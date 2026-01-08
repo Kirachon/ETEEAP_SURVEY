@@ -9,7 +9,7 @@ $type = $type ?? 'success';
 $isSuccess = $type === 'success';
 ?>
 
-<div class="min-h-screen bg-slate-50 flex items-center justify-center p-6 animate-fade-in">
+<div class="py-12 flex items-center justify-center p-6 animate-fade-in">
     <div class="w-full max-w-xl mx-auto">
         
         <!-- Main Content Card -->

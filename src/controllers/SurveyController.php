@@ -166,7 +166,7 @@ class SurveyController
                 "INSERT INTO survey_responses (
                     session_id, consent_given, current_step, completed_at,
                     last_name, first_name, middle_name, ext_name, sex, age_range, email, phone,
-                    office_type, specific_office, current_position, employment_status,
+                    office_type, office_assignment, specific_office, current_position, employment_status,
                     years_dswd, years_swd_sector,
                     performs_sw_tasks,
                     highest_education, undergrad_course, diploma_course, graduate_course,
@@ -175,7 +175,7 @@ class SurveyController
                 ) VALUES (
                     :session_id, :consent_given, :current_step, NOW(),
                     :last_name, :first_name, :middle_name, :ext_name, :sex, :age_range, :email, :phone,
-                    :office_type, :specific_office, :current_position, :employment_status,
+                    :office_type, :office_assignment, :specific_office, :current_position, :employment_status,
                     :years_dswd, :years_swd_sector,
                     :performs_sw_tasks,
                     :highest_education, :undergrad_course, :diploma_course, :graduate_course,
@@ -195,6 +195,7 @@ class SurveyController
                     'email' => $allData['email'] ?? null,
                     'phone' => $allData['phone'] ?? null,
                     'office_type' => $allData['office_type'] ?? null,
+                    'office_assignment' => $allData['office_assignment'] ?? null,
                     'specific_office' => $allData['specific_office'] ?? null,
                     'current_position' => $allData['current_position'] ?? null,
                     'employment_status' => $allData['employment_status'] ?? null,
@@ -232,19 +233,42 @@ class SurveyController
             dbRollback();
             
             // Check for duplicate key error (MySQL error code 1062)
-            if ($e->getCode() == 23000 || strpos($e->getMessage(), 'Duplicate entry') !== false) {
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
                 error_log('Duplicate survey submission attempted for email: ' . ($allData['email'] ?? 'unknown'));
                 flashSet('error', 'This email address has already been used to submit a survey. Each person may only submit one response.');
                 redirect(appUrl('/survey/step/2'));
             } else {
-                error_log('Survey submission failed: ' . $e->getMessage());
-                flashSet('error', 'There was a problem submitting your survey. Please try again.');
+                $rawMessage = $e->getMessage();
+                error_log('Survey submission failed: ' . $rawMessage);
+
+                $isSchemaOutOfDate =
+                    strpos($rawMessage, 'Unknown column') !== false ||
+                    strpos($rawMessage, 'Data truncated for column') !== false ||
+                    strpos($rawMessage, 'Incorrect') !== false;
+
+                if ($isSchemaOutOfDate) {
+                    $msg = 'System update required. Please contact the administrator.';
+                    if (defined('APP_DEBUG') && APP_DEBUG) {
+                        $msg = 'Database schema is out of date. Apply `database/migrations/2026-01-08_nationwide_interest_survey.sql`. Details: ' . $rawMessage;
+                    }
+                    flashSet('error', $msg);
+                } else {
+                    $msg = 'There was a problem submitting your survey. Please try again.';
+                    if (defined('APP_DEBUG') && APP_DEBUG) {
+                        $msg .= ' Details: ' . $rawMessage;
+                    }
+                    flashSet('error', $msg);
+                }
                 redirect(appUrl('/survey/step/' . SURVEY_TOTAL_STEPS));
             }
         } catch (Exception $e) {
             dbRollback();
             error_log('Survey submission failed: ' . $e->getMessage());
-            flashSet('error', 'There was a problem submitting your survey. Please try again.');
+            $msg = 'There was a problem submitting your survey. Please try again.';
+            if (defined('APP_DEBUG') && APP_DEBUG) {
+                $msg .= ' Details: ' . $e->getMessage();
+            }
+            flashSet('error', $msg);
             redirect(appUrl('/survey/step/' . SURVEY_TOTAL_STEPS));
         }
     }

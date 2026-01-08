@@ -101,11 +101,6 @@ class AdminController
         // Get multi-value data
         $multiValues = [];
         
-        $multiValues['program_assignments'] = dbFetchAll(
-            "SELECT program FROM response_program_assignments WHERE response_id = :id",
-            ['id' => $id]
-        );
-        
         $multiValues['sw_tasks'] = dbFetchAll(
             "SELECT task FROM response_sw_tasks WHERE response_id = :id",
             ['id' => $id]
@@ -161,7 +156,6 @@ class AdminController
 
         foreach ($responses as &$response) {
             $id = (int) ($response['id'] ?? 0);
-            $response['program_assignments'] = $multi['program_assignments'][$id] ?? [];
             $response['sw_tasks'] = $multi['sw_tasks'][$id] ?? [];
             $response['expertise_areas'] = $multi['expertise_areas'][$id] ?? [];
             $response['dswd_courses'] = $multi['dswd_courses'][$id] ?? [];
@@ -211,10 +205,6 @@ class AdminController
         };
 
         return [
-            'program_assignments' => $grouped(
-                dbFetchAll("SELECT response_id, program FROM response_program_assignments WHERE response_id IN ($in)", $params),
-                'program'
-            ),
             'sw_tasks' => $grouped(
                 dbFetchAll("SELECT response_id, task FROM response_sw_tasks WHERE response_id IN ($in)", $params),
                 'task'
@@ -244,7 +234,6 @@ class AdminController
     private function emptyMultiValues(): array
     {
         return [
-            'program_assignments' => [],
             'sw_tasks' => [],
             'expertise_areas' => [],
             'dswd_courses' => [],

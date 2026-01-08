@@ -8,12 +8,78 @@ $multiValues = $multiValues ?? [];
 
 // Helper to format field labels
 function formatLabel($key) {
-    return ucwords(str_replace('_', ' ', $key));
+    return ucwords(str_replace('_', ' ', (string) $key));
 }
 
 // Helper to format boolean
 function formatBool($val) {
+    if ($val === null) {
+        return 'N/A';
+    }
     return $val ? 'Yes' : 'No';
+}
+
+function formatEnumValue(string $key, $value): string
+{
+    if ($value === null || $value === '') {
+        return 'N/A';
+    }
+
+    $map = [
+        'sex' => [
+            'male' => 'Male',
+            'female' => 'Female',
+            'prefer_not_to_say' => 'Prefer not to say',
+        ],
+        'age_range' => [
+            '20-29' => '20–29',
+            '30-39' => '30–39',
+            '40-49' => '40–49',
+            '50-59' => '50–59',
+            '60+' => '60+',
+        ],
+        'office_type' => [
+            'central_office' => 'Central Office',
+            'field_office' => 'Field Office',
+            'attached_agency' => 'Attached Agency',
+        ],
+        'employment_status' => [
+            'permanent' => 'Permanent',
+            'cos' => 'COS',
+            'jo' => 'JO',
+            'others' => 'Others',
+        ],
+        'highest_education' => [
+            'high_school' => 'High School',
+            'some_college' => 'Some College',
+            'bachelors' => "Bachelor’s",
+            'masters' => "Master’s",
+            'doctoral' => 'Doctoral Units / Degree',
+        ],
+        'eteeap_interest' => [
+            'very_interested' => 'Very interested',
+            'interested' => 'Interested',
+            'somewhat_interested' => 'Somewhat interested',
+            'not_interested' => 'Not interested',
+        ],
+        'will_apply' => [
+            'yes' => 'Yes',
+            'maybe' => 'Maybe',
+            'no' => 'No',
+        ],
+        'years_bucket' => [
+            'lt5' => '<5',
+            '5-10' => '5–10',
+            '11-15' => '11–15',
+            '15+' => '15+',
+        ],
+    ];
+
+    if ($key === 'years_dswd' || $key === 'years_swd_sector') {
+        return $map['years_bucket'][(string) $value] ?? (string) $value;
+    }
+
+    return $map[$key][(string) $value] ?? (string) $value;
 }
 ?>
 
@@ -63,15 +129,15 @@ function formatBool($val) {
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-sm text-gray-500">Sex</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= formatLabel($response['sex']) ?></dd>
+                    <dd class="text-sm font-medium text-gray-900"><?= formatEnumValue('sex', $response['sex'] ?? null) ?></dd>
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-sm text-gray-500">Age Range</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= $response['age_range'] ?></dd>
+                    <dd class="text-sm font-medium text-gray-900"><?= formatEnumValue('age_range', $response['age_range'] ?? null) ?></dd>
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-sm text-gray-500">Email</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['email']) ?></dd>
+                    <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['email'] ?: 'N/A') ?></dd>
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-sm text-gray-500">Phone</dt>
@@ -86,33 +152,23 @@ function formatBool($val) {
             <dl class="space-y-3">
                 <div class="flex justify-between">
                     <dt class="text-sm text-gray-500">Office Type</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= formatLabel($response['office_type']) ?></dd>
+                    <dd class="text-sm font-medium text-gray-900"><?= formatEnumValue('office_type', $response['office_type'] ?? null) ?></dd>
                 </div>
                 <div class="flex justify-between">
-                    <dt class="text-sm text-gray-500">Specific Office</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['specific_office']) ?></dd>
+                    <dt class="text-sm text-gray-500">Office / Field Office Assignment</dt>
+                    <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['office_assignment'] ?: 'N/A') ?></dd>
                 </div>
                 <div class="flex justify-between">
-                    <dt class="text-sm text-gray-500">Current Position</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['current_position']) ?></dd>
+                    <dt class="text-sm text-gray-500">Office Field / Unit / Program Assignment</dt>
+                    <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['specific_office'] ?: 'N/A') ?></dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-sm text-gray-500">Current Position / Designation</dt>
+                    <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['current_position'] ?: 'N/A') ?></dd>
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-sm text-gray-500">Employment Status</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= formatLabel($response['employment_status']) ?></dd>
-                </div>
-                <div>
-                    <dt class="text-sm text-gray-500 mb-2">Program Assignments</dt>
-                    <dd class="flex flex-wrap gap-1">
-                        <?php 
-                        $programs = array_column($multiValues['program_assignments'] ?? [], 'program');
-                        if (empty($programs)): ?>
-                            <span class="text-sm text-gray-400">None</span>
-                        <?php else: ?>
-                            <?php foreach ($programs as $program): ?>
-                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"><?= htmlspecialchars(formatLabel($program)) ?></span>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </dd>
+                    <dd class="text-sm font-medium text-gray-900"><?= formatEnumValue('employment_status', $response['employment_status'] ?? null) ?></dd>
                 </div>
             </dl>
         </div>
@@ -122,26 +178,22 @@ function formatBool($val) {
             <h3 class="text-md font-semibold text-gray-900 mb-4 pb-2 border-b">Work Experience</h3>
             <dl class="space-y-3">
                 <div class="flex justify-between">
-                    <dt class="text-sm text-gray-500">Years in DSWD</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= formatLabel($response['years_dswd']) ?></dd>
+                    <dt class="text-sm text-gray-500">Total Years of Work Experience</dt>
+                    <dd class="text-sm font-medium text-gray-900"><?= formatEnumValue('years_dswd', $response['years_dswd'] ?? null) ?></dd>
                 </div>
                 <div class="flex justify-between">
-                    <dt class="text-sm text-gray-500">Years in SWD Sector</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= formatLabel($response['years_swd_sector']) ?></dd>
+                    <dt class="text-sm text-gray-500">Years of Social Work–Related Experience</dt>
+                    <dd class="text-sm font-medium text-gray-900"><?= formatEnumValue('years_swd_sector', $response['years_swd_sector'] ?? null) ?></dd>
                 </div>
             </dl>
         </div>
         
-        <!-- Social Work Competencies -->
+        <!-- Social Work–Related Experience -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 class="text-md font-semibold text-gray-900 mb-4 pb-2 border-b">Social Work Competencies</h3>
+            <h3 class="text-md font-semibold text-gray-900 mb-4 pb-2 border-b">Social Work–Related Experience</h3>
             <dl class="space-y-3">
-                <div class="flex justify-between">
-                    <dt class="text-sm text-gray-500">Performs SW Tasks</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= formatBool($response['performs_sw_tasks']) ?></dd>
-                </div>
                 <div>
-                    <dt class="text-sm text-gray-500 mb-2">SW Tasks</dt>
+                    <dt class="text-sm text-gray-500 mb-2">Current Tasks / Functions</dt>
                     <dd class="flex flex-wrap gap-1">
                         <?php 
                         $tasks = array_column($multiValues['sw_tasks'] ?? [], 'task');
@@ -149,13 +201,13 @@ function formatBool($val) {
                             <span class="text-sm text-gray-400">None</span>
                         <?php else: ?>
                             <?php foreach ($tasks as $task): ?>
-                                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded"><?= htmlspecialchars(formatLabel($task)) ?></span>
+                                <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded"><?= htmlspecialchars($task) ?></span>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </dd>
                 </div>
                 <div>
-                    <dt class="text-sm text-gray-500 mb-2">Expertise Areas</dt>
+                    <dt class="text-sm text-gray-500 mb-2">Social Work–Related Experiences</dt>
                     <dd class="flex flex-wrap gap-1">
                         <?php 
                         $areas = array_column($multiValues['expertise_areas'] ?? [], 'area');
@@ -163,7 +215,7 @@ function formatBool($val) {
                             <span class="text-sm text-gray-400">None</span>
                         <?php else: ?>
                             <?php foreach ($areas as $area): ?>
-                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded"><?= htmlspecialchars(formatLabel($area)) ?></span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded"><?= htmlspecialchars($area) ?></span>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </dd>
@@ -177,7 +229,7 @@ function formatBool($val) {
             <dl class="space-y-3">
                 <div class="flex justify-between">
                     <dt class="text-sm text-gray-500">Highest Education</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= formatLabel($response['highest_education']) ?></dd>
+                    <dd class="text-sm font-medium text-gray-900"><?= formatEnumValue('highest_education', $response['highest_education'] ?? null) ?></dd>
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-sm text-gray-500">Undergraduate Course</dt>
@@ -211,7 +263,7 @@ function formatBool($val) {
                             <span class="text-sm text-gray-400">None</span>
                         <?php else: ?>
                             <?php foreach ($courses as $course): ?>
-                                <span class="px-2 py-1 bg-amber-100 text-amber-800 text-xs rounded"><?= htmlspecialchars(formatLabel($course)) ?></span>
+                                <span class="px-2 py-1 bg-amber-100 text-amber-800 text-xs rounded"><?= htmlspecialchars($course) ?></span>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </dd>
@@ -220,17 +272,17 @@ function formatBool($val) {
         </div>
     </div>
     
-    <!-- ETEEAP Interest (Full Width) -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 class="text-md font-semibold text-gray-900 mb-4 pb-2 border-b">ETEEAP Interest</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-                <dt class="text-sm text-gray-500">Aware of ETEEAP</dt>
-                <dd class="text-lg font-semibold text-gray-900 mt-1"><?= formatBool($response['eteeap_awareness']) ?></dd>
-            </div>
-            <div>
-                <dt class="text-sm text-gray-500">Interest Level</dt>
-                <dd class="mt-1">
+        <!-- ETEEAP Interest (Full Width) -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 class="text-md font-semibold text-gray-900 mb-4 pb-2 border-b">ETEEAP Interest</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div>
+                    <dt class="text-sm text-gray-500">Aware of ETEEAP</dt>
+                    <dd class="text-lg font-semibold text-gray-900 mt-1"><?= formatBool($response['eteeap_awareness']) ?></dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-gray-500">Interest Level</dt>
+                    <dd class="mt-1">
                     <?php
                     $interestClass = match($response['eteeap_interest']) {
                         'very_interested' => 'bg-green-100 text-green-800',
@@ -239,61 +291,55 @@ function formatBool($val) {
                         default => 'bg-gray-100 text-gray-800'
                     };
                     ?>
-                    <span class="px-3 py-1 text-sm rounded-full <?= $interestClass ?>"><?= formatLabel($response['eteeap_interest']) ?></span>
-                </dd>
-            </div>
-            <div>
-                <dt class="text-sm text-gray-500">Will Apply</dt>
-                <dd class="mt-1">
+                    <span class="px-3 py-1 text-sm rounded-full <?= $interestClass ?>"><?= htmlspecialchars(formatEnumValue('eteeap_interest', $response['eteeap_interest'] ?? null)) ?></span>
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-gray-500">Will Apply</dt>
+                    <dd class="mt-1">
                     <?php
                     $applyClass = match($response['will_apply']) {
                         'yes' => 'bg-green-100 text-green-800',
                         'maybe' => 'bg-amber-100 text-amber-800',
+                        null => 'bg-gray-100 text-gray-800',
                         default => 'bg-red-100 text-red-800'
                     };
                     ?>
-                    <span class="px-3 py-1 text-sm rounded-full <?= $applyClass ?>"><?= ucfirst($response['will_apply']) ?></span>
-                </dd>
+                    <span class="px-3 py-1 text-sm rounded-full <?= $applyClass ?>"><?= htmlspecialchars(formatEnumValue('will_apply', $response['will_apply'] ?? null)) ?></span>
+                    </dd>
+                </div>
             </div>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <div>
-                <dt class="text-sm text-gray-500 mb-2">Motivations</dt>
-                <dd class="flex flex-wrap gap-1">
-                    <?php 
-                    $motivations = array_column($multiValues['motivations'] ?? [], 'motivation');
-                    if (empty($motivations)): ?>
-                        <span class="text-sm text-gray-400">None specified</span>
-                    <?php else: ?>
-                        <?php foreach ($motivations as $m): ?>
-                            <span class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded"><?= htmlspecialchars(formatLabel($m)) ?></span>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </dd>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div>
+                    <dt class="text-sm text-gray-500 mb-2">Motivations</dt>
+                    <dd class="flex flex-wrap gap-1">
+                        <?php 
+                        $motivations = array_column($multiValues['motivations'] ?? [], 'motivation');
+                        if (empty($motivations)): ?>
+                            <span class="text-sm text-gray-400">None specified</span>
+                        <?php else: ?>
+                            <?php foreach ($motivations as $m): ?>
+                                <span class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded"><?= htmlspecialchars($m) ?></span>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm text-gray-500 mb-2">Barriers</dt>
+                    <dd class="flex flex-wrap gap-1">
+                        <?php 
+                        $barriers = array_column($multiValues['barriers'] ?? [], 'barrier');
+                        if (empty($barriers)): ?>
+                            <span class="text-sm text-gray-400">None specified</span>
+                        <?php else: ?>
+                            <?php foreach ($barriers as $b): ?>
+                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded"><?= htmlspecialchars($b) ?></span>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </dd>
+                </div>
             </div>
-            <div>
-                <dt class="text-sm text-gray-500 mb-2">Barriers</dt>
-                <dd class="flex flex-wrap gap-1">
-                    <?php 
-                    $barriers = array_column($multiValues['barriers'] ?? [], 'barrier');
-                    if (empty($barriers)): ?>
-                        <span class="text-sm text-gray-400">None specified</span>
-                    <?php else: ?>
-                        <?php foreach ($barriers as $b): ?>
-                            <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded"><?= htmlspecialchars(formatLabel($b)) ?></span>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </dd>
-            </div>
-        </div>
-        
-        <?php if (!empty($response['additional_comments'])): ?>
-        <div class="mt-6">
-            <dt class="text-sm text-gray-500 mb-2">Additional Comments</dt>
-            <dd class="p-4 bg-gray-50 rounded-lg text-sm text-gray-700"><?= nl2br(htmlspecialchars($response['additional_comments'])) ?></dd>
-        </div>
-        <?php endif; ?>
     </div>
     
     <!-- Metadata -->

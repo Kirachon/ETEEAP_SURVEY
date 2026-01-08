@@ -29,7 +29,7 @@ define('SURVEY_STEP_NAMES', [
     2 => 'Basic Information',
     3 => 'Office & Employment Data',
     4 => 'Work Experience',
-    5 => 'Social Work Competencies',
+    5 => 'Social Work–Related Experience',
     6 => 'Educational Background',
     7 => 'DSWD Academy Courses',
     8 => 'ETEEAP Interest'

@@ -65,7 +65,7 @@ class ApiController
                  FROM survey_responses 
                  WHERE consent_given = 1 AND completed_at IS NOT NULL AND years_dswd IS NOT NULL
                  GROUP BY years_dswd 
-                 ORDER BY FIELD(years_dswd, 'less_than_2', '2-5', '6-10', '11-15', '16+')"
+                 ORDER BY FIELD(years_dswd, 'lt5', '5-10', '11-15', '15+')"
             );
             
             // Education level distribution

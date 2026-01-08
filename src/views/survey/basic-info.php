@@ -15,10 +15,10 @@ $savedData = $savedData ?? [];
         <!-- Header Section -->
         <div class="mb-10 text-center sm:text-left">
             <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tight text-dswd-dark leading-tight">
-                Personal Information
+                SECTION 2: BASIC INFORMATION
             </h1>
             <p class="mt-3 text-base lg:text-lg text-slate-500 max-w-2xl">
-                Please provide your basic details so we can identify your record in our system.
+                Please provide your basic information.
             </p>
         </div>
         
@@ -38,7 +38,7 @@ $savedData = $savedData ?? [];
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <!-- Last Name -->
                         <div class="space-y-2">
-                            <label for="last_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">Last Name <span class="text-red-500">*</span></label>
+                            <label for="last_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">2a. Last Name <span class="text-red-500">*</span></label>
                             <input type="text" name="last_name" id="last_name" value="<?= htmlspecialchars($savedData['last_name'] ?? '') ?>" 
                                 class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Dela Cruz" required>
@@ -49,7 +49,7 @@ $savedData = $savedData ?? [];
 
                         <!-- First Name -->
                         <div class="space-y-2">
-                            <label for="first_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">First Name <span class="text-red-500">*</span></label>
+                            <label for="first_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">2b. First Name <span class="text-red-500">*</span></label>
                             <input type="text" name="first_name" id="first_name" value="<?= htmlspecialchars($savedData['first_name'] ?? '') ?>" 
                                 class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Juan" required>
@@ -60,7 +60,7 @@ $savedData = $savedData ?? [];
 
                         <!-- Middle Name -->
                         <div class="space-y-2">
-                            <label for="middle_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">Middle Name</label>
+                            <label for="middle_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">2c. Middle Name</label>
                             <input type="text" name="middle_name" id="middle_name" value="<?= htmlspecialchars($savedData['middle_name'] ?? '') ?>" 
                                 class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Santos">
@@ -71,7 +71,7 @@ $savedData = $savedData ?? [];
 
                         <!-- Ext Name -->
                         <div class="space-y-2">
-                            <label for="ext_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">Ext. Name</label>
+                            <label for="ext_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">2d. Extension Name (e.g., Jr., Sr., III)</label>
                             <input type="text" name="ext_name" id="ext_name" value="<?= htmlspecialchars($savedData['ext_name'] ?? '') ?>" 
                                 class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Jr., Sr.">
@@ -87,7 +87,7 @@ $savedData = $savedData ?? [];
                 <!-- Bento Card: Sex -->
                 <div class="bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden">
                     <div class="p-8">
-                        <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider mb-6">Sex at Birth <span class="text-red-500">*</span></h3>
+                        <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider mb-6">3. Sex</h3>
                         <div class="space-y-3">
                             <?php 
                             $sexOptions = [
@@ -117,15 +117,15 @@ $savedData = $savedData ?? [];
                 <!-- Bento Card: Age Range -->
                 <div class="bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden">
                     <div class="p-8">
-                        <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider mb-6">Age Range <span class="text-red-500">*</span></h3>
+                        <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider mb-6">4. Age Range</h3>
                         <div class="space-y-3">
                             <?php 
                             $ageOptions = [
-                                '20-29' => '20-29 years old',
-                                '30-39' => '30-39 years old',
-                                '40-49' => '40-49 years old',
-                                '50-59' => '50-59 years old',
-                                '60+' => '60 years old and above'
+                                '20-29' => '20–29',
+                                '30-39' => '30–39',
+                                '40-49' => '40–49',
+                                '50-59' => '50–59',
+                                '60+' => '60+'
                             ];
                             foreach ($ageOptions as $value => $label): 
                             ?>
@@ -155,19 +155,20 @@ $savedData = $savedData ?? [];
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <!-- Email Address -->
                         <div class="space-y-2">
-                            <label for="email" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">Email Address <span class="text-red-500">*</span></label>
+                            <label for="email" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">5. Email Address</label>
                             <input type="email" name="email" id="email" value="<?= htmlspecialchars($savedData['email'] ?? '') ?>" 
                                 class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
-                                placeholder="juan.delacruz@dswd.gov.ph" required>
+                                placeholder="juan.delacruz@dswd.gov.ph">
                             <?php if (isset($errors['email'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['email'][0]) ?></p>
                             <?php endif; ?>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-2">Email validation applies if provided</p>
                         </div>
 
-                        <!-- Phone Number -->
+                        <!-- Mobile / Phone Number -->
                         <div class="space-y-2">
                             <div class="flex justify-between items-center">
-                                <label for="phone" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">Phone Number</label>
+                                <label for="phone" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">6. Mobile / Phone Number</label>
                                 <span class="text-[10px] font-black text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-widest">Optional</span>
                             </div>
                             <input type="tel" name="phone" id="phone" value="<?= htmlspecialchars($savedData['phone'] ?? '') ?>" 

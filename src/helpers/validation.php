@@ -411,36 +411,36 @@ function validateStepBasicInfo(array $data): ValidationResult
         }
     }
     
-    // Sex (required)
+    // Sex (optional)
     $sex = $data['sex'] ?? null;
     $allowedSex = ['male', 'female', 'prefer_not_to_say'];
-    if (!validateInList($sex, $allowedSex)) {
-        $result->addError('sex', 'Please select your sex.');
+    if ($sex !== null && $sex !== '' && !validateInList($sex, $allowedSex)) {
+        $result->addError('sex', 'Please select a valid option.');
     }
-    $result->sanitized['sex'] = $sex;
+    $result->sanitized['sex'] = ($sex !== null && $sex !== '') ? $sex : null;
     
-    // Age range (required)
+    // Age range (optional)
     $ageRange = $data['age_range'] ?? null;
     $allowedAge = ['20-29', '30-39', '40-49', '50-59', '60+'];
-    if (!validateInList($ageRange, $allowedAge)) {
-        $result->addError('age_range', 'Please select your age range.');
+    if ($ageRange !== null && $ageRange !== '' && !validateInList($ageRange, $allowedAge)) {
+        $result->addError('age_range', 'Please select a valid option.');
     }
-    $result->sanitized['age_range'] = $ageRange;
+    $result->sanitized['age_range'] = ($ageRange !== null && $ageRange !== '') ? $ageRange : null;
     
-    // Email (required, valid format, legitimate domain, unique)
+    // Email (optional, validate format + uniqueness if provided)
     $email = sanitizeEmail($data['email'] ?? '');
-    if (!validateRequired($email)) {
-        $result->addError('email', 'Email address is required.');
-    } elseif (!validateEmail($email)) {
-        $result->addError('email', 'Please enter a valid email address.');
-    } elseif (!validateEmailDomain($email)) {
-        $result->addError('email', 'Please use a valid email provider (e.g., Gmail, Yahoo, Outlook, or your official government/educational email).');
-    } elseif (isEmailAlreadyUsed($email)) {
-        $result->addError('email', 'This email address has already been used to submit a survey. Each person may only submit one response.');
+    if ($email !== '') {
+        if (!validateEmail($email)) {
+            $result->addError('email', 'Please enter a valid email address.');
+        } elseif (!validateEmailDomain($email)) {
+            $result->addError('email', 'Please use a valid email provider (e.g., Gmail, Yahoo, Outlook, or your official government/educational email).');
+        } elseif (isEmailAlreadyUsed($email)) {
+            $result->addError('email', 'This email address has already been used to submit a survey. Each person may only submit one response.');
+        }
     }
-    $result->sanitized['email'] = $email;
+    $result->sanitized['email'] = $email !== '' ? $email : null;
     
-    // Phone (optional but validate format if provided)
+    // Mobile / Phone Number (optional but validate format if provided)
     $phone = sanitizePhone($data['phone'] ?? '');
     if ($phone !== '' && !validatePhone($phone)) {
         $result->addError('phone', 'Please enter a valid phone number.');
@@ -461,42 +461,64 @@ function validateStepOfficeData(array $data): ValidationResult
 {
     $result = new ValidationResult();
     
-    // Office type (required)
+    // Office type (optional)
     $officeType = $data['office_type'] ?? null;
     $allowedOffice = ['central_office', 'field_office', 'attached_agency'];
-    if (!validateInList($officeType, $allowedOffice)) {
-        $result->addError('office_type', 'Please select your office type.');
+    if ($officeType !== null && $officeType !== '' && !validateInList($officeType, $allowedOffice)) {
+        $result->addError('office_type', 'Please select a valid option.');
     }
-    $result->sanitized['office_type'] = $officeType;
+    $result->sanitized['office_type'] = ($officeType !== null && $officeType !== '') ? $officeType : null;
+
+    // Office / Field Office Assignment (optional dropdown)
+    $officeAssignment = sanitizeString($data['office_assignment'] ?? '');
+    $allowedAssignments = [
+        'Central Office',
+        'FO I',
+        'FO II',
+        'FO III',
+        'FO IV-A',
+        'FO IV-B',
+        'FO V',
+        'FO VI',
+        'FO VII',
+        'FO VIII',
+        'FO IX',
+        'FO X',
+        'FO XI',
+        'FO XII',
+        'FO CAR',
+        'FO CARAGA',
+        'FO BARMM',
+    ];
+    if ($officeAssignment !== '' && !validateInList($officeAssignment, $allowedAssignments)) {
+        $result->addError('office_assignment', 'Please select a valid option.');
+    }
+    $result->sanitized['office_assignment'] = $officeAssignment !== '' ? $officeAssignment : null;
     
-    // Specific office (required)
+    // Office Field / Unit / Program Assignment (optional short answer)
     $specificOffice = sanitizeString($data['specific_office'] ?? '');
-    if (!validateRequired($specificOffice)) {
-        $result->addError('specific_office', 'Please specify your office/unit.');
+    if ($specificOffice !== '' && !validateMaxLength($specificOffice, 255)) {
+        $result->addError('specific_office', 'This field must not exceed 255 characters.');
     }
-    $result->sanitized['specific_office'] = $specificOffice;
+    $result->sanitized['specific_office'] = $specificOffice !== '' ? $specificOffice : null;
     
-    // Program assignments (optional, multi-value)
-    $programs = $data['program_assignments'] ?? [];
-    if (!is_array($programs)) {
-        $programs = [];
-    }
-    $result->sanitized['program_assignments'] = array_map('sanitizeString', $programs);
+    // Program assignments (not part of the current official form spec; keep empty)
+    $result->sanitized['program_assignments'] = [];
     
-    // Current position (required)
+    // Current position / designation (optional)
     $position = sanitizeString($data['current_position'] ?? '');
-    if (!validateRequired($position)) {
-        $result->addError('current_position', 'Please enter your current position.');
+    if ($position !== '' && !validateMaxLength($position, 255)) {
+        $result->addError('current_position', 'This field must not exceed 255 characters.');
     }
-    $result->sanitized['current_position'] = $position;
+    $result->sanitized['current_position'] = $position !== '' ? $position : null;
     
-    // Employment status (required)
+    // Employment status (optional)
     $status = $data['employment_status'] ?? null;
-    $allowedStatus = ['permanent', 'coterminous', 'contractual', 'cos_moa'];
-    if (!validateInList($status, $allowedStatus)) {
-        $result->addError('employment_status', 'Please select your employment status.');
+    $allowedStatus = ['permanent', 'cos', 'jo', 'others'];
+    if ($status !== null && $status !== '' && !validateInList($status, $allowedStatus)) {
+        $result->addError('employment_status', 'Please select a valid option.');
     }
-    $result->sanitized['employment_status'] = $status;
+    $result->sanitized['employment_status'] = ($status !== null && $status !== '') ? $status : null;
     
     return $result;
 }
@@ -511,21 +533,44 @@ function validateStepWorkExperience(array $data): ValidationResult
 {
     $result = new ValidationResult();
     
-    // Years in DSWD (required)
+    // Total years of work experience (optional)
     $yearsDswd = $data['years_dswd'] ?? null;
-    $allowedYears = ['less_than_2', '2-5', '6-10', '11-15', '16+'];
-    if (!validateInList($yearsDswd, $allowedYears)) {
-        $result->addError('years_dswd', 'Please select your years of service in DSWD.');
+    $allowedYears = ['lt5', '5-10', '11-15', '15+'];
+    if ($yearsDswd !== null && $yearsDswd !== '' && !validateInList($yearsDswd, $allowedYears)) {
+        $result->addError('years_dswd', 'Please select a valid option.');
     }
-    $result->sanitized['years_dswd'] = $yearsDswd;
+    $result->sanitized['years_dswd'] = ($yearsDswd !== null && $yearsDswd !== '') ? $yearsDswd : null;
     
-    // Years in SWD sector (required)
+    // Years of social work–related experience (optional)
     $yearsSector = $data['years_swd_sector'] ?? null;
-    $allowedSector = ['less_than_5', '5-10', '11-20', '21+'];
-    if (!validateInList($yearsSector, $allowedSector)) {
-        $result->addError('years_swd_sector', 'Please select your years in SWD sector.');
+    $allowedSector = ['lt5', '5-10', '11-15', '15+'];
+    if ($yearsSector !== null && $yearsSector !== '' && !validateInList($yearsSector, $allowedSector)) {
+        $result->addError('years_swd_sector', 'Please select a valid option.');
     }
-    $result->sanitized['years_swd_sector'] = $yearsSector;
+    $result->sanitized['years_swd_sector'] = ($yearsSector !== null && $yearsSector !== '') ? $yearsSector : null;
+
+    // Current tasks / functions (optional checkboxes)
+    $tasks = $data['sw_tasks'] ?? [];
+    if (!is_array($tasks)) {
+        $tasks = [];
+    }
+    $tasks = array_map('sanitizeString', $tasks);
+
+    $otherText = sanitizeString($data['sw_tasks_other'] ?? '');
+    if (!in_array('Other', $tasks, true) && $otherText !== '') {
+        $result->addError('sw_tasks', 'Please select "Others" if you want to specify additional tasks.');
+    }
+    if (in_array('Other', $tasks, true)) {
+        if ($otherText === '') {
+            $result->addError('sw_tasks_other', 'Please specify your "Others" entry.');
+        } elseif (!validateMaxLength($otherText, 200)) {
+            $result->addError('sw_tasks_other', 'Your "Others" entry must not exceed 200 characters.');
+        } else {
+            $tasks = array_values(array_filter($tasks, static fn($v) => $v !== 'Other'));
+            $tasks[] = 'Others: ' . $otherText;
+        }
+    }
+    $result->sanitized['sw_tasks'] = $tasks;
     
     return $result;
 }
@@ -539,30 +584,29 @@ function validateStepWorkExperience(array $data): ValidationResult
 function validateStepCompetencies(array $data): ValidationResult
 {
     $result = new ValidationResult();
-    
-    // Performs SW tasks (required)
-    $performsTasks = $data['performs_sw_tasks'] ?? null;
-    if (!validateInList($performsTasks, ['yes', 'no'])) {
-        $result->addError('performs_sw_tasks', 'Please indicate if you perform social work tasks.');
-    }
-    $result->sanitized['performs_sw_tasks'] = $performsTasks === 'yes';
-    
-    // SW tasks (conditional - required if performs_sw_tasks is yes)
-    $tasks = $data['sw_tasks'] ?? [];
-    if (!is_array($tasks)) {
-        $tasks = [];
-    }
-    if ($performsTasks === 'yes' && count($tasks) === 0) {
-        $result->addError('sw_tasks', 'Please select at least one task.');
-    }
-    $result->sanitized['sw_tasks'] = array_map('sanitizeString', $tasks);
-    
-    // Expertise areas (optional)
+
+    // Social work–related experiences (optional checkboxes)
     $areas = $data['expertise_areas'] ?? [];
     if (!is_array($areas)) {
         $areas = [];
     }
-    $result->sanitized['expertise_areas'] = array_map('sanitizeString', $areas);
+    $areas = array_map('sanitizeString', $areas);
+
+    $otherText = sanitizeString($data['expertise_areas_other'] ?? '');
+    if (!in_array('Other', $areas, true) && $otherText !== '') {
+        $result->addError('expertise_areas', 'Please select "Others" if you want to specify additional experiences.');
+    }
+    if (in_array('Other', $areas, true)) {
+        if ($otherText === '') {
+            $result->addError('expertise_areas_other', 'Please specify your "Others" entry.');
+        } elseif (!validateMaxLength($otherText, 200)) {
+            $result->addError('expertise_areas_other', 'Your "Others" entry must not exceed 200 characters.');
+        } else {
+            $areas = array_values(array_filter($areas, static fn($v) => $v !== 'Other'));
+            $areas[] = 'Others: ' . $otherText;
+        }
+    }
+    $result->sanitized['expertise_areas'] = $areas;
     
     return $result;
 }
@@ -577,13 +621,13 @@ function validateStepEducation(array $data): ValidationResult
 {
     $result = new ValidationResult();
     
-    // Highest education (required)
+    // Highest educational attainment (optional)
     $highest = $data['highest_education'] ?? null;
     $allowedEdu = ['high_school', 'some_college', 'bachelors', 'masters', 'doctoral'];
-    if (!validateInList($highest, $allowedEdu)) {
-        $result->addError('highest_education', 'Please select your highest educational attainment.');
+    if ($highest !== null && $highest !== '' && !validateInList($highest, $allowedEdu)) {
+        $result->addError('highest_education', 'Please select a valid option.');
     }
-    $result->sanitized['highest_education'] = $highest;
+    $result->sanitized['highest_education'] = ($highest !== null && $highest !== '') ? $highest : null;
     
     // Undergrad course (optional)
     $undergrad = sanitizeString($data['undergrad_course'] ?? '');
@@ -610,22 +654,35 @@ function validateStepDswdCourses(array $data): ValidationResult
 {
     $result = new ValidationResult();
     
-    // Availed training (required)
+    // Have you availed of any DSWD Academy trainings? (optional)
     $availed = $data['availed_dswd_training'] ?? null;
-    if (!validateInList($availed, ['yes', 'no'])) {
-        $result->addError('availed_dswd_training', 'Please indicate if you have availed DSWD Academy training.');
+    if ($availed !== null && $availed !== '' && !validateInList($availed, ['yes', 'no'])) {
+        $result->addError('availed_dswd_training', 'Please select a valid option.');
     }
-    $result->sanitized['availed_dswd_training'] = $availed === 'yes';
+    $result->sanitized['availed_dswd_training'] = ($availed === 'yes') ? true : (($availed === 'no') ? false : null);
     
-    // Courses taken (conditional)
+    // If YES, indicate courses taken (optional)
     $courses = $data['dswd_courses'] ?? [];
     if (!is_array($courses)) {
         $courses = [];
     }
-    if ($availed === 'yes' && count($courses) === 0) {
-        $result->addError('dswd_courses', 'Please select at least one course.');
+    $courses = array_map('sanitizeString', $courses);
+
+    $otherText = sanitizeString($data['dswd_courses_other'] ?? '');
+    if (!in_array('Other', $courses, true) && $otherText !== '') {
+        $result->addError('dswd_courses', 'Please select "Others" if you want to specify another course.');
     }
-    $result->sanitized['dswd_courses'] = array_map('sanitizeString', $courses);
+    if (in_array('Other', $courses, true)) {
+        if ($otherText === '') {
+            $result->addError('dswd_courses_other', 'Please specify your "Others" entry.');
+        } elseif (!validateMaxLength($otherText, 200)) {
+            $result->addError('dswd_courses_other', 'Your "Others" entry must not exceed 200 characters.');
+        } else {
+            $courses = array_values(array_filter($courses, static fn($v) => $v !== 'Other'));
+            $courses[] = 'Others: ' . $otherText;
+        }
+    }
+    $result->sanitized['dswd_courses'] = $courses;
     
     return $result;
 }
@@ -640,20 +697,20 @@ function validateStepEteeapInterest(array $data): ValidationResult
 {
     $result = new ValidationResult();
     
-    // ETEEAP awareness (required)
+    // Awareness of ETEEAP (optional)
     $awareness = $data['eteeap_awareness'] ?? null;
-    if (!validateInList($awareness, ['yes', 'no'])) {
-        $result->addError('eteeap_awareness', 'Please indicate if you are aware of ETEEAP.');
+    if ($awareness !== null && $awareness !== '' && !validateInList($awareness, ['aware', 'not_aware'])) {
+        $result->addError('eteeap_awareness', 'Please select a valid option.');
     }
-    $result->sanitized['eteeap_awareness'] = $awareness === 'yes';
+    $result->sanitized['eteeap_awareness'] = ($awareness === 'aware') ? true : (($awareness === 'not_aware') ? false : null);
     
-    // Interest level (required)
+    // Interest in ETEEAP – BS Social Work (optional)
     $interest = $data['eteeap_interest'] ?? null;
     $allowedInterest = ['very_interested', 'interested', 'somewhat_interested', 'not_interested'];
-    if (!validateInList($interest, $allowedInterest)) {
-        $result->addError('eteeap_interest', 'Please select your level of interest.');
+    if ($interest !== null && $interest !== '' && !validateInList($interest, $allowedInterest)) {
+        $result->addError('eteeap_interest', 'Please select a valid option.');
     }
-    $result->sanitized['eteeap_interest'] = $interest;
+    $result->sanitized['eteeap_interest'] = ($interest !== null && $interest !== '') ? $interest : null;
     
     // Motivations (optional)
     $motivations = $data['motivations'] ?? [];
@@ -669,20 +726,12 @@ function validateStepEteeapInterest(array $data): ValidationResult
     }
     $result->sanitized['barriers'] = array_map('sanitizeString', $barriers);
     
-    // Will apply (required)
+    // If offered, will you apply? (optional)
     $willApply = $data['will_apply'] ?? null;
-    if (!validateInList($willApply, ['yes', 'maybe', 'no'])) {
-        $result->addError('will_apply', 'Please indicate if you intend to apply.');
+    if ($willApply !== null && $willApply !== '' && !validateInList($willApply, ['yes', 'maybe', 'no'])) {
+        $result->addError('will_apply', 'Please select a valid option.');
     }
-    $result->sanitized['will_apply'] = $willApply;
-    
-    // Additional comments (optional)
-    $comments = sanitizeString($data['additional_comments'] ?? '');
-    if (!validateMaxLength($comments, 2000)) {
-        $result->addError('additional_comments', 'Comments must not exceed 2000 characters.');
-    }
-    $result->sanitized['additional_comments'] = $comments;
-    
+    $result->sanitized['will_apply'] = ($willApply !== null && $willApply !== '') ? $willApply : null;
     return $result;
 }
 

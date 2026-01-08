@@ -1,202 +1,277 @@
-# Nationwide Interest Survey on the ETEEAP-BS Social Work Program for DSWD Personnel
+
+
+---
+
+# Nationwide Interest Survey on the ETEEAP–BS Social Work Program for DSWD Personnel
 
 ## Form Description
 
 The Department of Social Welfare and Development (DSWD), through the DSWD Academy, continues to strengthen the professionalization of the social welfare and development (SWD) workforce by supporting pathways for formal academic recognition of competencies acquired through formal and informal capability development interventions and related years of public service.
 
-As part of this commitment, the DSWD Academy is exploring the implementation of the **Expanded Tertiary Education Equivalency and Accreditation Program (ETEEAP)** leading to a **Bachelor of Science in Social Work (BSSW)**, in partnership with the recognized Commission on Higher Education (CHED).
+As part of this commitment, the DSWD Academy is exploring the implementation of the **Expanded Tertiary Education Equivalency and Accreditation Program (ETEEAP)** leading to a **Bachelor of Science in Social Work (BSSW)**, in partnership with the Commission on Higher Education (CHED).
 
 ---
 
 ## SECTION 1: CONSENT
 
-**1. Consent for Data Collection and Use**
-*I hereby consent to the collection, storage, and use of my personal and professional information for purposes of planning, assessing, and implementing the ETEEAP - BS Social Work program, in accordance with the Data Privacy Act of 2012 (RA 10173).*
+### 1. Consent for Data Collection and Use
 
-* [ ] Yes, I consent
-* [ ] No, I do not consent *(If selected, you will be directed to submit the form)*
+I hereby consent to the collection, storage, and use of my personal and professional information for purposes of planning, assessing, and implementing the ETEEAP – BS Social Work program, in accordance with the Data Privacy Act of 2012 (RA 10173).
+
+**[Multiple Choice – Required]**
+
+* ☐ Yes, I consent
+* ☐ No, I do not consent *(If selected, you will be directed to submit the form)*
 
 ---
 
 ## SECTION 2: BASIC INFORMATION
 
-**2. Full Name** `[Short answer]`
+### 2a. Last Name
 
-**3. Sex**
+**[Short Answer – Required]**
 
-* [ ] Male
-* [ ] Female
-* [ ] Prefer not to say
+### 2b. First Name
 
-**4. Age Range**
+**[Short Answer – Required]**
 
-* [ ] 20-29
-* [ ] 30-39
-* [ ] 40-49
-* [ ] 50-59
-* [ ] 60+
+### 2c. Middle Name
 
-**5. Email Address** `[Short answer - Response validation: Email]`
+**[Short Answer – Optional]**
 
-**6. Mobile / Phone Number** `[Short answer]`
+### 2d. Extension Name (e.g., Jr., Sr., III)
+
+**[Short Answer – Optional]**
+
+### 3. Sex
+
+**[Multiple Choice]**
+
+* ☐ Male
+* ☐ Female
+* ☐ Prefer not to say
+
+### 4. Age Range
+
+**[Multiple Choice]**
+
+* ☐ 20–29
+* ☐ 30–39
+* ☐ 40–49
+* ☐ 50–59
+* ☐ 60+
+
+### 5. Email Address
+
+**[Short Answer – Email Validation]**
+
+### 6. Mobile / Phone Number
+
+**[Short Answer]**
 
 ---
 
-## SECTION 3: OFFICE AND EMPLOYMENT DATA
+## SECTION 3: OFFICE & EMPLOYMENT
 
-**7. Office Type**
+### 8. Office Type
 
-* [ ] Central Office
-* [ ] Field Office
-* [ ] Attached Agency
+**[Multiple Choice]**
 
-**8. Specific Field Office / Bureau / Service / Unit** `[Short answer]`
+* ☐ Central Office
+* ☐ Field Office
+* ☐ Attached Agency
 
-**9. Current Program Assignment**
+### 9. Office / Field Office Assignment
 
-* [ ] 4Ps (Pantawid Pamilyang Pilipino Program)
-* [ ] SLP (Sustainable Livelihood Program)
-* [ ] KALAHI-CIDSS
-* [ ] DRMB (Disaster Response Management Bureau)
-* [ ] CIU (Crisis Intervention Unit)
-* [ ] Residential Care Facilities / Centers
-* [ ] Others: `________`
+**[Dropdown]**
 
-**10. Current Position / Designation** `[Short answer]`
+* Central Office
+* FO I
+* FO II
+* FO III
+* FO IV-A
+* FO IV-B
+* FO V
+* FO VI
+* FO VII
+* FO VIII
+* FO IX
+* FO X
+* FO XI
+* FO XII
+* FO CAR
+* FO CARAGA
+* FO BARMM
 
-**11. Employment Status**
+### 10. Office Field / Unit / Program Assignment
 
-* [ ] Permanent
-* [ ] Coterminous
-* [ ] Contractual
-* [ ] Cost of Service (COS) / MOA
+**[Short Answer]**
+*(e.g., 4Ps, SLP, AICS, Disaster Response, Protective Services, Admin, HR, Finance)*
+
+### 11. Employment Status
+
+**[Multiple Choice]**
+
+* ☐ Permanent
+* ☐ COS
+* ☐ JO
+* ☐ Others
+
+### 12. Current Position / Designation
+
+**[Short Answer]**
 
 ---
 
 ## SECTION 4: WORK EXPERIENCE
 
-**12. Total Years of Service in DSWD**
+### 13. Total Years of Work Experience
 
-* [ ] Less than 2 years
-* [ ] 2-5 years
-* [ ] 6-10 years
-* [ ] 11-15 years
-* [ ] 16+ years
+**[Multiple Choice]**
 
-**13. Total Years of Service in the Social Welfare and Development (SWD) Sector** *(Including experience outside DSWD)*
+* ☐ <5
+* ☐ 5–10
+* ☐ 11–15
+* ☐ 15+
 
-* [ ] Less than 5 years
-* [ ] 5-10 years
-* [ ] 11-20 years
-* [ ] 21+ years
+### 14. Years of Social Work–Related Experience
+
+**[Multiple Choice]**
+
+* ☐ <5
+* ☐ 5–10
+* ☐ 11–15
+* ☐ 15+
+
+### 15. Current Tasks / Functions
+
+**[Checkboxes – Check all that apply]**
+
+* ☐ Case management / casework
+* ☐ Community organizing / development
+* ☐ Program implementation (4Ps, SLP, AICS, etc.)
+* ☐ Disaster response / humanitarian assistance
+* ☐ Psychosocial support services
+* ☐ Monitoring & evaluation / reporting
+* ☐ Policy / standards / research work
+* ☐ Administrative / support functions
+* ☐ Supervision / team leadership
+* ☐ Others: __________
 
 ---
 
-## SECTION 5: SOCIAL WORK COMPETENCIES
+## SECTION 5: SOCIAL WORK–RELATED EXPERIENCE
 
-**14. Are you currently performing social work-related tasks?**
+### 16. Social Work–Related Experiences
 
-* [ ] Yes
-* [ ] No
+**[Checkboxes – Check all that apply]**
 
-**15. If YES, please check the following tasks you regularly perform:**
-
-* [ ] Case Management (Intake, Assessment, Case Planning)
-* [ ] Community Organizing / Mobilization
-* [ ] Conduct of Home Visits / Social Case Study Reports
-* [ ] Facilitation of Group Work / Therapy
-* [ ] Disaster Response and Relief Operations
-* [ ] Resource Generation / Partnership Building
-* [ ] Monitoring and Evaluation of SWD Programs
-* [ ] Provision of Technical Assistance to LGUs/NGOs
-* [ ] Others: `________`
-
-**16. Areas of Expertise (Check all that apply):**
-
-* [ ] Child and Youth Welfare
-* [ ] Women's Welfare
-* [ ] Family and Community Welfare
-* [ ] Elderly / Senior Citizens
-* [ ] Persons with Disabilities (PWD)
-* [ ] Disaster Risk Reduction and Management
-* [ ] Policy Development / Research
-* [ ] Administrative support services
-* [ ] Program planning / M&E
-* [ ] Supervision of social welfare staff
-* [ ] Training facilitation/capacity building
-* [ ] NGO/LGU/ volunteer social welfare work
-* [ ] Others: `________`
+* ☐ Case management (assessment, intervention, referral)
+* ☐ Child, women, elderly, PWD, IP casework
+* ☐ Community organizing / advocacy
+* ☐ Social protection program implementation
+* ☐ Disaster response & recovery
+* ☐ Psychosocial support services
+* ☐ Program planning / monitoring & evaluation
+* ☐ Supervision of social welfare staff
+* ☐ Training facilitation / capacity building
+* ☐ NGO / LGU / volunteer social welfare work
+* ☐ Others: __________
 
 ---
 
 ## SECTION 6: EDUCATIONAL BACKGROUND
 
-**17. Highest Educational Attainment**
+### 17. Highest Educational Attainment
 
-* [ ] High School
-* [ ] Some College Units
-* [ ] Bachelor's Degree
-* [ ] Master's Degree
-* [ ] Doctoral Degree
+**[Multiple Choice]**
 
-**18. Undergraduate Course / Degree** `[Short answer - Optional]`
+* ☐ High School
+* ☐ Some College
+* ☐ Bachelor’s
+* ☐ Master’s
+* ☐ Doctoral Units / Degree
 
-**19. Diploma Course (if any)** `[Short answer - Optional]`
+### 18. Undergraduate Course / Degree
 
-**20. Graduate Course / Degree (if any)** `[Short answer - Optional]`
+**[Short Answer – Optional]**
+
+### 19. Diploma Course (if any)
+
+**[Short Answer – Optional]**
+
+### 20. Graduate Course / Degree (if any)
+
+**[Short Answer – Optional]**
 
 ---
 
 ## SECTION 7: DSWD ACADEMY COURSES
 
-**21. Have you availed of any DSWD Academy trainings?**
+### 21. Have you availed of any DSWD Academy trainings?
 
-* [ ] Yes
-* [ ] No
+**[Multiple Choice]**
 
-**22. If YES, indicate courses taken (Check all that apply):**
+* ☐ Yes
+* ☐ No
 
-* [ ] Case Management
-* [ ] Social Protection Programs
-* [ ] DRRM
-* [ ] Program Development
-* [ ] Leadership / Supervisory
-* [ ] Others: `________`
+### 22. If YES, indicate courses taken
+
+**[Checkboxes – Optional]**
+
+* ☐ Case Management
+* ☐ Social Protection Programs
+* ☐ DRRM
+* ☐ Program Development
+* ☐ Leadership / Supervisory
+* ☐ Others: __________
 
 ---
 
 ## SECTION 8: ETEEAP INTEREST
 
-**23. Awareness of ETEEAP**
+### 23. Awareness of ETEEAP
 
-* [ ] Aware
-* [ ] Not aware
+**[Multiple Choice]**
 
-**24. Interest in ETEEAP - BS Social Work**
+* ☐ Aware
+* ☐ Not aware
 
-* [ ] Very interested
-* [ ] Interested
-* [ ] Somewhat interested
-* [ ] Not interested
+### 24. Interest in ETEEAP – BS Social Work
 
-**25. Motivation for Enrolling (Check all that apply):**
+**[Multiple Choice]**
 
-* [ ] PRC Social Worker eligibility
-* [ ] Career progression / promotion
-* [ ] Professionalization
-* [ ] Alignment with current work
-* [ ] Personal growth
+* ☐ Very interested
+* ☐ Interested
+* ☐ Somewhat interested
+* ☐ Not interested
 
-**26. Possible Barriers (Check all that apply):**
+### 25. Motivation for Enrolling
 
-* [ ] Tuition/fees
-* [ ] Time/workload
-* [ ] Family responsibilities
-* [ ] Internet/connectivity
-* [ ] Lack of management support
+**[Checkboxes – Check all that apply]**
 
-**27. If offered, will you apply for ETEEAP-BSSW?**
+* ☐ PRC Social Worker eligibility
+* ☐ Career progression / promotion
+* ☐ Professionalization
+* ☐ Alignment with current work
+* ☐ Personal growth
 
-* [ ] Yes
-* [ ] Maybe
-* [ ] No
+### 26. Possible Barriers
+
+**[Checkboxes – Check all that apply]**
+
+* ☐ Tuition / fees
+* ☐ Time / workload
+* ☐ Family responsibilities
+* ☐ Internet / connectivity
+* ☐ Lack of management support
+
+### 27. If offered, will you apply for ETEEAP – BSSW?
+
+**[Multiple Choice]**
+
+* ☐ Yes
+* ☐ Maybe
+* ☐ No
+
+

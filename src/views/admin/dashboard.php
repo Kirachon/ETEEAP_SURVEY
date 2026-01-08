@@ -260,9 +260,40 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const formatLabel = (str) => {
         if (!str) return 'Unknown';
-        if (str === 'male') return 'Male';
-        if (str === 'female') return 'Female';
-        return str.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+        const map = {
+            // Sex
+            male: 'Male',
+            female: 'Female',
+            prefer_not_to_say: 'Prefer not to say',
+
+            // Age ranges (use en dash)
+            '20-29': '20–29',
+            '30-39': '30–39',
+            '40-49': '40–49',
+            '50-59': '50–59',
+            '60+': '60+',
+
+            // Office type
+            central_office: 'Central Office',
+            field_office: 'Field Office',
+            attached_agency: 'Attached Agency',
+
+            // Employment status
+            permanent: 'Permanent',
+            cos: 'COS',
+            jo: 'JO',
+            others: 'Others',
+
+            // Work experience buckets
+            lt5: '<5',
+            '5-10': '5–10',
+            '11-15': '11–15',
+            '15+': '15+',
+        };
+
+        if (map[str]) return map[str];
+        return String(str).split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
     };
     
     // Sophisticated Color Palette

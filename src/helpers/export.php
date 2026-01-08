@@ -106,27 +106,24 @@ function exportToCsv(array $data, string $filename = 'export', array $headers = 
 }
 
 /**
- * Format survey response for export
- * 
- * @param array $response Raw database response
- * @param array $multiValues Multi-value fields (programs, tasks, etc.)
- * @return array Formatted for export
+ * Enum mappings for consistent human-readable exports.
+ *
+ * @return array<string, array<string, string>>
  */
-function formatResponseForExport(array $response, array $multiValues = []): array
+function getSurveyEnumMappings(): array
 {
-    // Map database enum values to human-readable labels
-    $enumMappings = [
+    return [
         'sex' => [
             'male' => 'Male',
             'female' => 'Female',
             'prefer_not_to_say' => 'Prefer not to say'
         ],
         'age_range' => [
-            '20-29' => '20-29 years',
-            '30-39' => '30-39 years',
-            '40-49' => '40-49 years',
-            '50-59' => '50-59 years',
-            '60+' => '60 years and above'
+            '20-29' => '20–29',
+            '30-39' => '30–39',
+            '40-49' => '40–49',
+            '50-59' => '50–59',
+            '60+' => '60+'
         ],
         'office_type' => [
             'central_office' => 'Central Office',
@@ -135,35 +132,34 @@ function formatResponseForExport(array $response, array $multiValues = []): arra
         ],
         'employment_status' => [
             'permanent' => 'Permanent',
-            'coterminous' => 'Coterminous',
-            'contractual' => 'Contractual',
-            'cos_moa' => 'COS/MOA'
+            'cos' => 'COS',
+            'jo' => 'JO',
+            'others' => 'Others'
         ],
         'years_dswd' => [
-            'less_than_2' => 'Less than 2 years',
-            '2-5' => '2-5 years',
-            '6-10' => '6-10 years',
-            '11-15' => '11-15 years',
-            '16+' => '16 years and above'
+            'lt5' => '<5',
+            '5-10' => '5–10',
+            '11-15' => '11–15',
+            '15+' => '15+'
         ],
         'years_swd_sector' => [
-            'less_than_5' => 'Less than 5 years',
-            '5-10' => '5-10 years',
-            '11-20' => '11-20 years',
-            '21+' => '21 years and above'
+            'lt5' => '<5',
+            '5-10' => '5–10',
+            '11-15' => '11–15',
+            '15+' => '15+'
         ],
         'highest_education' => [
-            'high_school' => 'High School Graduate',
+            'high_school' => 'High School',
             'some_college' => 'Some College',
-            'bachelors' => 'Bachelor\'s Degree',
-            'masters' => 'Master\'s Degree',
-            'doctoral' => 'Doctoral Degree'
+            'bachelors' => 'Bachelor’s',
+            'masters' => 'Master’s',
+            'doctoral' => 'Doctoral Units / Degree'
         ],
         'eteeap_interest' => [
-            'very_interested' => 'Very Interested',
+            'very_interested' => 'Very interested',
             'interested' => 'Interested',
-            'somewhat_interested' => 'Somewhat Interested',
-            'not_interested' => 'Not Interested'
+            'somewhat_interested' => 'Somewhat interested',
+            'not_interested' => 'Not interested'
         ],
         'will_apply' => [
             'yes' => 'Yes',
@@ -171,6 +167,18 @@ function formatResponseForExport(array $response, array $multiValues = []): arra
             'no' => 'No'
         ]
     ];
+}
+
+/**
+ * Format survey response for export
+ * 
+ * @param array $response Raw database response
+ * @param array $multiValues Multi-value fields (programs, tasks, etc.)
+ * @return array Formatted for export
+ */
+function formatResponseForExport(array $response, array $multiValues = []): array
+{
+    $enumMappings = getSurveyEnumMappings();
     
     $formatted = [];
     
@@ -187,9 +195,13 @@ function formatResponseForExport(array $response, array $multiValues = []): arra
             continue;
         }
         
-        // Format booleans
-        if (in_array($key, ['consent_given', 'performs_sw_tasks', 'availed_dswd_training', 'eteeap_awareness'])) {
-            $formatted[$key] = $value ? 'Yes' : 'No';
+        // Format booleans (nullable)
+        if (in_array($key, ['consent_given', 'performs_sw_tasks', 'availed_dswd_training', 'eteeap_awareness'], true)) {
+            if ($value === null || $value === '') {
+                $formatted[$key] = '';
+            } else {
+                $formatted[$key] = ((int) $value === 1) ? 'Yes' : 'No';
+            }
             continue;
         }
         
@@ -235,25 +247,24 @@ function getExportHeaders(): array
         
         // Office & Employment
         'Office Type' => 'office_type',
-        'Specific Office' => 'specific_office',
-        'Current Position' => 'current_position',
+        'Office / Field Office Assignment' => 'office_assignment',
+        'Office Field / Unit / Program Assignment' => 'specific_office',
+        'Current Position / Designation' => 'current_position',
         'Employment Status' => 'employment_status',
-        'Program Assignments' => 'program_assignments',
         
         // Work Experience
-        'Years in DSWD' => 'years_dswd',
-        'Years in SWD Sector' => 'years_swd_sector',
+        'Total Years of Work Experience' => 'years_dswd',
+        'Years of Social Work–Related Experience' => 'years_swd_sector',
         
-        // Competencies
-        'Performs SW Tasks' => 'performs_sw_tasks',
-        'SW Tasks Performed' => 'sw_tasks',
-        'Expertise Areas' => 'expertise_areas',
+        // Work Experience / Social Work–Related Experience
+        'Current Tasks / Functions' => 'sw_tasks',
+        'Social Work–Related Experiences' => 'expertise_areas',
         
         // Education
         'Highest Education' => 'highest_education',
-        'Undergrad Course' => 'undergrad_course',
+        'Undergraduate Course / Degree' => 'undergrad_course',
         'Diploma Course' => 'diploma_course',
-        'Graduate Course' => 'graduate_course',
+        'Graduate Course / Degree' => 'graduate_course',
         
         // DSWD Academy
         'Availed DSWD Training' => 'availed_dswd_training',
@@ -264,8 +275,7 @@ function getExportHeaders(): array
         'ETEEAP Interest Level' => 'eteeap_interest',
         'Motivations' => 'motivations',
         'Barriers' => 'barriers',
-        'Will Apply' => 'will_apply',
-        'Additional Comments' => 'additional_comments'
+        'Will Apply' => 'will_apply'
     ];
 }
 
@@ -282,6 +292,9 @@ function exportSurveyToCsv(array $responses, string $filename = 'survey_export')
         echo 'No data to export.';
         return;
     }
+
+    $enumMappings = getSurveyEnumMappings();
+    $boolFields = ['consent_given', 'performs_sw_tasks', 'availed_dswd_training', 'eteeap_awareness'];
 
     // Generate filename with timestamp
     $filename = sprintf(
@@ -316,18 +329,31 @@ function exportSurveyToCsv(array $responses, string $filename = 'survey_export')
         foreach ($headerMapping as $label => $field) {
             $value = $response[$field] ?? '';
 
+            // Map enums to human-readable labels
+            if ($value !== '' && $value !== null && isset($enumMappings[$field])) {
+                $mapped = $enumMappings[$field][(string) $value] ?? null;
+                if ($mapped !== null) {
+                    $value = $mapped;
+                }
+            }
+
             // Handle arrays (multi-value fields)
             if (is_array($value)) {
                 $value = implode('; ', $value);
             }
 
-            // Handle booleans
-            if (is_bool($value) || $value === '1' || $value === '0') {
-                if (is_bool($value)) {
+            // Handle booleans (nullable)
+            if (in_array($field, $boolFields, true)) {
+                if ($value === '' || $value === null) {
+                    $value = '';
+                } elseif (is_bool($value)) {
                     $value = $value ? 'Yes' : 'No';
                 } else {
-                    $value = $value === '1' ? 'Yes' : 'No';
+                    $value = ((int) $value === 1) ? 'Yes' : 'No';
                 }
+            } elseif (is_bool($value) || $value === '1' || $value === '0') {
+                // Legacy fallback
+                $value = ((string) $value === '1' || $value === true) ? 'Yes' : 'No';
             }
 
             // Prevent CSV/Excel formula injection on string output

@@ -79,7 +79,7 @@ INSERT INTO lookup_dswd_courses (code, name, sort_order) VALUES
 INSERT INTO survey_responses (
     session_id, consent_given, current_step, completed_at,
     last_name, first_name, middle_name, ext_name, sex, age_range, email, phone,
-    office_type, specific_office, current_position, employment_status,
+    office_type, office_assignment, specific_office, current_position, employment_status,
     years_dswd, years_swd_sector,
     performs_sw_tasks,
     highest_education, undergrad_course,
@@ -89,8 +89,8 @@ INSERT INTO survey_responses (
 -- Sample 1: Completed response
 ('sess_sample_001', TRUE, 8, NOW(),
  'Santos', 'Maria', NULL, NULL, 'female', '30-39', 'maria.santos@dswd.gov.ph', '09171234567',
- 'field_office', 'DSWD Field Office NCR', 'Social Welfare Officer II', 'permanent',
- '6-10', '11-20',
+ 'field_office', 'FO IV-A', 'DSWD Field Office NCR', 'Social Welfare Officer II', 'permanent',
+ '5-10', '11-15',
  TRUE,
  'bachelors', 'Bachelor of Arts in Psychology',
  TRUE,
@@ -99,8 +99,8 @@ INSERT INTO survey_responses (
 -- Sample 2: Completed response with extension
 ('sess_sample_002', TRUE, 8, NOW(),
  'Dela Cruz', 'Juan', 'Manuel', 'Jr.', 'male', '40-49', 'juan.delacruz@dswd.gov.ph', '09181234567',
- 'central_office', 'DSWD Central Office - PDPB', 'Project Development Officer III', 'permanent',
- '16+', '21+',
+ 'central_office', 'Central Office', 'DSWD Central Office - PDPB', 'Project Development Officer III', 'permanent',
+ '15+', '15+',
  TRUE,
  'masters', 'Master of Science in Social Work',
  TRUE,
@@ -109,8 +109,8 @@ INSERT INTO survey_responses (
 -- Sample 3: In-progress response
 ('sess_sample_003', TRUE, 4, NULL,
  'Reyes', 'Ana', 'Bautista', NULL, 'female', '20-29', 'ana.reyes@dswd.gov.ph', '09191234567',
- 'field_office', 'DSWD Field Office Region IV-A', 'Social Welfare Assistant', 'contractual',
- 'less_than_2', 'less_than_5',
+ 'field_office', 'FO IV-A', 'DSWD Field Office Region IV-A', 'Social Welfare Assistant', 'cos',
+ 'lt5', 'lt5',
  NULL,
  'some_college', NULL,
  NULL,

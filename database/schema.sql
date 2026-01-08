@@ -37,13 +37,14 @@ CREATE TABLE IF NOT EXISTS survey_responses (
     
     -- Section 3: Office & Employment Data
     office_type ENUM('central_office', 'field_office', 'attached_agency') NULL,
+    office_assignment VARCHAR(50) NULL,
     specific_office VARCHAR(255) NULL,
     current_position VARCHAR(255) NULL,
-    employment_status ENUM('permanent', 'coterminous', 'contractual', 'cos_moa') NULL,
+    employment_status ENUM('permanent', 'cos', 'jo', 'others') NULL,
     
     -- Section 4: Work Experience
-    years_dswd ENUM('less_than_2', '2-5', '6-10', '11-15', '16+') NULL,
-    years_swd_sector ENUM('less_than_5', '5-10', '11-20', '21+') NULL,
+    years_dswd ENUM('lt5', '5-10', '11-15', '15+') NULL,
+    years_swd_sector ENUM('lt5', '5-10', '11-15', '15+') NULL,
     
     -- Section 5: Competencies (single-value fields)
     performs_sw_tasks BOOLEAN NULL,
