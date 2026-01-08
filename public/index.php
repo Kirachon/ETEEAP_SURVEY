@@ -60,7 +60,9 @@ $routes = [
     'GET /admin' => ['controller' => 'AdminController', 'action' => 'dashboard'],
     'GET /admin/login' => ['controller' => 'AuthController', 'action' => 'showLogin'],
     'POST /admin/login' => ['controller' => 'AuthController', 'action' => 'login'],
-    'GET /admin/logout' => ['controller' => 'AuthController', 'action' => 'logout'],
+    // GET shows a confirmation page (no state change); POST performs the logout
+    'GET /admin/logout' => ['controller' => 'AuthController', 'action' => 'showLogout'],
+    'POST /admin/logout' => ['controller' => 'AuthController', 'action' => 'logout'],
     'GET /admin/dashboard' => ['controller' => 'AdminController', 'action' => 'dashboard'],
     'GET /admin/responses' => ['controller' => 'AdminController', 'action' => 'responses'],
     'GET /admin/responses/{id}' => ['controller' => 'AdminController', 'action' => 'viewResponse'],

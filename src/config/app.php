@@ -16,7 +16,7 @@ if (!defined('APP_ROOT')) {
 define('APP_NAME', 'ETEEAP Survey');
 define('APP_VERSION', '1.0.0');
 define('APP_ENV', getenv('APP_ENV') ?: 'development');
-define('APP_DEBUG', APP_ENV === 'development');
+define('APP_DEBUG', filter_var(getenv('APP_DEBUG'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? (APP_ENV === 'development'));
 define('APP_URL', getenv('APP_URL') ?: 'http://localhost');
 
 // ============================================
@@ -50,10 +50,10 @@ define('ASSETS_PATH', '/assets');
 // Session Configuration
 // ============================================
 define('SESSION_NAME', 'eteeap_session');
-define('SESSION_LIFETIME', 7200); // 2 hours
-define('SESSION_SECURE', APP_ENV === 'production');
-define('SESSION_HTTPONLY', true);
-define('SESSION_SAMESITE', 'Lax');
+define('SESSION_LIFETIME', (int) (getenv('SESSION_LIFETIME') ?: 7200)); // 2 hours
+define('SESSION_SECURE', filter_var(getenv('SESSION_SECURE'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? (APP_ENV === 'production'));
+define('SESSION_HTTPONLY', filter_var(getenv('SESSION_HTTPONLY'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true);
+define('SESSION_SAMESITE', getenv('SESSION_SAMESITE') ?: 'Lax');
 
 // ============================================
 // Security Settings

@@ -176,7 +176,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="<?= cspNonceEscaped() ?>">
 function toggleTasksSection(show) {
     const section = document.getElementById('tasksSection');
     if (show) {

@@ -88,7 +88,7 @@ INSERT INTO survey_responses (
 ) VALUES
 -- Sample 1: Completed response
 ('sess_sample_001', TRUE, 8, NOW(),
- 'Maria Santos', 'female', '30-39', 'maria.santos@dswd.gov.ph', '09171234567',
+ 'Santos', 'Maria', NULL, NULL, 'female', '30-39', 'maria.santos@dswd.gov.ph', '09171234567',
  'field_office', 'DSWD Field Office NCR', 'Social Welfare Officer II', 'permanent',
  '6-10', '11-20',
  TRUE,
@@ -117,8 +117,8 @@ INSERT INTO survey_responses (
  NULL, NULL, NULL),
 
 -- Sample 4: Declined consent
-('sess_sample_004', FALSE, 1, NOW(),
- NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+('sess_sample_004', FALSE, 1, NULL,
+ 'Declined', 'Consent', NULL, NULL, NULL, NULL, NULL, NULL,
  NULL, NULL, NULL, NULL,
  NULL, NULL,
  NULL,

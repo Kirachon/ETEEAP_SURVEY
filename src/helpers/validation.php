@@ -47,7 +47,16 @@ function sanitizeString($value): string
     if ($value === null) {
         return '';
     }
-    return htmlspecialchars(trim((string) $value), ENT_QUOTES, 'UTF-8');
+
+    $string = (string) $value;
+    // Remove null bytes
+    $string = str_replace("\0", '', $string);
+    // Trim whitespace
+    $string = trim($string);
+    // Remove control characters (except common whitespace)
+    $string = preg_replace('/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/', '', $string);
+
+    return $string;
 }
 
 /**

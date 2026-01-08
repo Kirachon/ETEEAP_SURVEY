@@ -15,11 +15,26 @@ if (!defined('APP_ROOT')) {
  * 
  * @return string
  */
+function csrfEnsureSessionStarted(): void
+{
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        return;
+    }
+
+    // Prefer the application's hardened session bootstrap when available.
+    if (function_exists('sessionStart')) {
+        sessionStart();
+        return;
+    }
+
+    if (!session_start()) {
+        throw new RuntimeException('Failed to start session for CSRF protection.');
+    }
+}
+
 function csrfGenerateToken(): string
 {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    csrfEnsureSessionStarted();
     
     $token = bin2hex(random_bytes(32));
     $_SESSION[CSRF_TOKEN_NAME] = [
@@ -37,9 +52,7 @@ function csrfGenerateToken(): string
  */
 function csrfGetToken(): string
 {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    csrfEnsureSessionStarted();
     
     // Check if token exists and is not expired
     if (
@@ -62,9 +75,7 @@ function csrfGetToken(): string
  */
 function csrfValidateToken(?string $token): bool
 {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    csrfEnsureSessionStarted();
     
     if (
         empty($token) ||

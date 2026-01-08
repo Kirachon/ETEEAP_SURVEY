@@ -131,7 +131,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="<?= cspNonceEscaped() ?>">
 function toggleCoursesSection(show) {
     const section = document.getElementById('coursesSection');
     if (show) {

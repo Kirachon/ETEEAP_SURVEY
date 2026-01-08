@@ -151,44 +151,106 @@ class AdminController
              WHERE consent_given = 1 AND completed_at IS NOT NULL
              ORDER BY created_at DESC"
         );
-        
-        // Get multi-value data for each response
+
+        // Attach multi-value fields in bulk (avoid N+1 queries)
+        $ids = array_values(array_filter(
+            array_map(static fn($r) => (int) ($r['id'] ?? 0), $responses),
+            static fn(int $id) => $id > 0
+        ));
+        $multi = $this->fetchMultiValuesByResponseIds($ids);
+
         foreach ($responses as &$response) {
-            $id = $response['id'];
-            
-            $response['program_assignments'] = array_column(
-                dbFetchAll("SELECT program FROM response_program_assignments WHERE response_id = :id", ['id' => $id]),
-                'program'
-            );
-            
-            $response['sw_tasks'] = array_column(
-                dbFetchAll("SELECT task FROM response_sw_tasks WHERE response_id = :id", ['id' => $id]),
-                'task'
-            );
-            
-            $response['expertise_areas'] = array_column(
-                dbFetchAll("SELECT area FROM response_expertise_areas WHERE response_id = :id", ['id' => $id]),
-                'area'
-            );
-            
-            $response['dswd_courses'] = array_column(
-                dbFetchAll("SELECT course FROM response_dswd_courses WHERE response_id = :id", ['id' => $id]),
-                'course'
-            );
-            
-            $response['motivations'] = array_column(
-                dbFetchAll("SELECT motivation FROM response_motivations WHERE response_id = :id", ['id' => $id]),
-                'motivation'
-            );
-            
-            $response['barriers'] = array_column(
-                dbFetchAll("SELECT barrier FROM response_barriers WHERE response_id = :id", ['id' => $id]),
-                'barrier'
-            );
+            $id = (int) ($response['id'] ?? 0);
+            $response['program_assignments'] = $multi['program_assignments'][$id] ?? [];
+            $response['sw_tasks'] = $multi['sw_tasks'][$id] ?? [];
+            $response['expertise_areas'] = $multi['expertise_areas'][$id] ?? [];
+            $response['dswd_courses'] = $multi['dswd_courses'][$id] ?? [];
+            $response['motivations'] = $multi['motivations'][$id] ?? [];
+            $response['barriers'] = $multi['barriers'][$id] ?? [];
         }
         
         // Use export helper
         exportSurveyToCsv($responses, 'eteeap_survey_export_' . date('Y-m-d_His'));
+    }
+
+    /**
+     * Fetch checkbox/multi-value fields for a set of survey response IDs in bulk.
+     *
+     * @param int[] $ids
+     * @return array<string, array<int, array>>
+     */
+    private function fetchMultiValuesByResponseIds(array $ids): array
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), static fn(int $id) => $id > 0)));
+        if (empty($ids)) {
+            return $this->emptyMultiValues();
+        }
+
+        $placeholders = [];
+        $params = [];
+        foreach ($ids as $i => $id) {
+            $key = 'id' . $i;
+            $placeholders[] = ':' . $key;
+            $params[$key] = $id;
+        }
+        if (empty($params) || count($placeholders) !== count($params) || count($params) !== count($ids)) {
+            return $this->emptyMultiValues();
+        }
+        $in = implode(',', $placeholders);
+
+        $grouped = static function (array $rows, string $valueKey): array {
+            $out = [];
+            foreach ($rows as $row) {
+                $rid = (int) ($row['response_id'] ?? 0);
+                if ($rid <= 0) {
+                    continue;
+                }
+                $out[$rid][] = $row[$valueKey] ?? '';
+            }
+            return $out;
+        };
+
+        return [
+            'program_assignments' => $grouped(
+                dbFetchAll("SELECT response_id, program FROM response_program_assignments WHERE response_id IN ($in)", $params),
+                'program'
+            ),
+            'sw_tasks' => $grouped(
+                dbFetchAll("SELECT response_id, task FROM response_sw_tasks WHERE response_id IN ($in)", $params),
+                'task'
+            ),
+            'expertise_areas' => $grouped(
+                dbFetchAll("SELECT response_id, area FROM response_expertise_areas WHERE response_id IN ($in)", $params),
+                'area'
+            ),
+            'dswd_courses' => $grouped(
+                dbFetchAll("SELECT response_id, course FROM response_dswd_courses WHERE response_id IN ($in)", $params),
+                'course'
+            ),
+            'motivations' => $grouped(
+                dbFetchAll("SELECT response_id, motivation FROM response_motivations WHERE response_id IN ($in)", $params),
+                'motivation'
+            ),
+            'barriers' => $grouped(
+                dbFetchAll("SELECT response_id, barrier FROM response_barriers WHERE response_id IN ($in)", $params),
+                'barrier'
+            ),
+        ];
+    }
+
+    /**
+     * @return array<string, array<int, array>>
+     */
+    private function emptyMultiValues(): array
+    {
+        return [
+            'program_assignments' => [],
+            'sw_tasks' => [],
+            'expertise_areas' => [],
+            'dswd_courses' => [],
+            'motivations' => [],
+            'barriers' => [],
+        ];
     }
     
     /**

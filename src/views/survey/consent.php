@@ -31,7 +31,7 @@ $csrfToken = $csrfToken ?? csrfGetToken();
             
             <!-- Visual Header inside Card -->
             <div class="relative py-8 px-6 lg:px-10 bg-gradient-to-br from-dswd-blue to-primary-600 overflow-hidden">
-                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(white 1.5px, transparent 1.5px); background-size: 20px 20px;"></div>
+                <div class="absolute inset-0 opacity-10 bg-dot-grid"></div>
                 <div class="relative flex items-center gap-4">
                     <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-inner border border-white/30 text-white">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

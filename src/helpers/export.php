@@ -11,6 +11,30 @@ if (!defined('APP_ROOT')) {
 }
 
 /**
+ * Prevent CSV/Excel formula injection by prefixing values that could be interpreted as formulas.
+ *
+ * Excel (and some other spreadsheet software) may treat cells beginning with =, +, -, @ as formulas.
+ * This also applies when the first non-whitespace character is one of those symbols.
+ *
+ * @param string $value
+ * @return string
+ */
+function csvEscapeFormula(string $value): string
+{
+    $trimmed = ltrim($value);
+    if ($trimmed === '') {
+        return $value;
+    }
+
+    $first = $trimmed[0];
+    if (in_array($first, ['=', '+', '-', '@'], true)) {
+        return "'" . $value;
+    }
+
+    return $value;
+}
+
+/**
  * Export data to CSV and send as download
  * 
  * @param array $data Array of associative arrays (rows)
@@ -65,6 +89,11 @@ function exportToCsv(array $data, string $filename = 'export', array $headers = 
             // Handle booleans
             if (is_bool($value)) {
                 $value = $value ? 'Yes' : 'No';
+            }
+
+            // Prevent CSV/Excel formula injection on string output
+            if (is_string($value)) {
+                $value = csvEscapeFormula($value);
             }
             
             $csvRow[] = $value;
@@ -253,23 +282,45 @@ function exportSurveyToCsv(array $responses, string $filename = 'survey_export')
         echo 'No data to export.';
         return;
     }
-    
+
+    // Generate filename with timestamp
+    $filename = sprintf(
+        '%s_%s.csv',
+        $filename,
+        date(EXPORT_DATETIME_FORMAT)
+    );
+
+    // Set headers for download
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+
+    // Open output stream
+    $output = fopen('php://output', 'w');
+
+    // Add BOM for Excel UTF-8 compatibility
+    fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
     // Get export headers mapping
     $headerMapping = getExportHeaders();
-    
-    // Prepare data with human-readable headers
-    $exportData = [];
-    
+    $headers = array_keys($headerMapping);
+
+    // Write headers
+    fputcsv($output, $headers, EXPORT_CSV_DELIMITER, EXPORT_CSV_ENCLOSURE);
+
+    // Stream rows (avoid building a second in-memory export array)
     foreach ($responses as $response) {
-        $row = [];
+        $csvRow = [];
+
         foreach ($headerMapping as $label => $field) {
             $value = $response[$field] ?? '';
-            
+
             // Handle arrays (multi-value fields)
             if (is_array($value)) {
                 $value = implode('; ', $value);
             }
-            
+
             // Handle booleans
             if (is_bool($value) || $value === '1' || $value === '0') {
                 if (is_bool($value)) {
@@ -278,12 +329,18 @@ function exportSurveyToCsv(array $responses, string $filename = 'survey_export')
                     $value = $value === '1' ? 'Yes' : 'No';
                 }
             }
-            
-            $row[$label] = $value;
+
+            // Prevent CSV/Excel formula injection on string output
+            if (is_string($value)) {
+                $value = csvEscapeFormula($value);
+            }
+
+            $csvRow[] = $value;
         }
-        $exportData[] = $row;
+
+        fputcsv($output, $csvRow, EXPORT_CSV_DELIMITER, EXPORT_CSV_ENCLOSURE);
     }
-    
-    // Export to CSV
-    exportToCsv($exportData, $filename, array_keys($headerMapping));
+
+    fclose($output);
+    exit;
 }

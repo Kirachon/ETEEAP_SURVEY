@@ -7,77 +7,17 @@
     <?= csrfMetaTag() ?>
     
     <title><?= htmlspecialchars($pageTitle ?? 'Admin') ?> | <?= APP_NAME ?></title>
-    
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            200: '#bae0fd',
-                            300: '#7cc7fb',
-                            400: '#38aaf7',
-                            500: '#0e90e9',
-                            600: '#0070c7',
-                            700: '#0058a3',
-                            800: '#004a87',
-                            900: '#063f6f',
-                            950: '#04284d',
-                        },
-                        dswd: {
-                            blue: '#003087',
-                            gold: '#ffc72c',
-                            red: '#c8102e',
-                            dark: '#001a4d',
-                            slate: '#1e293b'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'Outfit', 'system-ui', 'sans-serif'],
-                        display: ['Outfit', 'Inter', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        'premium': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03), 0 10px 15px -3px rgba(0, 0, 0, 0.05)',
-                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
-                    }
-                }
-            }
-        }
-    </script>
+
+    <!-- Compiled CSS (Tailwind build) -->
+    <link rel="stylesheet" href="<?= assetUrl('app.css') ?>">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f8fafc; }
-        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
-        
-        body {
-            background-color: #f8fafc;
-            color: #1e293b;
-        }
-
-        .glass-sidebar {
-            background: linear-gradient(180deg, #001a4d 0%, #001030 100%);
-        }
-
-        .nav-item-active {
-            background: rgba(255, 255, 255, 0.1);
-            border-left: 4px solid #38aaf7;
-            box-shadow: inset 0 0 20px rgba(56, 170, 247, 0.05);
-        }
-    </style>
+    <!-- Chart.js (vendored, served locally) -->
+    <script src="<?= assetUrl('vendor/chart.umd.min.js') ?>"></script>
     
     <?php if (isset($additionalHead)): ?>
         <?= $additionalHead ?>
@@ -160,17 +100,21 @@
                         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
                             <span class="text-white font-bold text-sm"><?= strtoupper(substr($adminUser['username'] ?? 'A', 0, 1)) ?></span>
                         </div>
-                        <div class="flex flex-col">
-                            <span class="text-sm font-bold text-white leading-tight"><?= htmlspecialchars($adminUser['username'] ?? 'Admin') ?></span>
-                            <span class="text-[10px] text-blue-400/60 font-medium">Administrator</span>
-                        </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-white leading-tight"><?= htmlspecialchars($adminUser['username'] ?? 'Admin') ?></span>
+                        <span class="text-[10px] text-blue-400/60 font-medium">Administrator</span>
                     </div>
-                    <a href="<?= appUrl('/admin/logout') ?>" 
-                       class="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-all" title="Sign Out">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                    </a>
+                </div>
+                    <form method="POST" action="<?= appUrl('/admin/logout') ?>" class="inline">
+                        <?= csrfInputField() ?>
+                        <button type="submit"
+                                class="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-all"
+                                title="Sign Out">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             </div>
         </aside>
@@ -230,15 +174,6 @@
         </div>
     </div>
     
-    <!-- Flash Notifications (Global Styles) -->
-    <style>
-        .animate-slide-in { animation: slideIn 0.3s ease-out forwards; }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-    </style>
-    
     <?php if (flashHas('success')): ?>
     <div id="flash-success" class="fixed top-6 right-6 bg-white border-l-4 border-green-500 p-4 rounded-2xl shadow-premium animate-slide-in z-[100] flex items-center gap-4">
         <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-green-600">
@@ -249,7 +184,7 @@
             <p class="text-sm font-bold text-slate-900"><?= htmlspecialchars(flashGet('success')) ?></p>
         </div>
     </div>
-    <script>setTimeout(() => document.getElementById('flash-success')?.remove(), 5000);</script>
+    <script nonce="<?= cspNonceEscaped() ?>">setTimeout(() => document.getElementById('flash-success')?.remove(), 5000);</script>
     <?php endif; ?>
 
     <?php if (flashHas('error')): ?>
@@ -262,10 +197,10 @@
             <p class="text-sm font-bold text-slate-900"><?= htmlspecialchars(flashGet('error')) ?></p>
         </div>
     </div>
-    <script>setTimeout(() => document.getElementById('flash-error')?.remove(), 5000);</script>
+    <script nonce="<?= cspNonceEscaped() ?>">setTimeout(() => document.getElementById('flash-error')?.remove(), 5000);</script>
     <?php endif; ?>
 
-    <script>
+    <script nonce="<?= cspNonceEscaped() ?>">
         // Simple mobile menu toggle
         const mobBtn = document.getElementById('mobileMenuBtn');
         if (mobBtn) {

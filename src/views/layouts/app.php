@@ -7,107 +7,14 @@
     <?= csrfMetaTag() ?>
     
     <title><?= htmlspecialchars($pageTitle ?? 'ETEEAP Survey') ?> | <?= APP_NAME ?></title>
-    
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f0f7ff',
-                            100: '#e0effe',
-                            200: '#bae0fd',
-                            300: '#7cc7fb',
-                            400: '#38aaf7',
-                            500: '#0e90e9',
-                            600: '#0070c7',
-                            700: '#0058a3',
-                            800: '#004a87',
-                            900: '#063f6f',
-                            950: '#04284d',
-                        },
-                        dswd: {
-                            blue: '#003087',
-                            gold: '#ffc72c',
-                            red: '#c8102e',
-                            dark: '#001a4d',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'Outfit', 'system-ui', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        'premium': '0 10px 30px -5px rgba(0, 48, 135, 0.1), 0 4px 10px -5px rgba(0, 48, 135, 0.05)',
-                        'glass': 'inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                    }
-                }
-            }
-        }
-    </script>
+
+    <!-- Compiled CSS (Tailwind build) -->
+    <link rel="stylesheet" href="<?= assetUrl('app.css') ?>">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f8fafc;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        
-        /* Glassmorphism utility */
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .glass-dark {
-            background: rgba(0, 48, 135, 0.05);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(0, 48, 135, 0.1);
-        }
-
-        /* Input field focus enhancement */
-        input:focus, select:focus, textarea:focus {
-            box-shadow: 0 0 0 4px rgba(0, 48, 135, 0.1);
-            border-color: #003087 !important;
-        }
-        
-        /* Smooth animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-        
-        /* Progress line pulse */
-        @keyframes pulse-gold {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        .progress-pulse {
-            animation: pulse-gold 2s infinite ease-in-out;
-        }
-    </style>
     
     <?php if (isset($additionalHead)): ?>
         <?= $additionalHead ?>
@@ -155,14 +62,8 @@
             <!-- Progress Bar -->
             <?php if (isset($currentStep) && isset($totalSteps)): ?>
             <div class="h-[2px] w-full bg-gray-100/50 overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-dswd-blue via-blue-600 to-dswd-blue bg-[length:200%_100%] animate-[shimmer_2s_infinite_linear] progress-animate" style="width: <?= ($currentStep / $totalSteps) * 100 ?>%"></div>
+                <progress class="survey-progress" value="<?= (int) $currentStep ?>" max="<?= (int) $totalSteps ?>"></progress>
             </div>
-            <style>
-                @keyframes shimmer {
-                    from { background-position: 200% 0; }
-                    to { background-position: -200% 0; }
-                }
-            </style>
             <?php endif; ?>
         </header>
         
@@ -198,7 +99,7 @@
         </svg>
         <span><?= htmlspecialchars(flashGet('success')) ?></span>
     </div>
-    <script>setTimeout(() => document.getElementById('flash-success')?.remove(), 5000);</script>
+    <script nonce="<?= cspNonceEscaped() ?>">setTimeout(() => document.getElementById('flash-success')?.remove(), 5000);</script>
     <?php endif; ?>
     
     <?php if (flashHas('error')): ?>
@@ -208,7 +109,7 @@
         </svg>
         <span><?= htmlspecialchars(flashGet('error')) ?></span>
     </div>
-    <script>setTimeout(() => document.getElementById('flash-error')?.remove(), 5000);</script>
+    <script nonce="<?= cspNonceEscaped() ?>">setTimeout(() => document.getElementById('flash-error')?.remove(), 5000);</script>
     <?php endif; ?>
     
     <?php if (isset($additionalScripts)): ?>

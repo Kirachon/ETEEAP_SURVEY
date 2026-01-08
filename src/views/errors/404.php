@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found | <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="<?= assetUrl('app.css') ?>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body class="min-h-screen bg-gray-50 font-sans antialiased flex items-center justify-center p-4">
@@ -33,7 +33,7 @@
                 </svg>
                 Go to Survey
             </a>
-            <button onclick="history.back()" class="inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
+            <button id="go-back" type="button" class="inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -41,5 +41,8 @@
             </button>
         </div>
     </div>
+    <script nonce="<?= cspNonceEscaped() ?>">
+        document.getElementById('go-back')?.addEventListener('click', () => history.back());
+    </script>
 </body>
 </html>

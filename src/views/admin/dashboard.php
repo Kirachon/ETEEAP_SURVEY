@@ -244,7 +244,7 @@ $recentResponses = $recentResponses ?? [];
 </div>
 
 <!-- Chart.js Scripts: Premium Styling -->
-<script>
+<script nonce="<?= cspNonceEscaped() ?>">   
 document.addEventListener('DOMContentLoaded', function() {
     // Premium Chart.js Defaults
     Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";

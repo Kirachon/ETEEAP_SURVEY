@@ -15,6 +15,35 @@ if (!defined('APP_ROOT')) {
 // ============================================
 
 /**
+ * Ensure a per-request CSP nonce exists and return it.
+ *
+ * @return string Base64-encoded nonce - MUST be HTML-escaped when output into HTML attributes.
+ */
+function cspNonce(): string
+{
+    static $nonce = null;
+
+    if (!is_string($nonce) || $nonce === '') {
+        // 256-bit nonce, base64 encoded
+        $nonce = base64_encode(random_bytes(32));
+        // Basic sanity check: ensure the nonce is safe to embed in attributes after HTML-escaping.
+        if (!preg_match('/^[A-Za-z0-9+\\/]+=*$/', $nonce)) {
+            throw new RuntimeException('Invalid CSP nonce generated.');
+        }
+    }
+
+    return $nonce;
+}
+
+/**
+ * HTML-escaped CSP nonce for use in attributes.
+ */
+function cspNonceEscaped(): string
+{
+    return htmlspecialchars(cspNonce(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+}
+
+/**
  * Set comprehensive security headers
  */
 function setSecurityHeaders(): void
@@ -31,16 +60,28 @@ function setSecurityHeaders(): void
     // Referrer Policy - prevent leaking URLs
     header('Referrer-Policy: strict-origin-when-cross-origin');
     
+    $nonce = cspNonce();
+
     // Content Security Policy - restrict resource loading
+    // Note: Inline styles are intentionally blocked; keep styles in compiled CSS files.
     $csp = "default-src 'self'; " .
-           "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; " .
-           "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; " .
+           "script-src 'self' 'nonce-{$nonce}'; " .
+           "script-src-attr 'none'; " .
+           "style-src 'self' https://fonts.googleapis.com; " .
+           "style-src-attr 'none'; " .
            "font-src 'self' https://fonts.gstatic.com; " .
            "img-src 'self' data: https:; " .
            "connect-src 'self'; " .
+           "object-src 'none'; " .
            "frame-ancestors 'self'; " .
+           "frame-src 'self'; " .
            "form-action 'self'; " .
            "base-uri 'self';";
+
+    // Enforce HTTPS upgrades only in production (avoid breaking local HTTP dev)
+    if (isProduction()) {
+        $csp .= " upgrade-insecure-requests;";
+    }
     header("Content-Security-Policy: " . $csp);
     
     // Permissions Policy - restrict browser features
@@ -231,6 +272,52 @@ function rateLimit(string $key, int $maxAttempts = 5, int $windowSeconds = 60): 
     $_SESSION[$sessionKey] = $attempts;
     
     return true;
+}
+
+/**
+ * Simple persistent rate limiter using the filesystem (best-effort).
+ *
+ * This is harder to bypass than the session-based limiter because it survives cookie/session rotation.
+ * It is still approximate and should be replaced with a shared store (Redis/DB) for multi-server deployments.
+ */
+function rateLimitPersistent(string $key, int $maxAttempts = 5, int $windowSeconds = 60): bool
+{
+    $now = time();
+    $file = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+        . 'eteeap_rate_limit_' . hash('sha256', $key) . '.json';
+
+    $handle = @fopen($file, 'c+');
+    if ($handle === false) {
+        return true; // best-effort: do not block if storage isn't writable
+    }
+
+    try {
+        if (!flock($handle, LOCK_EX)) {
+            return true; // best-effort
+        }
+
+        $raw = stream_get_contents($handle);
+        $decoded = is_string($raw) && $raw !== '' ? json_decode($raw, true) : [];
+        $attempts = is_array($decoded) ? $decoded : [];
+
+        $attempts = array_values(array_filter($attempts, static fn($ts) => is_int($ts) && $ts > ($now - $windowSeconds)));
+
+        if (count($attempts) >= $maxAttempts) {
+            return false;
+        }
+
+        $attempts[] = $now;
+
+        rewind($handle);
+        ftruncate($handle, 0);
+        fwrite($handle, json_encode($attempts));
+        fflush($handle);
+
+        return true;
+    } finally {
+        @flock($handle, LOCK_UN);
+        fclose($handle);
+    }
 }
 
 /**
@@ -433,6 +520,9 @@ function checkPasswordStrength(string $password): array
  */
 function initializeSecurity(): void
 {
+    // Ensure CSP nonce is generated early so templates can use it
+    cspNonce();
+
     // Set error handlers (only in production)
     if (!APP_DEBUG) {
         set_error_handler('secureErrorHandler');

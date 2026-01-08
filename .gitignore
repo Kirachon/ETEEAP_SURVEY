@@ -1,0 +1,4 @@
+node_modules/
+.context-engine/
+screenshots/
+.augment-context-state.json

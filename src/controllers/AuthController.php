@@ -23,6 +23,22 @@ class AuthController
             'email' => flashGet('old_email', '')
         ]);
     }
+
+    /**
+     * Show logout confirmation page (GET).
+     *
+     * GET must not perform state changes; logout is performed via POST with CSRF protection.
+     */
+    public function showLogout(): void
+    {
+        if (!$this->isLoggedIn()) {
+            redirect(appUrl('/admin/login'));
+        }
+
+        $this->render('admin/logout', [
+            'pageTitle' => 'Confirm Logout',
+        ]);
+    }
     
     /**
      * Process login
@@ -34,7 +50,7 @@ class AuthController
         
         // Rate limiting: 5 attempts per 5 minutes
         $rateLimitKey = 'login_' . getClientIp();
-        if (!rateLimit($rateLimitKey, 5, 300)) {
+        if (!rateLimitPersistent($rateLimitKey, 5, 300)) {
             flashSet('error', 'Too many login attempts. Please wait 5 minutes before trying again.');
             redirect(appUrl('/admin/login'));
         }
@@ -112,6 +128,9 @@ class AuthController
      */
     public function logout(): void
     {
+        // CSRF protection (logout is a state-changing action)
+        csrfProtect();
+
         // Clear admin session
         sessionRemove('admin_user');
         sessionRemove('admin_logged_in');

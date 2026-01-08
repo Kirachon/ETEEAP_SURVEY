@@ -30,6 +30,12 @@ function getDbConnection(): PDO
     static $pdo = null;
     
     if ($pdo === null) {
+        if (function_exists('isProduction') && isProduction()) {
+            if (DB_USER === 'root' || DB_PASS === '') {
+                throw new PDOException('Database connection failed. Please try again later.');
+            }
+        }
+
         $dsn = sprintf(
             'mysql:host=%s;port=%s;dbname=%s;charset=%s',
             DB_HOST,
