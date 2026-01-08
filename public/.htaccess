@@ -1,0 +1,150 @@
+# ETEEAP Survey Application
+# Enhanced Apache Security Configuration
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    
+    # Redirect trailing slashes
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+    
+    # Send requests to index.php
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# ============================================
+# Security Headers
+# ============================================
+<IfModule mod_headers.c>
+    # Prevent MIME type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Prevent clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    
+    # XSS Protection (legacy browsers)
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Referrer Policy - prevent URL leakage
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Remove server signature
+    Header unset Server
+    Header unset X-Powered-By
+    
+    # Prevent caching of sensitive pages
+    <FilesMatch "\.(php)$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate"
+        Header set Pragma "no-cache"
+    </FilesMatch>
+</IfModule>
+
+# ============================================
+# Directory Protection
+# ============================================
+
+# Disable directory listing
+Options -Indexes
+
+# Disable server signature
+ServerSignature Off
+
+# ============================================
+# Block Sensitive Files
+# ============================================
+
+# Block dotfiles (.env, .htaccess, .git, etc.)
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Block PHP files in non-public directories (if accessed directly)
+<FilesMatch "\.(sql|log|ini|sh|bak|backup|old|swp)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Block common sensitive files
+<FilesMatch "(composer\.json|composer\.lock|package\.json|package-lock\.json|\.env|Dockerfile|docker-compose\.yml)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ============================================
+# PHP Security Settings
+# ============================================
+<IfModule mod_php.c>
+    # Disable error display
+    php_flag display_errors Off
+    php_flag display_startup_errors Off
+    
+    # Log errors instead
+    php_flag log_errors On
+    
+    # Secure session cookies
+    php_value session.cookie_httponly 1
+    php_value session.cookie_samesite Lax
+    php_flag session.use_strict_mode On
+    php_flag session.use_only_cookies On
+    
+    # Prevent session fixation
+    php_flag session.use_trans_sid Off
+    
+    # Hide PHP version
+    php_flag expose_php Off
+    
+    # Limit POST size
+    php_value post_max_size 2M
+    php_value upload_max_filesize 1M
+</IfModule>
+
+# ============================================
+# Request Filtering
+# ============================================
+<IfModule mod_rewrite.c>
+    # Block SQL injection attempts in query strings
+    RewriteCond %{QUERY_STRING} (\%27)|(\')|(\-\-)|(\%23)|(#) [NC,OR]
+    RewriteCond %{QUERY_STRING} (union.*select.*\() [NC,OR]
+    RewriteCond %{QUERY_STRING} (concat.*\() [NC,OR]
+    RewriteCond %{QUERY_STRING} (base64_encode.*\() [NC,OR]
+    RewriteCond %{QUERY_STRING} (benchmark\(.*\)) [NC,OR]
+    RewriteCond %{QUERY_STRING} (sleep\(.*\)) [NC]
+    RewriteRule .* - [F,L]
+    
+    # Block common attack patterns
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|DELETE|TRACK|DEBUG) [NC]
+    RewriteRule .* - [F,L]
+    
+    # Block suspicious user agents
+    RewriteCond %{HTTP_USER_AGENT} (havij|libwww-perl|wget|python|nikto|scan|winhttp|clshttp|loader) [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} (;|<|>|'|"|\)|\(|%0A|%0D|%22|%27|%28|%3C|%3E|%00).*(libwww-perl|wget|python|nikto|curl|scan|java|winhttp|HTTrack|clshttp|archiver|loader|email|harvest|extract|grab|miner) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# ============================================
+# Rate Limiting (if mod_evasive available)
+# ============================================
+<IfModule mod_evasive20.c>
+    DOSHashTableSize 3097
+    DOSPageCount 5
+    DOSSiteCount 50
+    DOSPageInterval 1
+    DOSSiteInterval 1
+    DOSBlockingPeriod 60
+</IfModule>
+
+# ============================================
+# Compression
+# ============================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css application/json
+    AddOutputFilterByType DEFLATE application/javascript
+</IfModule>

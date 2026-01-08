@@ -1,0 +1,30 @@
+# Docker files
+.docker/
+mysql_data/
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment files (keep .env.example)
+.env
+.env.local
+.env.*.local
+
+# Composer (if used later)
+/vendor/
+
+# Node (if used later)
+/node_modules/
+
+# Cache
+*.cache
+.php_cs.cache
