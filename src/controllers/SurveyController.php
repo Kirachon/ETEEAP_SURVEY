@@ -241,9 +241,24 @@ class SurveyController
                 $rawMessage = $e->getMessage();
                 error_log('Survey submission failed: ' . $rawMessage);
 
+                // Prefer MySQL driver error codes (PDOException::errorInfo[1]) over message matching.
+                $driverCode = null;
+                if (isset($e->errorInfo) && is_array($e->errorInfo)) {
+                    $driverCode = $e->errorInfo[1] ?? null;
+                }
+
+                $schemaRelatedDriverCodes = [
+                    1054, // Unknown column
+                    1265, // Data truncated
+                    1366, // Incorrect value
+                    1292, // Truncated incorrect value
+                    1406, // Data too long for column
+                ];
+
                 $isSchemaOutOfDate =
+                    ($driverCode !== null && in_array($driverCode, $schemaRelatedDriverCodes, true)) ||
                     strpos($rawMessage, 'Unknown column') !== false ||
-                    strpos($rawMessage, 'Data truncated for column') !== false ||
+                    strpos($rawMessage, 'Data truncated') !== false ||
                     strpos($rawMessage, 'Incorrect') !== false;
 
                 if ($isSchemaOutOfDate) {
