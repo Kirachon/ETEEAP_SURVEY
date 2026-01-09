@@ -234,7 +234,7 @@ UPDATE admin_users SET password_hash = '$2y$10$NEW_HASH_HERE' WHERE email = 'adm
 **Ubuntu 22.04**:
 ```bash
 sudo apt update
-sudo apt install -y apache2 php8.1 php8.1-{mysql,mbstring,gd,curl,zip,xml}
+sudo apt install -y apache2 php8.1 php8.1-{mysql,mbstring,gd,curl,zip,xml,bcmath,exif}
 sudo apt install -y mysql-server
 
 # Enable Apache modules
