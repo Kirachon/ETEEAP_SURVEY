@@ -7,6 +7,17 @@ $currentStep = $currentStep ?? 2;
 $totalSteps = $totalSteps ?? SURVEY_TOTAL_STEPS;
 $errors = $errors ?? [];
 $savedData = $savedData ?? [];
+
+$extNameOptions = [
+    '' => 'None',
+    'Jr.' => 'Jr.',
+    'Sr.' => 'Sr.',
+    'II' => 'II',
+    'III' => 'III',
+    'IV' => 'IV',
+    'V' => 'V',
+    'VI' => 'VI',
+];
 ?>
 
 <div class="min-h-screen bg-slate-50 pt-8 pb-40">
@@ -40,7 +51,7 @@ $savedData = $savedData ?? [];
                         <div class="space-y-2">
                             <label for="last_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">2a. Last Name <span class="text-red-500">*</span></label>
                             <input type="text" name="last_name" id="last_name" value="<?= htmlspecialchars($savedData['last_name'] ?? '') ?>" 
-                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
+                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Dela Cruz" required>
                             <?php if (isset($errors['last_name'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['last_name'][0]) ?></p>
@@ -51,7 +62,7 @@ $savedData = $savedData ?? [];
                         <div class="space-y-2">
                             <label for="first_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">2b. First Name <span class="text-red-500">*</span></label>
                             <input type="text" name="first_name" id="first_name" value="<?= htmlspecialchars($savedData['first_name'] ?? '') ?>" 
-                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
+                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Juan" required>
                             <?php if (isset($errors['first_name'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['first_name'][0]) ?></p>
@@ -62,7 +73,7 @@ $savedData = $savedData ?? [];
                         <div class="space-y-2">
                             <label for="middle_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">2c. Middle Name</label>
                             <input type="text" name="middle_name" id="middle_name" value="<?= htmlspecialchars($savedData['middle_name'] ?? '') ?>" 
-                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
+                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Santos">
                             <?php if (isset($errors['middle_name'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['middle_name'][0]) ?></p>
@@ -72,9 +83,14 @@ $savedData = $savedData ?? [];
                         <!-- Ext Name -->
                         <div class="space-y-2">
                             <label for="ext_name" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">2d. Extension Name (e.g., Jr., Sr., III)</label>
-                            <input type="text" name="ext_name" id="ext_name" value="<?= htmlspecialchars($savedData['ext_name'] ?? '') ?>" 
-                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
-                                placeholder="e.g. Jr., Sr.">
+                            <select name="ext_name" id="ext_name"
+                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none">
+                                <?php foreach ($extNameOptions as $value => $label): ?>
+                                    <option value="<?= htmlspecialchars($value) ?>" <?= ($savedData['ext_name'] ?? '') === $value ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($label) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                             <?php if (isset($errors['ext_name'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['ext_name'][0]) ?></p>
                             <?php endif; ?>
@@ -152,7 +168,7 @@ $savedData = $savedData ?? [];
                         <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">Contact Details</h3>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <!-- Email Address -->
                         <div class="space-y-2">
                             <label for="email" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">5. Email Address</label>
@@ -184,6 +200,37 @@ $savedData = $savedData ?? [];
         </form>
     </div>
 </div>
+
+<script>
+(() => {
+    const form = document.getElementById('surveyForm');
+    if (!form) return;
+
+    const normalizeSpaces = (value) => value.replace(/\s+/g, ' ').trim();
+
+    form.addEventListener('submit', () => {
+        // Names: trim + collapse spaces + uppercase
+        for (const id of ['last_name', 'first_name', 'middle_name']) {
+            const el = document.getElementById(id);
+            if (!el || typeof el.value !== 'string') continue;
+            const normalized = normalizeSpaces(el.value);
+            el.value = normalized ? normalized.toUpperCase() : '';
+        }
+
+        // Email: trim only (do not uppercase)
+        const email = document.getElementById('email');
+        if (email && typeof email.value === 'string') {
+            email.value = email.value.trim();
+        }
+
+        // Phone: trim only
+        const phone = document.getElementById('phone');
+        if (phone && typeof phone.value === 'string') {
+            phone.value = phone.value.trim();
+        }
+    });
+})();
+</script>
 
 <!-- Floating Navigation Bar -->
 <div class="fixed bottom-0 left-0 right-0 z-40 glass border-t border-slate-200/50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">

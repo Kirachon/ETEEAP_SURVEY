@@ -60,6 +60,32 @@ function sanitizeString($value): string
 }
 
 /**
+ * Normalize whitespace (collapse internal whitespace + trim)
+ */
+function normalizeWhitespace(string $value): string
+{
+    $value = preg_replace('/\s+/', ' ', $value);
+    return trim($value ?? '');
+}
+
+/**
+ * Normalize a free-text field to uppercase + clean whitespace.
+ * Intended only for non-code text inputs (names, office/unit, position, etc.).
+ *
+ * @param mixed $value
+ */
+function normalizeUpperText($value): string
+{
+    $clean = sanitizeString($value);
+    $clean = normalizeWhitespace($clean);
+    if ($clean === '') {
+        return '';
+    }
+
+    return mb_strtoupper($clean, 'UTF-8');
+}
+
+/**
  * Sanitize email input
  * 
  * @param mixed $value
@@ -409,7 +435,7 @@ function validateStepBasicInfo(array $data): ValidationResult
     $result = new ValidationResult();
     
     // Last Name (required)
-    $lastName = sanitizeString($data['last_name'] ?? '');
+    $lastName = normalizeUpperText($data['last_name'] ?? '');
     if (!validateRequired($lastName)) {
         $result->addError('last_name', 'Last name is required.');
     } elseif (!validateMinLength($lastName, 2)) {
@@ -420,7 +446,7 @@ function validateStepBasicInfo(array $data): ValidationResult
     $result->sanitized['last_name'] = $lastName;
     
     // First Name (required)
-    $firstName = sanitizeString($data['first_name'] ?? '');
+    $firstName = normalizeUpperText($data['first_name'] ?? '');
     if (!validateRequired($firstName)) {
         $result->addError('first_name', 'First name is required.');
     } elseif (!validateMinLength($firstName, 2)) {
@@ -431,18 +457,22 @@ function validateStepBasicInfo(array $data): ValidationResult
     $result->sanitized['first_name'] = $firstName;
     
     // Middle Name (optional)
-    $middleName = sanitizeString($data['middle_name'] ?? '');
+    $middleName = normalizeUpperText($data['middle_name'] ?? '');
     if ($middleName !== '' && !validateMaxLength($middleName, 100)) {
         $result->addError('middle_name', 'Middle name must not exceed 100 characters.');
     }
     $result->sanitized['middle_name'] = $middleName !== '' ? $middleName : null;
     
     // Extension Name (optional)
-    $extName = sanitizeString($data['ext_name'] ?? '');
-    if ($extName !== '' && !validateMaxLength($extName, 20)) {
-        $result->addError('ext_name', 'Extension name must not exceed 20 characters.');
+    $extNameRaw = sanitizeString($data['ext_name'] ?? '');
+    $extNameRaw = normalizeWhitespace($extNameRaw);
+    $extName = $extNameRaw !== '' ? $extNameRaw : null;
+
+    $allowedExtNames = [null, 'Jr.', 'Sr.', 'II', 'III', 'IV', 'V', 'VI'];
+    if (!in_array($extName, $allowedExtNames, true)) {
+        $result->addError('ext_name', 'Please select a valid extension name.');
     }
-    $result->sanitized['ext_name'] = $extName !== '' ? $extName : null;
+    $result->sanitized['ext_name'] = $extName;
     
     // Sex (optional)
     $sex = $data['sex'] ?? null;
@@ -506,7 +536,6 @@ function validateStepOfficeData(array $data): ValidationResult
     // Office / Field Office Assignment (optional dropdown)
     $officeAssignment = sanitizeString($data['office_assignment'] ?? '');
     $allowedAssignments = [
-        'Central Office',
         'FO I',
         'FO II',
         'FO III',
@@ -527,10 +556,14 @@ function validateStepOfficeData(array $data): ValidationResult
     if ($officeAssignment !== '' && !validateInList($officeAssignment, $allowedAssignments)) {
         $result->addError('office_assignment', 'Please select a valid option.');
     }
-    $result->sanitized['office_assignment'] = $officeAssignment !== '' ? $officeAssignment : null;
+    if ($officeType === 'central_office' || $officeType === 'attached_agency') {
+        $result->sanitized['office_assignment'] = null;
+    } else {
+        $result->sanitized['office_assignment'] = $officeAssignment !== '' ? $officeAssignment : null;
+    }
     
     // Office Field / Unit / Program Assignment (optional short answer)
-    $specificOffice = sanitizeString($data['specific_office'] ?? '');
+    $specificOffice = normalizeUpperText($data['specific_office'] ?? '');
     if ($specificOffice !== '' && !validateMaxLength($specificOffice, 255)) {
         $result->addError('specific_office', 'This field must not exceed 255 characters.');
     }
@@ -540,7 +573,7 @@ function validateStepOfficeData(array $data): ValidationResult
     $result->sanitized['program_assignments'] = [];
     
     // Current position / designation (optional)
-    $position = sanitizeString($data['current_position'] ?? '');
+    $position = normalizeUpperText($data['current_position'] ?? '');
     if ($position !== '' && !validateMaxLength($position, 255)) {
         $result->addError('current_position', 'This field must not exceed 255 characters.');
     }

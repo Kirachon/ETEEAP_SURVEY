@@ -68,7 +68,6 @@ $savedData = $savedData ?? [];
                                 <?php
                                 $assignmentOptions = [
                                     '' => 'Select an option',
-                                    'Central Office' => 'Central Office',
                                     'FO I' => 'FO I',
                                     'FO II' => 'FO II',
                                     'FO III' => 'FO III',
@@ -94,6 +93,9 @@ $savedData = $savedData ?? [];
                             <?php if (isset($errors['office_assignment'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['office_assignment'][0]) ?></p>
                             <?php endif; ?>
+                            <p id="officeAssignmentHelp" class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-2 hidden">
+                                Disabled for Central Office / Attached Agency
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -106,7 +108,7 @@ $savedData = $savedData ?? [];
                                 10. Office Field / Unit / Program Assignment
                             </label>
                             <input type="text" name="specific_office" id="specific_office" value="<?= htmlspecialchars($savedData['specific_office'] ?? '') ?>"
-                                   class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none"
+                                   class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none"
                                    placeholder="e.g., 4Ps, SLP, AICS, Disaster Response, Protective Services, Admin, HR, Finance">
                             <?php if (isset($errors['specific_office'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['specific_office'][0]) ?></p>
@@ -149,7 +151,7 @@ $savedData = $savedData ?? [];
                                 12. Current Position / Designation
                             </label>
                             <input type="text" name="current_position" id="current_position" value="<?= htmlspecialchars($savedData['current_position'] ?? '') ?>" 
-                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
+                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Social Welfare Officer II">
                             <?php if (isset($errors['current_position'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['current_position'][0]) ?></p>
@@ -159,6 +161,59 @@ $savedData = $savedData ?? [];
                 </div>
             </div>
         </form>
+
+        <script>
+        (() => {
+            const form = document.getElementById('surveyForm');
+            if (!form) return;
+
+            const assignment = document.getElementById('office_assignment');
+            const help = document.getElementById('officeAssignmentHelp');
+            const normalizeSpaces = (value) => value.replace(/\s+/g, ' ').trim();
+
+            const getOfficeType = () => {
+                const checked = form.querySelector('input[name="office_type"]:checked');
+                return checked ? checked.value : '';
+            };
+
+            const updateOfficeAssignmentState = () => {
+                if (!assignment) return;
+                const officeType = getOfficeType();
+                const shouldDisable = officeType === 'central_office' || officeType === 'attached_agency';
+                assignment.disabled = shouldDisable;
+
+                if (shouldDisable) {
+                    assignment.value = '';
+                    assignment.classList.add('opacity-60', 'cursor-not-allowed');
+                    if (help) help.classList.remove('hidden');
+                } else {
+                    assignment.classList.remove('opacity-60', 'cursor-not-allowed');
+                    if (help) help.classList.add('hidden');
+                }
+            };
+
+            form.addEventListener('change', (e) => {
+                if (e.target && e.target.name === 'office_type') {
+                    updateOfficeAssignmentState();
+                }
+            });
+
+            form.addEventListener('submit', () => {
+                // Uppercase + trim free-text fields
+                for (const id of ['specific_office', 'current_position']) {
+                    const el = document.getElementById(id);
+                    if (!el || typeof el.value !== 'string') continue;
+                    const normalized = normalizeSpaces(el.value);
+                    el.value = normalized ? normalized.toUpperCase() : '';
+                }
+
+                // Ensure disabled assignment doesn't submit a stale value
+                updateOfficeAssignmentState();
+            });
+
+            updateOfficeAssignmentState();
+        })();
+        </script>
 
         <!-- Navigation Bar -->
         <div class="mt-12 p-6 md:p-8 bg-white rounded-[2rem] shadow-premium border border-slate-200/60 flex items-center justify-between gap-4">
