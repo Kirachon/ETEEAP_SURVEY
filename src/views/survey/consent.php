@@ -15,10 +15,10 @@ $savedData = $savedData ?? [];
             <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tight text-dswd-dark leading-tight">
                 Nationwide Interest Survey on the ETEEAP–BS Social Work Program for DSWD Personnel
             </h1>
-            <p class="mt-3 text-base lg:text-lg text-slate-500 max-w-2xl">
+            <p class="mt-3 text-base lg:text-lg text-slate-500 max-w-2xl text-justify">
                 The Department of Social Welfare and Development (DSWD), through the DSWD Academy, continues to strengthen the professionalization of the social welfare and development (SWD) workforce by supporting pathways for formal academic recognition of competencies acquired through formal and informal capability development interventions and related years of public service.
             </p>
-            <p class="mt-3 text-base lg:text-lg text-slate-500 max-w-2xl">
+            <p class="mt-3 text-base lg:text-lg text-slate-500 max-w-2xl text-justify">
                 As part of this commitment, the DSWD Academy is exploring the implementation of the <span class="font-bold">Expanded Tertiary Education Equivalency and Accreditation Program (ETEEAP)</span> leading to a <span class="font-bold">Bachelor of Science in Social Work (BSSW)</span>, in partnership with the Commission on Higher Education (CHED).
             </p>
         </div>
@@ -40,7 +40,7 @@ $savedData = $savedData ?? [];
             </div>
 
             <div class="p-6 lg:p-10 bg-white">
-                <p class="text-slate-700 text-sm lg:text-base leading-relaxed font-semibold">
+                <p class="text-slate-700 text-sm lg:text-base leading-relaxed font-semibold text-justify">
                     I hereby consent to the collection, storage, and use of my personal and professional information for purposes of planning, assessing, and implementing the ETEEAP – BS Social Work program, in accordance with the Data Privacy Act of 2012 (RA 10173).
                 </p>
 
