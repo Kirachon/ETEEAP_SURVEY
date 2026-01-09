@@ -201,7 +201,7 @@ $extNameOptions = [
     </div>
 </div>
 
-<script>
+<script nonce="<?= cspNonceEscaped() ?>">
 (() => {
     const form = document.getElementById('surveyForm');
     if (!form) return;
