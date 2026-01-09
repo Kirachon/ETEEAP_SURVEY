@@ -17,7 +17,7 @@ function oldValue(array $old, string $key, string $default = ''): string
 }
 ?>
 
-<div class="min-h-screen bg-slate-50 pt-8 pb-40">
+<div class="min-h-screen bg-slate-50 pt-8 pb-16">
     <div class="max-w-md md:max-w-2xl lg:max-w-4xl mx-auto px-6 w-full animate-fade-in">
         <div class="mb-10 text-center sm:text-left">
             <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tight text-dswd-dark leading-tight">
@@ -236,7 +236,7 @@ function oldValue(array $old, string $key, string $default = ''): string
                 </div>
             </div>
 
-            <div class="fixed bottom-0 left-0 right-0 z-40 glass border-t border-slate-200/50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+            <div class="sticky bottom-0 z-40 glass border-t border-slate-200/50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] mt-10">
                 <div class="max-w-md md:max-w-2xl lg:max-w-4xl mx-auto p-6 md:p-8 flex items-center justify-end gap-4">
                     <button type="submit"
                             class="flex-1 sm:flex-none group relative flex items-center justify-center gap-3 bg-dswd-blue hover:bg-dswd-dark text-white font-black py-4 px-10 rounded-2xl shadow-xl shadow-blue-900/20 transition-all active:scale-[0.98]">
