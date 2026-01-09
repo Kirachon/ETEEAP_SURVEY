@@ -28,6 +28,9 @@ function oldValue(array $old, string $key, string $default = ''): string
                 It will create <code class="px-2 py-1 bg-slate-100 rounded">storage/config.php</code>, initialize the database,
                 create the admin user, and then lock itself.
             </p>
+            <p class="mt-3 text-sm text-slate-500 max-w-2xl">
+                If you see an error about admin password, scroll to <a class="font-bold text-dswd-blue hover:underline" href="#admin-account">Admin Account</a>.
+            </p>
         </div>
 
         <?php if ($locked): ?>
@@ -100,7 +103,7 @@ function oldValue(array $old, string $key, string $default = ''): string
         <form method="POST" action="<?= appUrl('/install') ?>" class="space-y-8 mt-10">
             <?= csrfInputField() ?>
 
-            <div class="bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden">
+            <div id="app-settings" class="bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden">
                 <div class="p-8 md:p-10">
                     <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider mb-6">App Settings</h3>
 
@@ -130,7 +133,7 @@ function oldValue(array $old, string $key, string $default = ''): string
                 </div>
             </div>
 
-            <div class="bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden">
+            <div id="db-settings" class="bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden">
                 <div class="p-8 md:p-10">
                     <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider mb-6">Database Settings</h3>
 
@@ -194,7 +197,7 @@ function oldValue(array $old, string $key, string $default = ''): string
                 </div>
             </div>
 
-            <div class="bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden">
+            <div id="admin-account" class="bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden">
                 <div class="p-8 md:p-10">
                     <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider mb-6">Admin Account</h3>
 
@@ -216,12 +219,18 @@ function oldValue(array $old, string $key, string $default = ''): string
                             <input type="password" name="admin_password" id="admin_password"
                                    class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none"
                                    placeholder="Choose a strong password">
+                            <?php if (isset($errors['admin_password'])): ?>
+                                <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['admin_password'][0]) ?></p>
+                            <?php endif; ?>
                         </div>
                         <div class="space-y-2">
                             <label class="block text-xs font-black text-slate-600 uppercase tracking-widest" for="admin_password_confirm">Confirm Password</label>
                             <input type="password" name="admin_password_confirm" id="admin_password_confirm"
                                    class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none"
                                    placeholder="Repeat password">
+                            <?php if (isset($errors['admin_password_confirm'])): ?>
+                                <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['admin_password_confirm'][0]) ?></p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -241,4 +250,3 @@ function oldValue(array $old, string $key, string $default = ''): string
         </form>
     </div>
 </div>
-
