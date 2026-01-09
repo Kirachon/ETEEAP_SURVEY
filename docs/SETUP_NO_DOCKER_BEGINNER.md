@@ -36,6 +36,8 @@ If you are a beginner on Windows, the easiest option is:
 At minimum:
 - `pdo_mysql`
 - `mbstring`
+- `bcmath`
+- `exif`
 
 Commonly needed (often enabled by default):
 - `openssl`
