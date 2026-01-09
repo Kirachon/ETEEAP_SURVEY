@@ -290,6 +290,46 @@ function isEmailAlreadyUsed(string $email): bool
 }
 
 /**
+ * Check if a completed survey already exists for the same person identity (name + email)
+ *
+ * This is intentionally stricter than checking email alone to avoid blocking different people
+ * who share an email address, and to avoid false-positives for common names.
+ */
+function isNameEmailAlreadyUsed(string $email, string $lastName, string $firstName, ?string $middleName = null, ?string $extName = null): bool
+{
+    $email = strtolower(trim($email));
+    $lastName = strtolower(trim($lastName));
+    $firstName = strtolower(trim($firstName));
+    $middleName = $middleName !== null ? strtolower(trim($middleName)) : null;
+    $extName = $extName !== null ? strtolower(trim($extName)) : null;
+
+    if ($email === '' || $lastName === '' || $firstName === '') {
+        return false;
+    }
+
+    $result = dbFetchOne(
+        "SELECT COUNT(*) as count
+         FROM survey_responses
+         WHERE LOWER(TRIM(email)) = :email
+           AND LOWER(TRIM(last_name)) = :ln
+           AND LOWER(TRIM(first_name)) = :fn
+           AND LOWER(TRIM(middle_name)) <=> :mn
+           AND LOWER(TRIM(ext_name)) <=> :ext
+           AND consent_given = 1
+           AND completed_at IS NOT NULL",
+        [
+            'email' => $email,
+            'ln' => $lastName,
+            'fn' => $firstName,
+            'mn' => $middleName,
+            'ext' => $extName,
+        ]
+    );
+
+    return ($result['count'] ?? 0) > 0;
+}
+
+/**
  * Check if name has already been used for a completed survey
  * Uses case-insensitive comparison with trimmed/normalized name
  * 
@@ -404,13 +444,6 @@ function validateStepBasicInfo(array $data): ValidationResult
     }
     $result->sanitized['ext_name'] = $extName !== '' ? $extName : null;
     
-    // Check for duplicate name (combined check)
-    if ($lastName && $firstName) {
-        if (isNameAlreadyUsed($lastName, $firstName, $middleName, $extName)) {
-            $result->addError('last_name', 'A survey response with this name already exists. Each person may only submit one response.');
-        }
-    }
-    
     // Sex (optional)
     $sex = $data['sex'] ?? null;
     $allowedSex = ['male', 'female', 'prefer_not_to_say'];
@@ -429,13 +462,14 @@ function validateStepBasicInfo(array $data): ValidationResult
     
     // Email (optional, validate format + uniqueness if provided)
     $email = sanitizeEmail($data['email'] ?? '');
+    $email = $email !== '' ? strtolower($email) : '';
     if ($email !== '') {
         if (!validateEmail($email)) {
             $result->addError('email', 'Please enter a valid email address.');
         } elseif (!validateEmailDomain($email)) {
             $result->addError('email', 'Please use a valid email provider (e.g., Gmail, Yahoo, Outlook, or your official government/educational email).');
-        } elseif (isEmailAlreadyUsed($email)) {
-            $result->addError('email', 'This email address has already been used to submit a survey. Each person may only submit one response.');
+        } elseif (isNameEmailAlreadyUsed($email, $lastName, $firstName, $middleName !== '' ? $middleName : null, $extName !== '' ? $extName : null)) {
+            $result->addError('email', 'A survey response with the same name and email already exists. Please use a different email or verify the name.');
         }
     }
     $result->sanitized['email'] = $email !== '' ? $email : null;

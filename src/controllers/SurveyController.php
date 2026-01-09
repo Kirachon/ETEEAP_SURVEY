@@ -146,14 +146,14 @@ class SurveyController
         $middleName = $allData['middle_name'] ?? null;
         $extName = $allData['ext_name'] ?? null;
         
-        if (!empty($lastName) && !empty($firstName) && isNameAlreadyUsed($lastName, $firstName, $middleName, $extName)) {
-            flashSet('error', 'A survey response with this name already exists. Each person may only submit one response.');
-            redirect(appUrl('/survey/step/2'));
-            return;
-        }
-        
-        if (!empty($email) && isEmailAlreadyUsed($email)) {
-            flashSet('error', 'This email address has already been used to submit a survey. Each person may only submit one response.');
+        // Duplicate check: only block when BOTH name and email match an existing completed response.
+        if (
+            !empty($email) &&
+            !empty($lastName) &&
+            !empty($firstName) &&
+            isNameEmailAlreadyUsed($email, $lastName, $firstName, $middleName, $extName)
+        ) {
+            flashSet('error', 'A survey response with the same name and email already exists. Please use a different email or verify the name.');
             redirect(appUrl('/survey/step/2'));
             return;
         }
@@ -235,7 +235,7 @@ class SurveyController
             // Check for duplicate key error (MySQL error code 1062)
             if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
                 error_log('Duplicate survey submission attempted for email: ' . ($allData['email'] ?? 'unknown'));
-                flashSet('error', 'This email address has already been used to submit a survey. Each person may only submit one response.');
+                flashSet('error', 'A survey response with the same name and email already exists. Please use a different email or verify the name.');
                 redirect(appUrl('/survey/step/2'));
             } else {
                 $rawMessage = $e->getMessage();

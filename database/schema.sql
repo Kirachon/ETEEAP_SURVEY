@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS survey_responses (
     INDEX idx_completed (completed_at),
     INDEX idx_age_range (age_range),
     INDEX idx_sex (sex),
-    UNIQUE INDEX idx_unique_email (email)
+    UNIQUE INDEX idx_unique_identity (email, last_name, first_name, middle_name, ext_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================
