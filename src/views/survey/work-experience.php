@@ -137,7 +137,7 @@ $savedData = $savedData ?? [];
                     <div class="mt-6">
                         <label for="sw_tasks_other" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">If Others, please specify</label>
                         <input type="text" name="sw_tasks_other" id="sw_tasks_other" value="<?= htmlspecialchars($savedData['sw_tasks_other'] ?? '') ?>"
-                               class="mt-2 w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none"
+                               class="mt-2 w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none"
                                placeholder="Others: __________">
                         <?php if (isset($errors['sw_tasks_other'])): ?>
                             <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['sw_tasks_other'][0]) ?></p>

@@ -70,8 +70,11 @@ $savedData = $savedData ?? [];
                                 <span class="text-[10px] font-black text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-widest">If applicable</span>
                             </div>
                             <input type="text" name="undergrad_course" id="undergrad_course" value="<?= htmlspecialchars($savedData['undergrad_course'] ?? '') ?>" 
-                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
+                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Bachelor of Arts in Psychology">
+                            <?php if (isset($errors['undergrad_course'])): ?>
+                                <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['undergrad_course'][0]) ?></p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -87,8 +90,11 @@ $savedData = $savedData ?? [];
                                 <span class="text-[10px] font-black text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-widest">Optional</span>
                             </div>
                             <input type="text" name="diploma_course" id="diploma_course" value="<?= htmlspecialchars($savedData['diploma_course'] ?? '') ?>" 
-                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
+                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Diploma in Social Work">
+                            <?php if (isset($errors['diploma_course'])): ?>
+                                <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['diploma_course'][0]) ?></p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -104,8 +110,11 @@ $savedData = $savedData ?? [];
                                 <span class="text-[10px] font-black text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-widest">Optional</span>
                             </div>
                             <input type="text" name="graduate_course" id="graduate_course" value="<?= htmlspecialchars($savedData['graduate_course'] ?? '') ?>" 
-                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
+                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
                                 placeholder="e.g. Master of Science in Social Work">
+                            <?php if (isset($errors['graduate_course'])): ?>
+                                <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['graduate_course'][0]) ?></p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

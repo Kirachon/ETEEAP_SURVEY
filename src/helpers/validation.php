@@ -623,7 +623,7 @@ function validateStepWorkExperience(array $data): ValidationResult
     }
     $tasks = array_map('sanitizeString', $tasks);
 
-    $otherText = sanitizeString($data['sw_tasks_other'] ?? '');
+    $otherText = normalizeUpperText($data['sw_tasks_other'] ?? '');
     if (!in_array('Other', $tasks, true) && $otherText !== '') {
         $result->addError('sw_tasks', 'Please select "Others" if you want to specify additional tasks.');
     }
@@ -659,7 +659,7 @@ function validateStepCompetencies(array $data): ValidationResult
     }
     $areas = array_map('sanitizeString', $areas);
 
-    $otherText = sanitizeString($data['expertise_areas_other'] ?? '');
+    $otherText = normalizeUpperText($data['expertise_areas_other'] ?? '');
     if (!in_array('Other', $areas, true) && $otherText !== '') {
         $result->addError('expertise_areas', 'Please select "Others" if you want to specify additional experiences.');
     }
@@ -697,16 +697,25 @@ function validateStepEducation(array $data): ValidationResult
     $result->sanitized['highest_education'] = ($highest !== null && $highest !== '') ? $highest : null;
     
     // Undergrad course (optional)
-    $undergrad = sanitizeString($data['undergrad_course'] ?? '');
-    $result->sanitized['undergrad_course'] = $undergrad;
+    $undergrad = normalizeUpperText($data['undergrad_course'] ?? '');
+    if ($undergrad !== '' && !validateMaxLength($undergrad, 255)) {
+        $result->addError('undergrad_course', 'This field must not exceed 255 characters.');
+    }
+    $result->sanitized['undergrad_course'] = $undergrad !== '' ? $undergrad : null;
     
     // Diploma course (optional)
-    $diploma = sanitizeString($data['diploma_course'] ?? '');
-    $result->sanitized['diploma_course'] = $diploma;
+    $diploma = normalizeUpperText($data['diploma_course'] ?? '');
+    if ($diploma !== '' && !validateMaxLength($diploma, 255)) {
+        $result->addError('diploma_course', 'This field must not exceed 255 characters.');
+    }
+    $result->sanitized['diploma_course'] = $diploma !== '' ? $diploma : null;
     
     // Graduate course (optional)
-    $graduate = sanitizeString($data['graduate_course'] ?? '');
-    $result->sanitized['graduate_course'] = $graduate;
+    $graduate = normalizeUpperText($data['graduate_course'] ?? '');
+    if ($graduate !== '' && !validateMaxLength($graduate, 255)) {
+        $result->addError('graduate_course', 'This field must not exceed 255 characters.');
+    }
+    $result->sanitized['graduate_course'] = $graduate !== '' ? $graduate : null;
     
     return $result;
 }
@@ -735,7 +744,7 @@ function validateStepDswdCourses(array $data): ValidationResult
     }
     $courses = array_map('sanitizeString', $courses);
 
-    $otherText = sanitizeString($data['dswd_courses_other'] ?? '');
+    $otherText = normalizeUpperText($data['dswd_courses_other'] ?? '');
     if (!in_array('Other', $courses, true) && $otherText !== '') {
         $result->addError('dswd_courses', 'Please select "Others" if you want to specify another course.');
     }

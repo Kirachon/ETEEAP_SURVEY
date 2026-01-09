@@ -162,59 +162,6 @@ $savedData = $savedData ?? [];
             </div>
         </form>
 
-        <script nonce="<?= cspNonceEscaped() ?>">
-        (() => {
-            const form = document.getElementById('surveyForm');
-            if (!form) return;
-
-            const assignment = document.getElementById('office_assignment');
-            const help = document.getElementById('officeAssignmentHelp');
-            const normalizeSpaces = (value) => value.replace(/\s+/g, ' ').trim();
-
-            const getOfficeType = () => {
-                const checked = form.querySelector('input[name="office_type"]:checked');
-                return checked ? checked.value : '';
-            };
-
-            const updateOfficeAssignmentState = () => {
-                if (!assignment) return;
-                const officeType = getOfficeType();
-                const shouldDisable = officeType === 'central_office' || officeType === 'attached_agency';
-                assignment.disabled = shouldDisable;
-
-                if (shouldDisable) {
-                    assignment.value = '';
-                    assignment.classList.add('opacity-60', 'cursor-not-allowed');
-                    if (help) help.classList.remove('hidden');
-                } else {
-                    assignment.classList.remove('opacity-60', 'cursor-not-allowed');
-                    if (help) help.classList.add('hidden');
-                }
-            };
-
-            form.addEventListener('change', (e) => {
-                if (e.target && e.target.name === 'office_type') {
-                    updateOfficeAssignmentState();
-                }
-            });
-
-            form.addEventListener('submit', () => {
-                // Uppercase + trim free-text fields
-                for (const id of ['specific_office', 'current_position']) {
-                    const el = document.getElementById(id);
-                    if (!el || typeof el.value !== 'string') continue;
-                    const normalized = normalizeSpaces(el.value);
-                    el.value = normalized ? normalized.toUpperCase() : '';
-                }
-
-                // Ensure disabled assignment doesn't submit a stale value
-                updateOfficeAssignmentState();
-            });
-
-            updateOfficeAssignmentState();
-        })();
-        </script>
-
         <!-- Navigation Bar -->
         <div class="mt-12 p-6 md:p-8 bg-white rounded-[2rem] shadow-premium border border-slate-200/60 flex items-center justify-between gap-4">
             <!-- Back Button -->

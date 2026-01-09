@@ -201,37 +201,6 @@ $extNameOptions = [
     </div>
 </div>
 
-<script nonce="<?= cspNonceEscaped() ?>">
-(() => {
-    const form = document.getElementById('surveyForm');
-    if (!form) return;
-
-    const normalizeSpaces = (value) => value.replace(/\s+/g, ' ').trim();
-
-    form.addEventListener('submit', () => {
-        // Names: trim + collapse spaces + uppercase
-        for (const id of ['last_name', 'first_name', 'middle_name']) {
-            const el = document.getElementById(id);
-            if (!el || typeof el.value !== 'string') continue;
-            const normalized = normalizeSpaces(el.value);
-            el.value = normalized ? normalized.toUpperCase() : '';
-        }
-
-        // Email: trim only (do not uppercase)
-        const email = document.getElementById('email');
-        if (email && typeof email.value === 'string') {
-            email.value = email.value.trim();
-        }
-
-        // Phone: trim only
-        const phone = document.getElementById('phone');
-        if (phone && typeof phone.value === 'string') {
-            phone.value = phone.value.trim();
-        }
-    });
-})();
-</script>
-
 <!-- Floating Navigation Bar -->
 <div class="fixed bottom-0 left-0 right-0 z-40 glass border-t border-slate-200/50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
     <div class="max-w-md md:max-w-2xl lg:max-w-3xl mx-auto p-6 md:p-8 flex items-center justify-between gap-4">

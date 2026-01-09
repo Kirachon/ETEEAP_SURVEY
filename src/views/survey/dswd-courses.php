@@ -99,7 +99,7 @@ $savedData = $savedData ?? [];
                     <div class="mt-6">
                         <label for="dswd_courses_other" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">If Others, please specify</label>
                         <input type="text" name="dswd_courses_other" id="dswd_courses_other" value="<?= htmlspecialchars($savedData['dswd_courses_other'] ?? '') ?>"
-                               class="mt-2 w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none"
+                               class="mt-2 w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none"
                                placeholder="Others: __________">
                         <?php if (isset($errors['dswd_courses_other'])): ?>
                             <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['dswd_courses_other'][0]) ?></p>

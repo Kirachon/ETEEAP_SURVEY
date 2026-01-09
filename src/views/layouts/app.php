@@ -10,6 +10,9 @@
 
     <!-- Compiled CSS (Tailwind build) -->
     <link rel="stylesheet" href="<?= assetUrl('app.css') ?>">
+
+    <!-- App JS (form normalization + small UX helpers) -->
+    <script src="<?= assetUrl('app.js') ?>" defer></script>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
