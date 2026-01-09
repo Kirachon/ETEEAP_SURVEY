@@ -2,3 +2,6 @@ node_modules/
 .context-engine/
 screenshots/
 .augment-context-state.json
+storage/config.php
+storage/install.lock
+storage/install.log

@@ -10,14 +10,54 @@ if (!defined('APP_ROOT')) {
     die('Direct access not permitted');
 }
 
+/**
+ * Load installer-generated configuration from storage (if present).
+ * This allows non-Docker installs (e.g., XAMPP) to configure the app without setting server env vars.
+ */
+function installConfig(): array
+{
+    static $config = null;
+
+    if (is_array($config)) {
+        return $config;
+    }
+
+    $path = APP_ROOT . '/storage/config.php';
+    if (is_file($path)) {
+        $loaded = include $path;
+        $config = is_array($loaded) ? $loaded : [];
+        return $config;
+    }
+
+    $config = [];
+    return $config;
+}
+
+/**
+ * Get installer-generated configuration value.
+ *
+ * @param string $key
+ * @param mixed $default
+ * @return mixed
+ */
+function installConfigGet(string $key, $default = null)
+{
+    $config = installConfig();
+    return array_key_exists($key, $config) ? $config[$key] : $default;
+}
+
 // ============================================
 // Application Settings
 // ============================================
 define('APP_NAME', 'ETEEAP Survey');
 define('APP_VERSION', '1.0.0');
-define('APP_ENV', getenv('APP_ENV') ?: 'development');
-define('APP_DEBUG', filter_var(getenv('APP_DEBUG'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? (APP_ENV === 'development'));
-define('APP_URL', getenv('APP_URL') ?: 'http://localhost');
+$appEnv = getenv('APP_ENV') ?: (installConfigGet('APP_ENV', 'development'));
+define('APP_ENV', $appEnv);
+
+$appDebugEnv = filter_var(getenv('APP_DEBUG'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+define('APP_DEBUG', $appDebugEnv ?? (installConfigGet('APP_DEBUG', null) ?? (APP_ENV === 'development')));
+
+define('APP_URL', getenv('APP_URL') ?: (installConfigGet('APP_URL', 'http://localhost')));
 
 // ============================================
 // Survey Configuration
@@ -45,6 +85,7 @@ define('MODELS_PATH', SRC_PATH . '/models');
 define('HELPERS_PATH', SRC_PATH . '/helpers');
 define('PUBLIC_PATH', APP_ROOT . '/public');
 define('ASSETS_PATH', '/assets');
+define('STORAGE_PATH', APP_ROOT . '/storage');
 
 // ============================================
 // Session Configuration

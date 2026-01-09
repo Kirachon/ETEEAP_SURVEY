@@ -12,11 +12,13 @@ if (!defined('APP_ROOT')) {
 }
 
 // Database configuration
-define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
-define('DB_PORT', getenv('DB_PORT') ?: '3306');
-define('DB_NAME', getenv('DB_NAME') ?: 'eteeap_survey');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: '');
+$cfgGet = function_exists('installConfigGet') ? 'installConfigGet' : null;
+
+define('DB_HOST', getenv('DB_HOST') ?: ($cfgGet ? $cfgGet('DB_HOST', 'localhost') : 'localhost'));
+define('DB_PORT', getenv('DB_PORT') ?: ($cfgGet ? $cfgGet('DB_PORT', '3306') : '3306'));
+define('DB_NAME', getenv('DB_NAME') ?: ($cfgGet ? $cfgGet('DB_NAME', 'eteeap_survey') : 'eteeap_survey'));
+define('DB_USER', getenv('DB_USER') ?: ($cfgGet ? $cfgGet('DB_USER', 'root') : 'root'));
+define('DB_PASS', getenv('DB_PASS') ?: ($cfgGet ? $cfgGet('DB_PASS', '') : ''));
 define('DB_CHARSET', 'utf8mb4');
 
 /**

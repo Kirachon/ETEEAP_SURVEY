@@ -49,6 +49,10 @@ $routes = [
     // Survey routes
     'GET /' => ['controller' => 'SurveyController', 'action' => 'index'],
     'GET /survey' => ['controller' => 'SurveyController', 'action' => 'index'],
+
+    // Installer (disabled after install.lock is created)
+    'GET /install' => ['controller' => 'InstallController', 'action' => 'index'],
+    'POST /install' => ['controller' => 'InstallController', 'action' => 'install'],
     'GET /survey/consent' => ['controller' => 'SurveyController', 'action' => 'showStep', 'params' => ['step' => 1]],
     'POST /survey/consent' => ['controller' => 'SurveyController', 'action' => 'saveStep', 'params' => ['step' => 1]],
     'GET /survey/step/{step}' => ['controller' => 'SurveyController', 'action' => 'showStep'],
