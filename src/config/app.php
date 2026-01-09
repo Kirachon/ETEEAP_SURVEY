@@ -104,7 +104,26 @@ date_default_timezone_set('Asia/Manila');
  */
 function appUrl(string $path = ''): string
 {
-    return rtrim(APP_URL, '/') . '/' . ltrim($path, '/');
+    $base = rtrim(APP_URL, '/');
+
+    // If APP_URL isn't explicitly configured (or is the default localhost),
+    // derive the base URL from the current request so LAN access works without config changes.
+    if ($base === '' || $base === 'http://localhost' || $base === 'http://localhost:8000' || $base === 'http://127.0.0.1') {
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        // Basic allowlist for host header safety (host[:port] or [ipv6]:port)
+        if (is_string($host) && $host !== '' && preg_match('/^[A-Za-z0-9.\\-:\\[\\]]+$/', $host)) {
+            $isHttps = false;
+            if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+                $isHttps = true;
+            } elseif (isset($_SERVER['SERVER_PORT']) && (string) $_SERVER['SERVER_PORT'] === '443') {
+                $isHttps = true;
+            }
+            $scheme = $isHttps ? 'https' : 'http';
+            $base = $scheme . '://' . $host;
+        }
+    }
+
+    return rtrim($base, '/') . '/' . ltrim($path, '/');
 }
 
 /**
