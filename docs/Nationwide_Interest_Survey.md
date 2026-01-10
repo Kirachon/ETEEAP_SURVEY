@@ -271,7 +271,10 @@ I hereby consent to the collection, storage, and use of my personal and professi
 **[Multiple Choice]**
 
 * ☐ Yes
-* ☐ Maybe
 * ☐ No
+
+### 27a. If NO, please specify your reason (required if “No”)
+
+**[Short Answer – Required if No]**
 
 

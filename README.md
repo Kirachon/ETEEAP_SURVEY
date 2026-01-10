@@ -73,8 +73,8 @@ The ETEEAP Survey Application is designed to assess the interest and eligibility
 |-------|------------|---------|
 | **Backend** | PHP | 8.1+ |
 | **Database** | MySQL | 8.0+ |
-| **Styling** | Tailwind CSS | 3.x (CDN) |
-| **Charts** | Chart.js | 4.x (CDN) |
+| **Styling** | Tailwind CSS | 3.x (compiled to `public/assets/app.css`) |
+| **Charts** | Chart.js | 4.x (vendored in `public/assets/vendor/`) |
 | **Server** | Apache | 2.4+ |
 | **Containerization** | Docker | 20.10+ |
 
@@ -109,27 +109,22 @@ The ETEEAP Survey Application is designed to assess the interest and eligibility
    cd ETEEAP_SURVEY
    ```
 
-2. **Configure environment**
+2. **Start containers**
    ```bash
-   cp .env.example .env
-   # Edit .env with your database credentials
+   docker compose up -d
+   docker compose ps
    ```
 
-3. **Start containers**
-   ```bash
-   docker-compose up -d
-   ```
+   Services and ports (defaults from `docker-compose.yml`):
+   - App (PHP + Apache): `http://localhost:8000`
+   - MySQL: `localhost:3307` (host port → container 3306)
+   - phpMyAdmin: `http://localhost:8080`
 
-4. **Import database**
-   ```bash
-   docker-compose exec db mysql -u root -p eteeap_survey < database/schema.sql
-   docker-compose exec db mysql -u root -p eteeap_survey < database/seed.sql
-   ```
+3. **Access the application**
+   - Survey: `http://localhost:8000/`
+   - Admin: `http://localhost:8000/admin/login`
 
-5. **Access the application**
-   - Survey: `http://localhost:8080`
-   - Admin: `http://localhost:8080/admin/login`
-   - Default admin credentials in `database/seed.sql`
+   Default admin credentials are in `database/seed.sql`.
 
 ### Option 2: Manual Installation
 
@@ -261,13 +256,14 @@ See [API.md](docs/API.md) for complete API documentation.
 GET /api/stats/summary
 GET /api/stats/demographics
 GET /api/stats/interest
+GET /api/stats/timeline
 ```
 
-**Response Management**
+**Public (no auth)**
 ```http
-GET /api/responses
-GET /api/responses/{id}
-POST /api/responses/export
+GET /api/positions
+GET /api/courses
+POST /api/survey/submit
 ```
 
 ---
@@ -313,6 +309,9 @@ See `database/schema.sql` for complete schema.
 ---
 
 ## 🌐 Deployment
+
+Beginner manuals:
+- `docs/README.md`
 
 ### Docker Deployment (Production)
 
@@ -411,4 +410,4 @@ For support or inquiries:
 ---
 
 **Last Updated**: January 2026  
-**Version**: 1.0.0
+**Version**: 1.0.1

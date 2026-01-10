@@ -1,4 +1,7 @@
-# Deployment Guide
+# Deployment Guide (Legacy / Advanced)
+
+For beginner-friendly, start-to-finish manuals, see:
+- `docs/README.md`
 
 > Production deployment instructions for the ETEEAP Survey Application
 
@@ -651,4 +654,4 @@ For deployment assistance:
 ---
 
 **Last Updated**: January 2026  
-**Version**: 1.0.0
+**Version**: 1.0.1

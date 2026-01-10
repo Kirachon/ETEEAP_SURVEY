@@ -103,6 +103,7 @@ Run these in date order:
 ```bash
 mysql -u root -p eteeap_survey < database/migrations/2026-01-08_nationwide_interest_survey.sql
 mysql -u root -p eteeap_survey < database/migrations/2026-01-09_unique_identity_name_email.sql
+mysql -u root -p eteeap_survey < database/migrations/2026-01-09_update_q27_will_apply.sql
 ```
 
 If you skip migrations, you may see errors like:
@@ -114,25 +115,25 @@ If you skip migrations, you may see errors like:
 
 ## 4) Configure the Application
 
-### 4.1 Configure database connection
+### 4.1 Recommended: use the web installer
 
-Edit:
-- `src/config/database.php`
+Open:
+- `http://<your-host>/install`
 
-Set:
-- `DB_HOST`
-- `DB_NAME`
-- `DB_USER`
-- `DB_PASS`
+The installer will:
+- Create `storage/config.php` (your DB + app settings)
+- Apply `database/schema.sql`
+- Apply `database/migrations/*.sql` (sorted)
+- (Optional) insert `database/seed.sql`
+- Create/update the admin account you set
+- Create `storage/install.lock` (disables installer after success)
 
-Example:
+If you use the installer, you usually do **not** need to edit `src/config/database.php`.
 
-```php
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'eteeap_survey');
-define('DB_USER', 'eteeap_user');
-define('DB_PASS', 'strong_password_here');
-```
+### 4.1b Manual config (advanced)
+
+If you prefer manual configuration, you can edit:
+- `src/config/database.php` (or `storage/config.php` after install)
 
 ### 4.2 Configure app URL + environment
 
@@ -359,4 +360,3 @@ Fix:
 - Apply migrations before deploying new code
 - Restrict database user permissions (avoid broad grants in production)
 - Set up database backups
-

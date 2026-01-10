@@ -16,6 +16,46 @@ class ApiController
         // Set JSON content type
         header('Content-Type: application/json; charset=utf-8');
     }
+
+    /**
+     * Summary endpoint - Overall statistics used by dashboards
+     * GET /api/stats/summary
+     */
+    public function summary(): void
+    {
+        try {
+            // Raw counts for rates
+            $totalSessions = (int) (dbFetchOne("SELECT COUNT(*) as count FROM survey_responses")['count'] ?? 0);
+            $consentGiven = (int) (dbFetchOne("SELECT COUNT(*) as count FROM survey_responses WHERE consent_given = 1")['count'] ?? 0);
+            $completed = (int) (dbFetchOne("SELECT COUNT(*) as count FROM survey_responses WHERE consent_given = 1 AND completed_at IS NOT NULL")['count'] ?? 0);
+
+            $denomSessions = max($totalSessions, 1);
+            $denomConsent = max($consentGiven, 1);
+
+            $data = [
+                'total_responses' => $completed,
+                'consent_rate' => ($consentGiven / $denomSessions) * 100,
+                'completion_rate' => ($completed / $denomConsent) * 100,
+                'week_responses' => (int) (dbFetchOne(
+                    "SELECT COUNT(*) as count FROM survey_responses
+                     WHERE consent_given = 1 AND completed_at IS NOT NULL
+                       AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
+                )['count'] ?? 0),
+                'very_interested' => (int) (dbFetchOne(
+                    "SELECT COUNT(*) as count FROM survey_responses
+                     WHERE consent_given = 1 AND completed_at IS NOT NULL AND eteeap_interest = 'very_interested'"
+                )['count'] ?? 0),
+                'will_apply' => (int) (dbFetchOne(
+                    "SELECT COUNT(*) as count FROM survey_responses
+                     WHERE consent_given = 1 AND completed_at IS NOT NULL AND will_apply = 'yes'"
+                )['count'] ?? 0),
+            ];
+
+            $this->jsonResponse(['success' => true, 'data' => $data]);
+        } catch (Exception $e) {
+            $this->jsonError('Failed to fetch summary data', 500);
+        }
+    }
     
     /**
      * Demographics endpoint - Age, Sex, Office Type distribution

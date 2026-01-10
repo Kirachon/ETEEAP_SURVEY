@@ -103,6 +103,7 @@ function csrfValidateToken(?string $token): bool
  */
 function csrfRegenerateToken(): string
 {
+    csrfEnsureSessionStarted();
     if (isset($_SESSION[CSRF_TOKEN_NAME])) {
         unset($_SESSION[CSRF_TOKEN_NAME]);
     }

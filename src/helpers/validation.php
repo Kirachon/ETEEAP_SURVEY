@@ -569,8 +569,24 @@ function validateStepOfficeData(array $data): ValidationResult
     }
     $result->sanitized['specific_office'] = $specificOffice !== '' ? $specificOffice : null;
     
-    // Program assignments (not part of the current official form spec; keep empty)
-    $result->sanitized['program_assignments'] = [];
+    // Program assignments (optional checkbox list / multi-select)
+    $programs = $data['program_assignments'] ?? [];
+    if (!is_array($programs)) {
+        $programs = [];
+    }
+    $programs = array_map('sanitizeString', $programs);
+    $programs = array_values(array_filter($programs, static fn($v) => $v !== ''));
+    $programs = array_values(array_unique($programs));
+    if (count($programs) > 30) {
+        $result->addError('program_assignments', 'Please limit selections to 30 programs or fewer.');
+    }
+    foreach ($programs as $program) {
+        if (!validateMaxLength($program, 100)) {
+            $result->addError('program_assignments', 'One or more program entries are too long (max 100 characters each).');
+            break;
+        }
+    }
+    $result->sanitized['program_assignments'] = $programs;
     
     // Current position / designation (optional)
     $position = normalizeUpperText($data['current_position'] ?? '');
@@ -638,6 +654,10 @@ function validateStepWorkExperience(array $data): ValidationResult
         }
     }
     $result->sanitized['sw_tasks'] = $tasks;
+
+    // Derive performs_sw_tasks from whether any SW tasks were selected.
+    // Keep NULL when the respondent didn't select anything.
+    $result->sanitized['performs_sw_tasks'] = count($tasks) > 0 ? true : null;
     
     return $result;
 }

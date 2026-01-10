@@ -79,6 +79,7 @@ $routes = [
     'GET /admin/reports/export/{type}' => ['controller' => 'AdminController', 'action' => 'exportReport'],
      
     // API routes (for charts)
+    'GET /api/stats/summary' => ['controller' => 'ApiController', 'action' => 'summary'],
     'GET /api/stats/demographics' => ['controller' => 'ApiController', 'action' => 'demographics'],
     'GET /api/stats/interest' => ['controller' => 'ApiController', 'action' => 'interest'],
     'GET /api/stats/timeline' => ['controller' => 'ApiController', 'action' => 'timeline'],
@@ -86,6 +87,9 @@ $routes = [
     // Public API routes (for survey dropdowns - no auth required)
     'GET /api/positions' => ['controller' => 'PublicApiController', 'action' => 'positions'],
     'GET /api/courses' => ['controller' => 'PublicApiController', 'action' => 'courses'],
+
+    // Survey submission API (public, CSRF-protected)
+    'POST /api/survey/submit' => ['controller' => 'SurveyApiController', 'action' => 'submit'],
 ];
 
 // ============================================
