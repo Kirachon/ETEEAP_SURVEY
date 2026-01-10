@@ -16,12 +16,26 @@
     <script src="<?= assetUrl('vendor/tom-select.min.js') ?>" defer></script>
 
     <!-- App JS (form normalization + small UX helpers) -->
-    <script src="<?= assetUrl('app.js') ?>" defer></script>
+    <script src="<?= assetUrl('app.js?v=') . APP_VERSION ?>"></script>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Mobile Tom Select Fixes (Chrome/Android) */
+        @media (max-width: 768px) {
+            .ts-dropdown, .ts-control, .ts-control input {
+                touch-action: pan-y !important; /* Fix touch events */
+                font-size: 16px !important; /* Prevent iOS zoom */
+            }
+            .ts-dropdown {
+                z-index: 99999 !important; /* Force excessive z-index for overlaps */
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+    </style>
     
     <?php if (isset($additionalHead)): ?>
         <?= $additionalHead ?>

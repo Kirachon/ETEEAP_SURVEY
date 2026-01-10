@@ -52,7 +52,7 @@ if (!function_exists('installConfigGet')) {
 // Application Settings
 // ============================================
 define('APP_NAME', 'ETEEAP Survey');
-define('APP_VERSION', '1.0.5');
+define('APP_VERSION', '1.0.6');
 $appEnv = getenv('APP_ENV') ?: (installConfigGet('APP_ENV', 'development'));
 define('APP_ENV', $appEnv);
 
