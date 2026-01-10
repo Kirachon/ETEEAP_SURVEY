@@ -188,31 +188,52 @@ The ETEEAP Survey Application is designed to assess the interest and eligibility
    ```
 
 5. **Configure application**
-   Edit `src/config/database.php` with your credentials.
+   See [Configuration](#configuration) below.
 
 ---
 
 ## ⚙️ Configuration
 
 ### Database Configuration
-Edit `src/config/database.php`:
 
-```php
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'eteeap_survey');
-define('DB_USER', 'your_username');
-define('DB_PASS', 'your_password');
-define('DB_CHARSET', 'utf8mb4');
-```
+The application supports environment-specific configuration through `config.local.php`. This file is **not** committed to Git, allowing each deployment to have its own credentials.
+
+**For local development (XAMPP):** No configuration needed — defaults work out of the box.
+
+**For production/hosting deployments:**
+
+1. Copy the template:
+   ```bash
+   cp src/config/config.local.php.example src/config/config.local.php
+   ```
+
+2. Edit `src/config/config.local.php` with your credentials:
+   ```php
+   <?php
+   putenv('DB_HOST=your_database_host');
+   putenv('DB_NAME=your_database_name');
+   putenv('DB_USER=your_username');
+   putenv('DB_PASS=your_password');
+   ```
+
+### Shared Hosting (InfinityFree, etc.)
+
+For shared hosting with a flat folder structure:
+
+1. Upload all files to `htdocs/` (not a subfolder)
+2. Rename `public/index_infinityfree.php` to `index.php`
+3. Create `src/config/config.local.php` with your hosting credentials
+4. Upload `public/assets/` to `htdocs/assets/`
+5. Upload `docs/update/` to `htdocs/docs/update/` (for course data)
 
 ### Application Settings
-Edit `src/config/app.php`:
+
+Edit `src/config/app.php` if needed:
 
 ```php
 define('APP_NAME', 'ETEEAP Survey');
-define('APP_URL', 'http://localhost:8080');
+define('APP_URL', 'http://your-domain.com');
 define('APP_ENV', 'production'); // development | production
-define('SESSION_LIFETIME', 3600); // 1 hour in seconds
 ```
 
 ---

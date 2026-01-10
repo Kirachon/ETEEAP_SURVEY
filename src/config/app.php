@@ -40,10 +40,12 @@ function installConfig(): array
  * @param mixed $default
  * @return mixed
  */
-function installConfigGet(string $key, $default = null)
-{
-    $config = installConfig();
-    return array_key_exists($key, $config) ? $config[$key] : $default;
+if (!function_exists('installConfigGet')) {
+    function installConfigGet(string $key, $default = null)
+    {
+        $config = installConfig();
+        return array_key_exists($key, $config) ? $config[$key] : $default;
+    }
 }
 
 // ============================================

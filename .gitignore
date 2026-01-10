@@ -5,3 +5,5 @@ screenshots/
 storage/config.php
 storage/install.lock
 storage/install.log
+src/config/config.local.php
+public/debug.php

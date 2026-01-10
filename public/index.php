@@ -8,6 +8,12 @@
 // Define application root
 define('APP_ROOT', dirname(__DIR__));
 
+// Load local/environment-specific config if it exists (for deployment flexibility)
+// This file should NOT be committed to Git - each environment creates its own
+if (file_exists(APP_ROOT . '/src/config/config.local.php')) {
+    require_once APP_ROOT . '/src/config/config.local.php';
+}
+
 // Load configuration
 require_once APP_ROOT . '/src/config/app.php';
 require_once APP_ROOT . '/src/config/database.php';
@@ -187,7 +193,7 @@ try {
     // Error handling
     http_response_code(500);
     
-    if (APP_DEBUG) {
+    if (defined('APP_DEBUG') && APP_DEBUG) {
         echo '<h1>Error</h1>';
         echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
         echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
