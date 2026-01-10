@@ -490,17 +490,17 @@ function validateStepBasicInfo(array $data): ValidationResult
     }
     $result->sanitized['age_range'] = ($ageRange !== null && $ageRange !== '') ? $ageRange : null;
     
-    // Email (optional, validate format + uniqueness if provided)
+    // Email (required)
     $email = sanitizeEmail($data['email'] ?? '');
     $email = $email !== '' ? strtolower($email) : '';
-    if ($email !== '') {
-        if (!validateEmail($email)) {
-            $result->addError('email', 'Please enter a valid email address.');
-        } elseif (!validateEmailDomain($email)) {
-            $result->addError('email', 'Please use a valid email provider (e.g., Gmail, Yahoo, Outlook, or your official government/educational email).');
-        } elseif (isNameEmailAlreadyUsed($email, $lastName, $firstName, $middleName !== '' ? $middleName : null, $extName !== '' ? $extName : null)) {
-            $result->addError('email', 'A survey response with the same name and email already exists. Please use a different email or verify the name.');
-        }
+    if (!validateRequired($email)) {
+        $result->addError('email', 'Email address is required.');
+    } elseif (!validateEmail($email)) {
+        $result->addError('email', 'Please enter a valid email address.');
+    } elseif (!validateEmailDomain($email)) {
+        $result->addError('email', 'Please use a valid email provider (e.g., Gmail, Yahoo, Outlook, or your official government/educational email).');
+    } elseif (isNameEmailAlreadyUsed($email, $lastName, $firstName, $middleName !== '' ? $middleName : null, $extName !== '' ? $extName : null)) {
+        $result->addError('email', 'A survey response with the same name and email already exists. Please use a different email or verify the name.');
     }
     $result->sanitized['email'] = $email !== '' ? $email : null;
     
@@ -525,10 +525,12 @@ function validateStepOfficeData(array $data): ValidationResult
 {
     $result = new ValidationResult();
     
-    // Office type (optional)
+    // Office type (required)
     $officeType = $data['office_type'] ?? null;
     $allowedOffice = ['central_office', 'field_office', 'attached_agency'];
-    if ($officeType !== null && $officeType !== '' && !validateInList($officeType, $allowedOffice)) {
+    if (!validateRequired($officeType)) {
+        $result->addError('office_type', 'Please select your office type.');
+    } elseif (!validateInList($officeType, $allowedOffice)) {
         $result->addError('office_type', 'Please select a valid option.');
     }
     $result->sanitized['office_type'] = ($officeType !== null && $officeType !== '') ? $officeType : null;
@@ -600,10 +602,12 @@ function validateStepOfficeData(array $data): ValidationResult
     }
     $result->sanitized['current_position'] = $position !== '' ? $position : null;
     
-    // Employment status (optional)
+    // Employment status (required)
     $status = $data['employment_status'] ?? null;
     $allowedStatus = ['permanent', 'cos', 'jo', 'others'];
-    if ($status !== null && $status !== '' && !validateInList($status, $allowedStatus)) {
+    if (!validateRequired($status)) {
+        $result->addError('employment_status', 'Please select your employment status.');
+    } elseif (!validateInList($status, $allowedStatus)) {
         $result->addError('employment_status', 'Please select a valid option.');
     }
     $result->sanitized['employment_status'] = ($status !== null && $status !== '') ? $status : null;
@@ -713,10 +717,12 @@ function validateStepEducation(array $data): ValidationResult
 {
     $result = new ValidationResult();
     
-    // Highest educational attainment (optional)
+    // Highest educational attainment (required)
     $highest = $data['highest_education'] ?? null;
     $allowedEdu = ['high_school', 'some_college', 'bachelors', 'masters', 'doctoral'];
-    if ($highest !== null && $highest !== '' && !validateInList($highest, $allowedEdu)) {
+    if (!validateRequired($highest)) {
+        $result->addError('highest_education', 'Please select your highest educational attainment.');
+    } elseif (!validateInList($highest, $allowedEdu)) {
         $result->addError('highest_education', 'Please select a valid option.');
     }
     $result->sanitized['highest_education'] = ($highest !== null && $highest !== '') ? $highest : null;
@@ -804,10 +810,12 @@ function validateStepEteeapInterest(array $data): ValidationResult
     }
     $result->sanitized['eteeap_awareness'] = ($awareness === 'aware') ? true : (($awareness === 'not_aware') ? false : null);
     
-    // Interest in ETEEAP – BS Social Work (optional)
+    // Interest in ETEEAP – BS Social Work (required)
     $interest = $data['eteeap_interest'] ?? null;
     $allowedInterest = ['very_interested', 'interested', 'somewhat_interested', 'not_interested'];
-    if ($interest !== null && $interest !== '' && !validateInList($interest, $allowedInterest)) {
+    if (!validateRequired($interest)) {
+        $result->addError('eteeap_interest', 'Please indicate your level of interest in ETEEAP.');
+    } elseif (!validateInList($interest, $allowedInterest)) {
         $result->addError('eteeap_interest', 'Please select a valid option.');
     }
     $result->sanitized['eteeap_interest'] = ($interest !== null && $interest !== '') ? $interest : null;
@@ -826,9 +834,11 @@ function validateStepEteeapInterest(array $data): ValidationResult
     }
     $result->sanitized['barriers'] = array_map('sanitizeString', $barriers);
     
-    // If offered, will you apply? (optional - but must be yes or no only, maybe removed)
+    // If offered, will you apply? (required)
     $willApply = $data['will_apply'] ?? null;
-    if ($willApply !== null && $willApply !== '' && !validateInList($willApply, ['yes', 'no'])) {
+    if (!validateRequired($willApply)) {
+        $result->addError('will_apply', 'Please indicate whether you would apply for ETEEAP.');
+    } elseif (!validateInList($willApply, ['yes', 'no'])) {
         $result->addError('will_apply', 'Please select a valid option.');
     }
     $result->sanitized['will_apply'] = ($willApply !== null && $willApply !== '') ? $willApply : null;

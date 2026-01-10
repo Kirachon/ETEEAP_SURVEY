@@ -33,7 +33,7 @@ $savedData = $savedData ?? [];
                             <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                             </div>
-                            <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider">8. Office Type</h3>
+                            <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider">8. Office Type <span class="text-red-500">*</span></h3>
                         </div>
                         <div class="space-y-3">
                             <?php 
@@ -122,7 +122,7 @@ $savedData = $savedData ?? [];
                 <!-- Bento Card: Employment Status -->
                 <div class="lg:col-span-5 bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden">
                     <div class="p-8">
-                        <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider mb-6">11. Employment Status</h3>
+                        <h3 class="text-sm font-black text-dswd-dark uppercase tracking-wider mb-6">11. Employment Status <span class="text-red-500">*</span></h3>
                         <div class="space-y-2">
                             <?php 
                             $statusOptions = [

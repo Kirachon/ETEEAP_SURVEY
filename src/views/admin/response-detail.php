@@ -64,8 +64,8 @@ function formatEnumValue(string $key, $value): string
         ],
         'will_apply' => [
             'yes' => 'Yes',
-            'maybe' => 'Maybe',
             'no' => 'No',
+            'undecided' => 'Undecided',
         ],
         'years_bucket' => [
             'lt5' => '<5',
@@ -300,15 +300,23 @@ function formatEnumValue(string $key, $value): string
                     <?php
                     $applyClass = match($response['will_apply']) {
                         'yes' => 'bg-green-100 text-green-800',
-                        'maybe' => 'bg-amber-100 text-amber-800',
-                        null => 'bg-gray-100 text-gray-800',
-                        default => 'bg-red-100 text-red-800'
+                        'no' => 'bg-slate-100 text-slate-800',
+                        default => 'bg-gray-100 text-gray-800'
                     };
                     ?>
                     <span class="px-3 py-1 text-sm rounded-full <?= $applyClass ?>"><?= htmlspecialchars(formatEnumValue('will_apply', $response['will_apply'] ?? null)) ?></span>
                     </dd>
                 </div>
             </div>
+            
+            <?php if (isset($response['will_apply']) && $response['will_apply'] === 'no' && !empty($response['will_not_apply_reason'])): ?>
+            <div class="mt-6">
+                <dt class="text-sm text-gray-500 mb-2">Reason for Not Applying</dt>
+                <dd class="p-4 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700">
+                    <?= nl2br(htmlspecialchars($response['will_not_apply_reason'])) ?>
+                </dd>
+            </div>
+            <?php endif; ?>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 <div>
@@ -340,11 +348,6 @@ function formatEnumValue(string $key, $value): string
                     </dd>
                 </div>
             </div>
-    </div>
-    
-    <!-- Metadata -->
-    <div class="bg-gray-100 rounded-lg p-4 text-xs text-gray-500">
-        <div class="flex flex-wrap gap-6">
             <span>Session ID: <?= htmlspecialchars($response['session_id'] ?? 'N/A') ?></span>
             <span>IP: <?= htmlspecialchars($response['ip_address'] ?? 'N/A') ?></span>
             <span>Created: <?= date('Y-m-d H:i:s', strtotime($response['created_at'])) ?></span>

@@ -62,7 +62,7 @@ $savedData = $savedData ?? [];
                             <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                             </div>
-                            <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">24. Interest in ETEEAP – BS Social Work</h3>
+                            <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">24. Interest in ETEEAP – BS Social Work <span class="text-red-500">*</span></h3>
                         </div>
 
                         <div class="space-y-3">
@@ -176,7 +176,7 @@ $savedData = $savedData ?? [];
                             <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
-                            <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">27. If offered, will you apply for ETEEAP – BSSW?</h3>
+                            <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">27. If offered, will you apply for ETEEAP – BSSW? <span class="text-red-500">*</span></h3>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">

@@ -274,7 +274,8 @@ function getExportHeaders(): array
         'ETEEAP Interest Level' => 'eteeap_interest',
         'Motivations' => 'motivations',
         'Barriers' => 'barriers',
-        'Will Apply' => 'will_apply'
+        'Will Apply' => 'will_apply',
+        'Reason for Not Applying' => 'will_not_apply_reason',
     ];
 }
 

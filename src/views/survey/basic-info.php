@@ -171,14 +171,13 @@ $extNameOptions = [
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                         <!-- Email Address -->
                         <div class="space-y-2">
-                            <label for="email" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">5. Email Address</label>
+                            <label for="email" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">5. Email Address <span class="text-red-500">*</span></label>
                             <input type="email" name="email" id="email" value="<?= htmlspecialchars($savedData['email'] ?? '') ?>" 
                                 class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
-                                placeholder="juan.delacruz@dswd.gov.ph">
+                                placeholder="juan.delacruz@dswd.gov.ph" required>
                             <?php if (isset($errors['email'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['email'][0]) ?></p>
                             <?php endif; ?>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-2">Email validation applies if provided</p>
                         </div>
 
                         <!-- Mobile / Phone Number -->

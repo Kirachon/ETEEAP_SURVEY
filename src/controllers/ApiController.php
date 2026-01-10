@@ -148,7 +148,7 @@ class ApiController
                  FROM survey_responses 
                  WHERE consent_given = 1 AND completed_at IS NOT NULL AND will_apply IS NOT NULL
                  GROUP BY will_apply 
-                 ORDER BY FIELD(will_apply, 'yes', 'maybe', 'no')"
+                 ORDER BY FIELD(will_apply, 'yes', 'no')"
             );
             
             // ETEEAP awareness

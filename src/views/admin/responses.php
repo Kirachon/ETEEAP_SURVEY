@@ -54,9 +54,9 @@ $totalPages = $totalPages ?? 1;
                             <?= $response['ext_name'] ? htmlspecialchars($response['ext_name']) : '' ?>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600"><?= htmlspecialchars($response['email']) ?></td>
-                        <td class="px-6 py-4 text-sm text-gray-600 hidden lg:table-cell"><?= ucfirst(str_replace('_', ' ', $response['sex'])) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-600 hidden lg:table-cell"><?= ucfirst(str_replace('_', ' ', $response['sex'] ?? '')) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-600 hidden lg:table-cell"><?= $response['age_range'] ?></td>
-                        <td class="px-6 py-4 text-sm text-gray-600"><?= ucwords(str_replace('_', ' ', $response['office_type'])) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-600"><?= ucwords(str_replace('_', ' ', $response['office_type'] ?? '')) ?></td>
                         <td class="px-6 py-4">
                             <?php
                             $interestClass = match($response['eteeap_interest']) {
@@ -65,7 +65,7 @@ $totalPages = $totalPages ?? 1;
                                 'somewhat_interested' => 'bg-amber-100 text-amber-800',
                                 default => 'bg-gray-100 text-gray-800'
                             };
-                            $interestLabel = ucwords(str_replace('_', ' ', $response['eteeap_interest']));
+                            $interestLabel = ucwords(str_replace('_', ' ', $response['eteeap_interest'] ?? ''));
                             ?>
                             <span class="px-2 py-1 text-xs rounded-full <?= $interestClass ?>"><?= $interestLabel ?></span>
                         </td>
@@ -73,11 +73,11 @@ $totalPages = $totalPages ?? 1;
                             <?php
                             $applyClass = match($response['will_apply']) {
                                 'yes' => 'bg-green-100 text-green-800',
-                                'maybe' => 'bg-amber-100 text-amber-800',
+                                'no' => 'bg-slate-100 text-slate-800',
                                 default => 'bg-gray-100 text-gray-800'
                             };
                             ?>
-                            <span class="px-2 py-1 text-xs rounded-full <?= $applyClass ?>"><?= ucfirst($response['will_apply']) ?></span>
+                            <span class="px-2 py-1 text-xs rounded-full <?= $applyClass ?>"><?= ucfirst($response['will_apply'] ?? '') ?></span>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600"><?= date('M j, Y', strtotime($response['created_at'])) ?></td>
                         <td class="px-6 py-4">
