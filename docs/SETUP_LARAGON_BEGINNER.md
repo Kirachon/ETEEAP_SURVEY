@@ -17,6 +17,34 @@ If you serve the project root, people may be able to browse `/src` and the insta
 
 ---
 
+## 0) Requirements (quick check)
+
+Laragon bundles PHP + a web server + a database, but you still need the correct PHP version and extensions enabled.
+
+### PHP version
+
+- PHP **8.1+** recommended.
+
+In Laragon you can switch PHP versions via:
+- **Menu -> PHP -> Version**
+
+### Required PHP extensions
+
+Minimum required for this app:
+- `mysqli` (the web installer uses `mysqli`)
+- `pdo_mysql`
+- `mbstring`
+- `openssl`
+
+Commonly enabled by default (still good to confirm if you hit errors):
+- `curl`
+- `fileinfo`
+- `json`
+
+If the installer shows a blank page or errors, check your PHP version/extensions first (see Troubleshooting).
+
+---
+
 ## 1) Install Laragon
 1) Download Laragon (Windows) and install it.
 2) Open Laragon.
@@ -136,7 +164,7 @@ Open:
 The installer will:
 - Create `storage/config.php` (your local settings)
 - Import `database/schema.sql`
-- Run SQL migrations from `database/migrations/*.sql`
+- Run SQL migrations from `database/migrations/*.sql` (in sorted order)
 - Create/update an admin user (password you set)
 - Create `storage/install.lock` to disable the installer after success
 
@@ -196,6 +224,13 @@ Quick smoke test:
 
 ## 9) Troubleshooting (common beginner issues)
 
+### 9.0 Where to check logs (fastest way to debug)
+
+In Laragon:
+- Apache logs: **Menu -> Apache -> log**
+- PHP error log: **Menu -> PHP -> php.ini** (search for `error_log`)
+- MySQL logs: **Menu -> MySQL -> log** (if available in your Laragon version)
+
 ### 9.1 “Not Found” on `/install` or `/survey/consent`
 Cause: DocumentRoot is wrong or rewrite is not enabled.
 
@@ -203,6 +238,16 @@ Fix checklist (Apache):
 - DocumentRoot points to `...\ETEEAP_SURVEY\public`
 - `<Directory ".../public"> AllowOverride All </Directory>` is present
 - Apache restarted
+
+### 9.1b Installer loads but shows errors about missing extensions
+
+Most common cause: `mysqli` is not enabled (installer needs it).
+
+What to do:
+1) In Laragon: **Menu -> PHP -> Extensions**
+2) Enable `mysqli` and `pdo_mysql` if they are disabled
+3) Restart Laragon (**Stop All** then **Start All**)
+4) Reload `/install`
 
 ### 9.2 You opened `.../src/views/install/` in the browser
 That folder is only template files. The installer runs via the app’s router.
