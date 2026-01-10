@@ -11,6 +11,10 @@
     <!-- Compiled CSS (Tailwind build) -->
     <link rel="stylesheet" href="<?= assetUrl('app.css') ?>">
 
+    <!-- Tom Select (vendored, served locally) -->
+    <link rel="stylesheet" href="<?= assetUrl('vendor/tom-select.min.css') ?>">
+    <script src="<?= assetUrl('vendor/tom-select.min.js') ?>" defer></script>
+
     <!-- App JS (form normalization + small UX helpers) -->
     <script src="<?= assetUrl('app.js') ?>" defer></script>
     

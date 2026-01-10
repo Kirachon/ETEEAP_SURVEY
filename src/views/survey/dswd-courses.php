@@ -42,7 +42,7 @@ $savedData = $savedData ?? [];
                         ?>
                         <label class="group relative flex items-center justify-center p-6 rounded-2xl border border-slate-200 bg-slate-50/50 cursor-pointer transition-all hover:bg-white hover:border-dswd-blue has-[:checked]:bg-white has-[:checked]:border-dswd-blue has-[:checked]:ring-4 has-[:checked]:ring-blue-500/10">
                             <span class="text-lg font-black text-slate-600 group-has-[:checked]:text-dswd-dark transition-colors"><?= htmlspecialchars($label) ?></span>
-                            <input type="radio" name="availed_dswd_training" value="<?= htmlspecialchars($value) ?>" <?= ($savedData['availed_dswd_training'] ?? null) === ($value === 'yes') ? 'checked' : '' ?> class="sr-only" onchange="toggleCoursesSection(this.value === 'yes')">
+                            <input type="radio" name="availed_dswd_training" value="<?= htmlspecialchars($value) ?>" <?= ($savedData['availed_dswd_training'] ?? null) === ($value === 'yes') ? 'checked' : '' ?> class="sr-only">
                         </label>
                         <?php endforeach; ?>
                     </div>
@@ -52,59 +52,60 @@ $savedData = $savedData ?? [];
                 </div>
             </div>
 
-            <div id="coursesSection" class="bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden transition-all duration-500 <?= ($savedData['availed_dswd_training'] ?? null) !== true ? 'hidden' : '' ?>">
+            <div id="coursesSection" class="bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden <?= ($savedData['availed_dswd_training'] ?? null) !== true ? 'hidden' : '' ?>">
                 <div class="p-8 md:p-10">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 00-2 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                             </div>
                             <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">22. If YES, indicate courses taken</h3>
                         </div>
-                        <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest px-3 py-1.5 bg-slate-100 rounded-lg self-start">Checkboxes – Optional</span>
+                        <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest px-3 py-1.5 bg-slate-100 rounded-lg self-start">Select Multiple</span>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 auto-rows-fr">
-                        <?php
-                        $courseOptions = [
-                            'Case Management',
-                            'Social Protection Programs',
-                            'DRRM',
-                            'Program Development',
-                            'Leadership / Supervisory',
-                            'Others',
-                        ];
-                        $selected = $savedData['dswd_courses'] ?? [];
-                        foreach ($courseOptions as $label):
-                            $value = $label === 'Others' ? 'Other' : $label;
-                        ?>
-                        <label class="group relative flex items-center justify-between p-5 rounded-2xl border border-slate-200 bg-slate-50/50 cursor-pointer transition-all hover:bg-white hover:border-dswd-blue has-[:checked]:bg-white has-[:checked]:border-dswd-blue has-[:checked]:ring-4 has-[:checked]:ring-blue-500/10">
-                            <span class="text-base font-bold text-slate-600 group-has-[:checked]:text-dswd-dark transition-colors mr-3 leading-tight"><?= htmlspecialchars($label) ?></span>
-                            <div class="flex-shrink-0 relative w-6 h-6 border-2 border-slate-200 rounded-lg group-hover:border-dswd-blue transition-colors group-has-[:checked]:bg-dswd-blue group-has-[:checked]:border-dswd-blue">
-                                <input type="checkbox" name="dswd_courses[]" value="<?= htmlspecialchars($value) ?>"
-                                    <?= in_array($value, $selected, true) ? 'checked' : '' ?>
-                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                                <svg class="w-4 h-4 text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-has-[:checked]:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                            </div>
-                        </label>
-                        <?php endforeach; ?>
+                    <!-- Tom Select Multi-Dropdown for Courses -->
+                    <div class="space-y-4">
+                        <div class="flex gap-3">
+                            <select
+                                id="academy_course_selector"
+                                data-tom-select="courses"
+                                data-tom-url="<?= htmlspecialchars(appUrl('/api/courses')) ?>"
+                                placeholder="Start typing to search courses..."
+                                class="flex-1"
+                            >
+                                <option value="">Select a course to add</option>
+                            </select>
+                            <button type="button" id="addCourseBtn" class="px-5 py-3 bg-dswd-blue hover:bg-dswd-dark text-white font-black rounded-xl transition-all active:scale-95 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                                <span class="hidden sm:inline">Add</span>
+                            </button>
+                        </div>
+
+                        <!-- Selected Courses Display -->
+                        <div id="selectedCoursesContainer" class="flex flex-wrap gap-2 min-h-[48px] p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                            <?php
+                            $selectedCourses = $savedData['dswd_courses'] ?? [];
+                            if (empty($selectedCourses)): ?>
+                                <p id="noCoursesPlaceholder" class="text-sm text-slate-400 italic">No courses selected yet. Use the dropdown above to add courses.</p>
+                            <?php else: ?>
+                                <?php foreach ($selectedCourses as $course): ?>
+                                <div class="course-tag inline-flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-slate-200 shadow-sm">
+                                    <span class="text-sm font-bold text-slate-700"><?= htmlspecialchars($course) ?></span>
+                                    <button type="button" class="remove-course text-slate-400 hover:text-red-500 transition-colors" data-course="<?= htmlspecialchars($course) ?>">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                    <input type="hidden" name="dswd_courses[]" value="<?= htmlspecialchars($course) ?>">
+                                </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Select from DSWD Academy courses. You can add multiple courses.</p>
                     </div>
 
                     <?php if (isset($errors['dswd_courses'])): ?>
-                        <p class="mt-6 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['dswd_courses'][0]) ?></p>
+                        <p class="mt-4 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['dswd_courses'][0]) ?></p>
                     <?php endif; ?>
-
-                    <div class="mt-6">
-                        <label for="dswd_courses_other" class="block text-sm font-bold text-slate-700 uppercase tracking-widest">If Others, please specify</label>
-                        <input type="text" name="dswd_courses_other" id="dswd_courses_other" value="<?= htmlspecialchars($savedData['dswd_courses_other'] ?? '') ?>"
-                               class="mt-2 w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none"
-                               placeholder="Others: __________">
-                        <?php if (isset($errors['dswd_courses_other'])): ?>
-                            <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['dswd_courses_other'][0]) ?></p>
-                        <?php endif; ?>
-                    </div>
                 </div>
             </div>
 
@@ -130,14 +131,3 @@ $savedData = $savedData ?? [];
     </div>
 </div>
 
-<script nonce="<?= cspNonceEscaped() ?>">
-function toggleCoursesSection(show) {
-    const section = document.getElementById('coursesSection');
-    if (!section) return;
-    if (show) {
-        section.classList.remove('hidden');
-    } else {
-        section.classList.add('hidden');
-    }
-}
-</script>

@@ -152,9 +152,26 @@ $savedData = $savedData ?? [];
                             <label for="current_position" class="block text-sm font-black text-dswd-dark uppercase tracking-wider">
                                 12. Current Position / Designation
                             </label>
-                            <input type="text" name="current_position" id="current_position" value="<?= htmlspecialchars($savedData['current_position'] ?? '') ?>" 
-                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
-                                placeholder="e.g. Social Welfare Officer II">
+
+                            <!-- Tom Select: searchable dropdown (loads from /api/positions) -->
+                            <select
+                                name="current_position"
+                                id="current_position"
+                                data-tom-select="positions"
+                                data-tom-url="<?= htmlspecialchars(appUrl('/api/positions')) ?>"
+                                placeholder="Start typing your position (e.g., Social Welfare Officer II)"
+                                class="w-full"
+                            >
+                                <option value="">Select or type a position</option>
+                                <?php if (!empty($savedData['current_position'] ?? '')): ?>
+                                    <option value="<?= htmlspecialchars($savedData['current_position']) ?>" selected>
+                                        <?= htmlspecialchars($savedData['current_position']) ?>
+                                    </option>
+                                <?php endif; ?>
+                            </select>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                                Searchable list (supports thousands of entries). You can also type if your position is not listed.
+                            </p>
                             <?php if (isset($errors['current_position'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['current_position'][0]) ?></p>
                             <?php endif; ?>

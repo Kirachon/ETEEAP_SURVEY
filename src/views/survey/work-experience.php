@@ -36,7 +36,7 @@ $savedData = $savedData ?? [];
                         <div class="space-y-3">
                             <?php
                             $totalYearsOptions = [
-                                'lt5' => '<5',
+                                'lt5' => 'Less than 5',
                                 '5-10' => '5–10',
                                 '11-15' => '11–15',
                                 '15+' => '15+',
@@ -67,7 +67,7 @@ $savedData = $savedData ?? [];
                         <div class="space-y-3">
                             <?php
                             $swYearsOptions = [
-                                'lt5' => '<5',
+                                'lt5' => 'Less than 5',
                                 '5-10' => '5–10',
                                 '11-15' => '11–15',
                                 '15+' => '15+',

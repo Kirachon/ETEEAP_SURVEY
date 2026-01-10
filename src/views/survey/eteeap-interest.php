@@ -179,11 +179,10 @@ $savedData = $savedData ?? [];
                             <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">27. If offered, will you apply for ETEEAP – BSSW?</h3>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <?php
                             $applyOptions = [
                                 'yes' => 'Yes',
-                                'maybe' => 'Maybe',
                                 'no' => 'No',
                             ];
                             foreach ($applyOptions as $value => $label):
@@ -197,6 +196,34 @@ $savedData = $savedData ?? [];
                         <?php if (isset($errors['will_apply'])): ?>
                             <p class="mt-4 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['will_apply'][0]) ?></p>
                         <?php endif; ?>
+
+                        <!-- Q27a: Reason (required when "No") -->
+                        <div id="willNotApplyReasonWrap" class="mt-6 hidden">
+                            <label for="will_not_apply_reason" class="block text-sm font-black text-dswd-dark uppercase tracking-wider">
+                                27a. If NO, please specify your reason <span class="text-red-500">*</span>
+                            </label>
+                            <div class="mt-3">
+                                <textarea
+                                    id="will_not_apply_reason"
+                                    name="will_not_apply_reason"
+                                    rows="4"
+                                    maxlength="500"
+                                    class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none"
+                                    placeholder="Example: Current workload is heavy and I cannot commit time to the program.&#10;Example: Schedule conflicts with family responsibilities."
+                                ><?= htmlspecialchars($savedData['will_not_apply_reason'] ?? '') ?></textarea>
+                                <div class="mt-2 flex items-center justify-between gap-3">
+                                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                                        Minimum 10 characters. Max 500.
+                                    </p>
+                                    <p class="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+                                        <span id="willNotApplyCounter">0</span>/500
+                                    </p>
+                                </div>
+                                <?php if (isset($errors['will_not_apply_reason'])): ?>
+                                    <p class="mt-2 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['will_not_apply_reason'][0]) ?></p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
