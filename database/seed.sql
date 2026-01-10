@@ -84,7 +84,7 @@ INSERT INTO survey_responses (
     performs_sw_tasks,
     highest_education, undergrad_course,
     availed_dswd_training,
-    eteeap_awareness, eteeap_interest, will_apply
+    eteeap_awareness, eteeap_interest, will_apply, will_not_apply_reason
 ) VALUES
 -- Sample 1: Completed response
 ('sess_sample_001', TRUE, 8, NOW(),
@@ -94,7 +94,7 @@ INSERT INTO survey_responses (
  TRUE,
  'bachelors', 'Bachelor of Arts in Psychology',
  TRUE,
- TRUE, 'very_interested', 'yes'),
+ TRUE, 'very_interested', 'yes', NULL),
 
 -- Sample 2: Completed response with extension
 ('sess_sample_002', TRUE, 8, NOW(),
@@ -104,7 +104,7 @@ INSERT INTO survey_responses (
  TRUE,
  'masters', 'Master of Science in Social Work',
  TRUE,
- TRUE, 'interested', 'maybe'),
+ TRUE, 'interested', 'no', 'Workload constraints and limited time to pursue the program at this moment.'),
 
 -- Sample 3: In-progress response
 ('sess_sample_003', TRUE, 4, NULL,
@@ -114,7 +114,7 @@ INSERT INTO survey_responses (
  NULL,
  'some_college', NULL,
  NULL,
- NULL, NULL, NULL),
+ NULL, NULL, NULL, NULL),
 
 -- Sample 4: Declined consent
 ('sess_sample_004', FALSE, 1, NULL,
@@ -124,7 +124,7 @@ INSERT INTO survey_responses (
  NULL,
  NULL, NULL,
  NULL,
- NULL, NULL, NULL);
+ NULL, NULL, NULL, NULL);
 
 -- Sample multi-value data for completed responses
 -- Response 1: Program assignments

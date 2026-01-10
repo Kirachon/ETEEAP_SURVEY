@@ -61,7 +61,8 @@ CREATE TABLE IF NOT EXISTS survey_responses (
     -- Section 8: ETEEAP Interest
     eteeap_awareness BOOLEAN NULL,
     eteeap_interest ENUM('very_interested', 'interested', 'somewhat_interested', 'not_interested') NULL,
-    will_apply ENUM('yes', 'maybe', 'no') NULL,
+    will_apply ENUM('yes', 'no') NULL COMMENT 'Will apply for ETEEAP-BSSW (Maybe option removed 2026-01-09)',
+    will_not_apply_reason TEXT NULL COMMENT 'Reason for selecting No in Q27 (required field)',
     additional_comments TEXT NULL,
     
     -- Indexes for reporting queries
@@ -72,6 +73,7 @@ CREATE TABLE IF NOT EXISTS survey_responses (
     INDEX idx_completed (completed_at),
     INDEX idx_age_range (age_range),
     INDEX idx_sex (sex),
+    INDEX idx_will_not_apply_reason (will_not_apply_reason(100)),
     UNIQUE INDEX idx_unique_identity (email, last_name, first_name, middle_name, ext_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

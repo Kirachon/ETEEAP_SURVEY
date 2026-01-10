@@ -743,21 +743,20 @@ function validateStepDswdCourses(array $data): ValidationResult
         $courses = [];
     }
     $courses = array_map('sanitizeString', $courses);
+    $courses = array_values(array_filter($courses, static fn($v) => $v !== ''));
+    $courses = array_values(array_unique($courses));
 
-    $otherText = normalizeUpperText($data['dswd_courses_other'] ?? '');
-    if (!in_array('Other', $courses, true) && $otherText !== '') {
-        $result->addError('dswd_courses', 'Please select "Others" if you want to specify another course.');
+    // Basic sanity checks: avoid giant payloads and keep entries within DB column size.
+    if (count($courses) > 50) {
+        $result->addError('dswd_courses', 'Please limit selections to 50 courses or fewer.');
     }
-    if (in_array('Other', $courses, true)) {
-        if ($otherText === '') {
-            $result->addError('dswd_courses_other', 'Please specify your "Others" entry.');
-        } elseif (!validateMaxLength($otherText, 200)) {
-            $result->addError('dswd_courses_other', 'Your "Others" entry must not exceed 200 characters.');
-        } else {
-            $courses = array_values(array_filter($courses, static fn($v) => $v !== 'Other'));
-            $courses[] = 'Others: ' . $otherText;
+    foreach ($courses as $course) {
+        if (!validateMaxLength($course, 255)) {
+            $result->addError('dswd_courses', 'One or more course entries are too long (max 255 characters each).');
+            break;
         }
     }
+
     $result->sanitized['dswd_courses'] = $courses;
     
     return $result;
@@ -802,12 +801,29 @@ function validateStepEteeapInterest(array $data): ValidationResult
     }
     $result->sanitized['barriers'] = array_map('sanitizeString', $barriers);
     
-    // If offered, will you apply? (optional)
+    // If offered, will you apply? (optional - but must be yes or no only, maybe removed)
     $willApply = $data['will_apply'] ?? null;
-    if ($willApply !== null && $willApply !== '' && !validateInList($willApply, ['yes', 'maybe', 'no'])) {
+    if ($willApply !== null && $willApply !== '' && !validateInList($willApply, ['yes', 'no'])) {
         $result->addError('will_apply', 'Please select a valid option.');
     }
     $result->sanitized['will_apply'] = ($willApply !== null && $willApply !== '') ? $willApply : null;
+    
+    // If "No" is selected, reason is REQUIRED
+    $willNotApplyReason = sanitizeString($data['will_not_apply_reason'] ?? '');
+    if ($willApply === 'no') {
+        if (!validateRequired($willNotApplyReason)) {
+            $result->addError('will_not_apply_reason', 'Please provide a reason why you would not apply.');
+        } elseif (!validateMinLength($willNotApplyReason, 10)) {
+            $result->addError('will_not_apply_reason', 'Please provide a more detailed reason (at least 10 characters).');
+        } elseif (!validateMaxLength($willNotApplyReason, 500)) {
+            $result->addError('will_not_apply_reason', 'Reason must not exceed 500 characters.');
+        }
+        $result->sanitized['will_not_apply_reason'] = $willNotApplyReason;
+    } else {
+        // Clear reason if Yes is selected
+        $result->sanitized['will_not_apply_reason'] = null;
+    }
+    
     return $result;
 }
 

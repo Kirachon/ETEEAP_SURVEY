@@ -67,6 +67,48 @@ function getDbConnection(): PDO
 }
 
 /**
+ * Prepare and execute a PDO statement with best-effort typed bindings.
+ *
+ * @throws InvalidArgumentException when a param value type is not supported
+ */
+function dbPrepareAndExecute(string $sql, array $params = []): PDOStatement
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare($sql);
+
+    foreach ($params as $key => $value) {
+        $param = null;
+        if (is_int($key)) {
+            // 0-based array becomes 1-based positional params
+            $param = $key + 1;
+        } elseif (is_string($key)) {
+            $param = str_starts_with($key, ':') ? $key : (':' . $key);
+        }
+
+        if ($param === null) {
+            throw new InvalidArgumentException('Invalid parameter key type.');
+        }
+
+        if (is_null($value)) {
+            $stmt->bindValue($param, null, PDO::PARAM_NULL);
+        } elseif (is_bool($value)) {
+            $stmt->bindValue($param, $value ? 1 : 0, PDO::PARAM_INT);
+        } elseif (is_int($value)) {
+            $stmt->bindValue($param, $value, PDO::PARAM_INT);
+        } elseif (is_float($value)) {
+            $stmt->bindValue($param, (string) $value, PDO::PARAM_STR);
+        } elseif (is_string($value)) {
+            $stmt->bindValue($param, $value, PDO::PARAM_STR);
+        } else {
+            throw new InvalidArgumentException('Unsupported parameter value type.');
+        }
+    }
+
+    $stmt->execute();
+    return $stmt;
+}
+
+/**
  * Execute a prepared statement and return all rows
  * 
  * @param string $sql
@@ -75,8 +117,7 @@ function getDbConnection(): PDO
  */
 function dbFetchAll(string $sql, array $params = []): array
 {
-    $stmt = getDbConnection()->prepare($sql);
-    $stmt->execute($params);
+    $stmt = dbPrepareAndExecute($sql, $params);
     return $stmt->fetchAll();
 }
 
@@ -89,8 +130,7 @@ function dbFetchAll(string $sql, array $params = []): array
  */
 function dbFetchOne(string $sql, array $params = []): ?array
 {
-    $stmt = getDbConnection()->prepare($sql);
-    $stmt->execute($params);
+    $stmt = dbPrepareAndExecute($sql, $params);
     $result = $stmt->fetch();
     return $result ?: null;
 }
@@ -104,8 +144,7 @@ function dbFetchOne(string $sql, array $params = []): ?array
  */
 function dbExecute(string $sql, array $params = []): int
 {
-    $stmt = getDbConnection()->prepare($sql);
-    $stmt->execute($params);
+    $stmt = dbPrepareAndExecute($sql, $params);
     return $stmt->rowCount();
 }
 
@@ -119,8 +158,7 @@ function dbExecute(string $sql, array $params = []): int
 function dbInsert(string $sql, array $params = []): int
 {
     $pdo = getDbConnection();
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
+    dbPrepareAndExecute($sql, $params);
     return (int) $pdo->lastInsertId();
 }
 

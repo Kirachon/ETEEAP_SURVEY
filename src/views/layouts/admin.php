@@ -79,6 +79,17 @@
                     <p class="text-[11px] uppercase tracking-[0.25em] font-black text-white/20 mb-6 px-4">Data Operations</p>
                     <ul class="space-y-2">
                         <li>
+                            <a href="<?= appUrl('/admin/reports') ?>" 
+                               class="group flex items-center space-x-3 px-4 py-3.5 rounded-2xl transition-all duration-300 <?= ($currentPage ?? '') === 'reports' ? 'nav-item-active text-white' : 'text-slate-400/80 hover:bg-white/5 hover:text-white' ?>">
+                                <div class="p-2 rounded-xl transition-colors duration-300 <?= ($currentPage ?? '') === 'reports' ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-white' ?>">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m-7 0h8m-8 0a2 2 0 01-2-2V7a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2m-8 0v2"></path>
+                                    </svg>
+                                </div>
+                                <span class="font-semibold tracking-tight">Reports</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="<?= appUrl('/admin/export/csv') ?>" 
                                class="group flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-400/80 hover:bg-white/5 hover:text-white transition-all duration-300">
                                 <div class="p-2 rounded-xl bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-white transition-all duration-300">
@@ -147,6 +158,53 @@
                     </button>
                 </div>
             </header>
+
+            <!-- Mobile Menu (off-canvas) -->
+            <div id="mobileMenuBackdrop" class="lg:hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden z-50"></div>
+            <aside id="mobileMenu" class="lg:hidden fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-slate-900 text-white shadow-2xl hidden z-[60]">
+                <div class="p-6 border-b border-white/10 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center">
+                            <span class="text-dswd-blue font-black text-xl font-display">E</span>
+                        </div>
+                        <div>
+                            <p class="font-black text-lg leading-none font-display">ETEEAP</p>
+                            <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-blue-300/70 mt-2">MENU</p>
+                        </div>
+                    </div>
+                    <button id="mobileMenuCloseBtn" class="p-2 rounded-xl hover:bg-white/10 transition-colors" aria-label="Close menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <nav class="p-6 space-y-8 overflow-y-auto h-[calc(100%-72px)]">
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.25em] font-black text-white/20 mb-4 px-2">Core</p>
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="<?= appUrl('/admin/dashboard') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'dashboard' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Overview</a>
+                            </li>
+                            <li>
+                                <a href="<?= appUrl('/admin/responses') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'responses' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Responses</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="text-[11px] uppercase tracking-[0.25em] font-black text-white/20 mb-4 px-2">Data</p>
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="<?= appUrl('/admin/reports') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'reports' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Reports</a>
+                            </li>
+                            <li>
+                                <a href="<?= appUrl('/admin/export/csv') ?>" class="block px-4 py-3 rounded-2xl font-semibold text-slate-300 hover:bg-white/10 hover:text-white">Export CSV</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </aside>
             
             <!-- Page Content -->
             <main class="flex-1 overflow-y-auto p-8 relative">
@@ -201,13 +259,27 @@
     <?php endif; ?>
 
     <script nonce="<?= cspNonceEscaped() ?>">
-        // Simple mobile menu toggle
+        // Mobile menu toggle
         const mobBtn = document.getElementById('mobileMenuBtn');
-        if (mobBtn) {
-            mobBtn.addEventListener('click', () => {
-                alert('Mobile menu redesign in progress');
-            });
+        const menu = document.getElementById('mobileMenu');
+        const backdrop = document.getElementById('mobileMenuBackdrop');
+        const closeBtn = document.getElementById('mobileMenuCloseBtn');
+
+        function openMenu() {
+            if (!menu || !backdrop) return;
+            menu.classList.remove('hidden');
+            backdrop.classList.remove('hidden');
         }
+
+        function closeMenu() {
+            if (!menu || !backdrop) return;
+            menu.classList.add('hidden');
+            backdrop.classList.add('hidden');
+        }
+
+        if (mobBtn) mobBtn.addEventListener('click', openMenu);
+        if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+        if (backdrop) backdrop.addEventListener('click', closeMenu);
     </script>
     
     <?php if (isset($additionalScripts)): ?>

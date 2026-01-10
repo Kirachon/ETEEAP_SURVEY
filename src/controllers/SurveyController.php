@@ -161,6 +161,12 @@ class SurveyController
         try {
             dbBeginTransaction();
             
+            $willApply = $allData['will_apply'] ?? null;
+            $willNotApplyReason = $allData['will_not_apply_reason'] ?? null;
+            if ($willApply !== 'no') {
+                $willNotApplyReason = null;
+            }
+
             // Insert main response
             $responseId = dbInsert(
                 "INSERT INTO survey_responses (
@@ -171,7 +177,7 @@ class SurveyController
                     performs_sw_tasks,
                     highest_education, undergrad_course, diploma_course, graduate_course,
                     availed_dswd_training,
-                    eteeap_awareness, eteeap_interest, will_apply, additional_comments
+                    eteeap_awareness, eteeap_interest, will_apply, will_not_apply_reason, additional_comments
                 ) VALUES (
                     :session_id, :consent_given, :current_step, NOW(),
                     :last_name, :first_name, :middle_name, :ext_name, :sex, :age_range, :email, :phone,
@@ -180,7 +186,7 @@ class SurveyController
                     :performs_sw_tasks,
                     :highest_education, :undergrad_course, :diploma_course, :graduate_course,
                     :availed_dswd_training,
-                    :eteeap_awareness, :eteeap_interest, :will_apply, :additional_comments
+                    :eteeap_awareness, :eteeap_interest, :will_apply, :will_not_apply_reason, :additional_comments
                 )",
                 [
                     'session_id' => $survey['session_id'],
@@ -209,7 +215,8 @@ class SurveyController
                     'availed_dswd_training' => isset($allData['availed_dswd_training']) ? ($allData['availed_dswd_training'] ? 1 : 0) : null,
                     'eteeap_awareness' => isset($allData['eteeap_awareness']) ? ($allData['eteeap_awareness'] ? 1 : 0) : null,
                     'eteeap_interest' => $allData['eteeap_interest'] ?? null,
-                    'will_apply' => $allData['will_apply'] ?? null,
+                    'will_apply' => $willApply,
+                    'will_not_apply_reason' => $willNotApplyReason,
                     'additional_comments' => $allData['additional_comments'] ?? null
                 ]
             );

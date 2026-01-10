@@ -71,11 +71,21 @@ $routes = [
     'GET /admin/responses' => ['controller' => 'AdminController', 'action' => 'responses'],
     'GET /admin/responses/{id}' => ['controller' => 'AdminController', 'action' => 'viewResponse'],
     'GET /admin/export/csv' => ['controller' => 'AdminController', 'action' => 'exportCsv'],
-    
+
+    // Reports
+    'GET /admin/reports' => ['controller' => 'AdminController', 'action' => 'reports'],
+    'GET /admin/reports/generate' => ['controller' => 'AdminController', 'action' => 'generateReport'],
+    'POST /admin/reports/generate' => ['controller' => 'AdminController', 'action' => 'generateReport'],
+    'GET /admin/reports/export/{type}' => ['controller' => 'AdminController', 'action' => 'exportReport'],
+     
     // API routes (for charts)
     'GET /api/stats/demographics' => ['controller' => 'ApiController', 'action' => 'demographics'],
     'GET /api/stats/interest' => ['controller' => 'ApiController', 'action' => 'interest'],
     'GET /api/stats/timeline' => ['controller' => 'ApiController', 'action' => 'timeline'],
+
+    // Public API routes (for survey dropdowns - no auth required)
+    'GET /api/positions' => ['controller' => 'PublicApiController', 'action' => 'positions'],
+    'GET /api/courses' => ['controller' => 'PublicApiController', 'action' => 'courses'],
 ];
 
 // ============================================

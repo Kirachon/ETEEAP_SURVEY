@@ -168,6 +168,80 @@ class AdminController
     }
 
     /**
+     * Reports dashboard page
+     */
+    public function reports(): void
+    {
+        require_once SRC_PATH . '/services/ReportGenerator.php';
+
+        $this->render('admin/reports', [
+            'pageTitle' => 'Reports Dashboard',
+            'currentPage' => 'reports',
+            'adminUser' => sessionGet('admin_user'),
+        ]);
+    }
+
+    /**
+     * Generate a specific report (AJAX)
+     */
+    public function generateReport(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $type = $_POST['type'] ?? $_GET['type'] ?? '';
+
+        $filters = [];
+        $filterKeys = ['sex', 'age_range', 'office_type', 'employment_status', 'highest_education'];
+        foreach ($filterKeys as $key) {
+            $value = $_POST[$key] ?? $_GET[$key] ?? '';
+            if (is_string($value) && $value !== '') {
+                $filters[$key] = $value;
+            }
+        }
+
+        if ($type === '') {
+            echo json_encode(['success' => false, 'error' => 'Report type is required']);
+            return;
+        }
+
+        try {
+            require_once SRC_PATH . '/services/ReportGenerator.php';
+            $generator = new ReportGenerator();
+            $data = $generator->generate($type, $filters);
+
+            echo json_encode(['success' => true, 'data' => $data], JSON_UNESCAPED_UNICODE);
+        } catch (Throwable $e) {
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Export report as CSV
+     *
+     * @param string $type Report type
+     */
+    public function exportReport(string $type): void
+    {
+        $filters = [];
+        $filterKeys = ['sex', 'age_range', 'office_type', 'employment_status', 'highest_education'];
+        foreach ($filterKeys as $key) {
+            $value = $_GET[$key] ?? '';
+            if (is_string($value) && $value !== '') {
+                $filters[$key] = $value;
+            }
+        }
+
+        try {
+            require_once SRC_PATH . '/services/ReportGenerator.php';
+            $generator = new ReportGenerator();
+            $generator->exportCsv($type, $filters);
+        } catch (Throwable $e) {
+            flashSet('error', 'Export failed: ' . $e->getMessage());
+            redirect(appUrl('/admin/reports'));
+        }
+    }
+
+    /**
      * Fetch checkbox/multi-value fields for a set of survey response IDs in bulk.
      *
      * @param int[] $ids
