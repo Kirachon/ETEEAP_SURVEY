@@ -85,23 +85,24 @@ I hereby consent to the collection, storage, and use of my personal and professi
 
 **[Dropdown]**
 
-* Central Office
-* FO I
-* FO II
-* FO III
-* FO IV-A
-* FO IV-B
-* FO V
-* FO VI
-* FO VII
-* FO VIII
-* FO IX
-* FO X
-* FO XI
-* FO XII
-* FO CAR
-* FO CARAGA
-* FO BARMM
+* I
+* II
+* III
+* IV-A
+* V
+* VI
+* VII
+* VIII
+* IX
+* X
+* XI
+* XII
+* NCR
+* CAR
+* XIII
+* MIMAROPA
+* NIR
+* BARMM
 
 ### 10. Office Field / Unit / Program Assignment
 

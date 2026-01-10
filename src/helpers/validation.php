@@ -536,31 +536,36 @@ function validateStepOfficeData(array $data): ValidationResult
     // Office / Field Office Assignment (optional dropdown)
     $officeAssignment = sanitizeString($data['office_assignment'] ?? '');
     $allowedAssignments = [
-        'FO I',
-        'FO II',
-        'FO III',
-        'FO IV-A',
-        'FO IV-B',
-        'FO V',
-        'FO VI',
-        'FO VII',
-        'FO VIII',
-        'FO IX',
-        'FO X',
-        'FO XI',
-        'FO XII',
-        'FO CAR',
-        'FO CARAGA',
-        'FO BARMM',
+        'I',
+        'II',
+        'III',
+        'IV-A',
+        'V',
+        'VI',
+        'VII',
+        'VIII',
+        'IX',
+        'X',
+        'XI',
+        'XII',
+        'NCR',
+        'CAR',
+        'XIII',
+        'MIMAROPA',
+        'NIR',
+        'BARMM',
     ];
-    if ($officeAssignment !== '' && !validateInList($officeAssignment, $allowedAssignments)) {
-        $result->addError('office_assignment', 'Please select a valid option.');
+
+    if ($officeAssignment !== '') {
+        if ($officeType !== 'field_office') {
+            $result->addError('office_assignment', 'Office/region assignment is only applicable for Field Office.');
+        } elseif (!validateInList($officeAssignment, $allowedAssignments)) {
+            $result->addError('office_assignment', 'Please select a valid option.');
+        }
     }
-    if ($officeType === 'central_office' || $officeType === 'attached_agency') {
-        $result->sanitized['office_assignment'] = null;
-    } else {
-        $result->sanitized['office_assignment'] = $officeAssignment !== '' ? $officeAssignment : null;
-    }
+
+    $result->sanitized['office_assignment'] =
+        ($officeType === 'field_office' && $officeAssignment !== '') ? $officeAssignment : null;
     
     // Office Field / Unit / Program Assignment (optional short answer)
     $specificOffice = normalizeUpperText($data['specific_office'] ?? '');

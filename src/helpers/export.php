@@ -163,7 +163,6 @@ function getSurveyEnumMappings(): array
         ],
         'will_apply' => [
             'yes' => 'Yes',
-            'maybe' => 'Maybe',
             'no' => 'No'
         ]
     ];

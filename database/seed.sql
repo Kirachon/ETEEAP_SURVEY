@@ -89,7 +89,7 @@ INSERT INTO survey_responses (
 -- Sample 1: Completed response
 ('sess_sample_001', TRUE, 8, NOW(),
  'Santos', 'Maria', NULL, NULL, 'female', '30-39', 'maria.santos@dswd.gov.ph', '09171234567',
- 'field_office', 'FO IV-A', 'DSWD Field Office NCR', 'Social Welfare Officer II', 'permanent',
+ 'field_office', 'IV-A', 'DSWD Field Office NCR', 'Social Welfare Officer II', 'permanent',
  '5-10', '11-15',
  TRUE,
  'bachelors', 'Bachelor of Arts in Psychology',
@@ -99,7 +99,7 @@ INSERT INTO survey_responses (
 -- Sample 2: Completed response with extension
 ('sess_sample_002', TRUE, 8, NOW(),
  'Dela Cruz', 'Juan', 'Manuel', 'Jr.', 'male', '40-49', 'juan.delacruz@dswd.gov.ph', '09181234567',
- 'central_office', 'Central Office', 'DSWD Central Office - PDPB', 'Project Development Officer III', 'permanent',
+ 'central_office', NULL, 'DSWD Central Office - PDPB', 'Project Development Officer III', 'permanent',
  '15+', '15+',
  TRUE,
  'masters', 'Master of Science in Social Work',
@@ -109,7 +109,7 @@ INSERT INTO survey_responses (
 -- Sample 3: In-progress response
 ('sess_sample_003', TRUE, 4, NULL,
  'Reyes', 'Ana', 'Bautista', NULL, 'female', '20-29', 'ana.reyes@dswd.gov.ph', '09191234567',
- 'field_office', 'FO IV-A', 'DSWD Field Office Region IV-A', 'Social Welfare Assistant', 'cos',
+ 'field_office', 'IV-A', 'DSWD Field Office Region IV-A', 'Social Welfare Assistant', 'cos',
  'lt5', 'lt5',
  NULL,
  'some_college', NULL,

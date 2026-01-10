@@ -91,7 +91,7 @@ X-CSRF-Token: {csrf_token}
   },
   "office_data": {
     "office_type": "field_office",
-    "office_assignment": "FO VII",
+    "office_assignment": "VII",
     "specific_office": "DSWD FIELD OFFICE VII",
     "current_position": "SOCIAL WELFARE OFFICER III",
     "employment_status": "permanent",
@@ -158,4 +158,3 @@ CSRF_TOKEN=$(php -r "echo (preg_match('/name=\"csrf-token\" content=\"([^\"]+)\"
 curl -s -b cookies.txt -H "Content-Type: application/json" -H "X-CSRF-Token: $CSRF_TOKEN" \
   -d @payload.json http://localhost:8000/api/survey/submit
 ```
-
