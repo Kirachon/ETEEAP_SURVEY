@@ -28,3 +28,5 @@ jobs:
             public/debug.php
             README.md
             LICENSE
+            storage/**
+            vendor/**
