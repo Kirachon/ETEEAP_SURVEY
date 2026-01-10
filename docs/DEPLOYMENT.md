@@ -654,4 +654,4 @@ For deployment assistance:
 ---
 
 **Last Updated**: January 2026  
-**Version**: 1.0.2
+**Version**: 1.0.5

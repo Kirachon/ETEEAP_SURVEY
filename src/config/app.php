@@ -50,7 +50,7 @@ function installConfigGet(string $key, $default = null)
 // Application Settings
 // ============================================
 define('APP_NAME', 'ETEEAP Survey');
-define('APP_VERSION', '1.0.2');
+define('APP_VERSION', '1.0.5');
 $appEnv = getenv('APP_ENV') ?: (installConfigGet('APP_ENV', 'development'));
 define('APP_ENV', $appEnv);
 
