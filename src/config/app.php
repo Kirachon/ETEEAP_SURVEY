@@ -177,7 +177,9 @@ function appUrl(string $path = ''): string
  */
 function assetUrl(string $path): string
 {
-    return ASSETS_PATH . '/' . ltrim($path, '/');
+    // Use appUrl to ensure the correct base path is prepended
+    // ASSETS_PATH is defined as '/assets'
+    return appUrl(ASSETS_PATH . '/' . ltrim($path, '/'));
 }
 
 /**

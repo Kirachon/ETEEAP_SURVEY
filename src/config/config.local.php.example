@@ -11,6 +11,9 @@ function installConfigGet($key, $default = null) {
         'DB_NAME' => 'REPLACE_WITH_INFINITYFREE_DB_NAME',
         'DB_USER' => 'REPLACE_WITH_INFINITYFREE_USERNAME',
         'DB_PASS' => 'REPLACE_WITH_INFINITYFREE_PASSWORD',
+        
+        // Optional: Set this if your app is in a subdirectory (e.g. http://yoursite.com/survey)
+        // 'APP_URL' => 'http://result-from-infinityfree-url',
     ];
 
     return $config[$key] ?? $default;

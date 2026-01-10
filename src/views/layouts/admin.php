@@ -22,13 +22,19 @@
     <?php if (isset($additionalHead)): ?>
         <?= $additionalHead ?>
     <?php endif; ?>
+    <!-- Failsafe styles for mobile layout if external CSS fails -->
+    <style>
+        @media (max-width: 1023px) {
+            #desktopSidebar { display: none !important; }
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-slate-50 font-sans antialiased text-slate-900">
     
     <div class="flex min-h-screen">
         
         <!-- Sidebar -->
-        <aside class="hidden lg:flex lg:flex-col lg:w-72 glass-sidebar text-white shadow-2xl z-20 flex-shrink-0">
+        <aside id="desktopSidebar" class="hidden lg:flex lg:flex-col lg:w-72 glass-sidebar text-white shadow-2xl z-20 flex-shrink-0">
             <!-- Logo area -->
             <div class="p-8 border-b border-white/5">
                 <div class="flex items-center space-x-4">
@@ -159,52 +165,7 @@
                 </div>
             </header>
 
-            <!-- Mobile Menu (off-canvas) -->
-            <div id="mobileMenuBackdrop" class="lg:hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden z-50"></div>
-            <aside id="mobileMenu" class="lg:hidden fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-slate-900 text-white shadow-2xl hidden z-[60]">
-                <div class="p-6 border-b border-white/10 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center">
-                            <span class="text-dswd-blue font-black text-xl font-display">E</span>
-                        </div>
-                        <div>
-                            <p class="font-black text-lg leading-none font-display">ETEEAP</p>
-                            <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-blue-300/70 mt-2">MENU</p>
-                        </div>
-                    </div>
-                    <button id="mobileMenuCloseBtn" class="p-2 rounded-xl hover:bg-white/10 transition-colors" aria-label="Close menu">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
 
-                <nav class="p-6 space-y-8 overflow-y-auto h-[calc(100%-72px)]">
-                    <div>
-                        <p class="text-[11px] uppercase tracking-[0.25em] font-black text-white/20 mb-4 px-2">Core</p>
-                        <ul class="space-y-2">
-                            <li>
-                                <a href="<?= appUrl('/admin/dashboard') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'dashboard' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Overview</a>
-                            </li>
-                            <li>
-                                <a href="<?= appUrl('/admin/responses') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'responses' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Responses</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <p class="text-[11px] uppercase tracking-[0.25em] font-black text-white/20 mb-4 px-2">Data</p>
-                        <ul class="space-y-2">
-                            <li>
-                                <a href="<?= appUrl('/admin/reports') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'reports' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Reports</a>
-                            </li>
-                            <li>
-                                <a href="<?= appUrl('/admin/export/csv') ?>" class="block px-4 py-3 rounded-2xl font-semibold text-slate-300 hover:bg-white/10 hover:text-white">Export CSV</a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-            </aside>
             
             <!-- Page Content -->
             <main class="flex-1 overflow-y-auto p-8 relative">
@@ -225,6 +186,53 @@
                     <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">System Operational</span>
                 </div>
+
+    <!-- Mobile Menu (off-canvas) - Moved to root for z-index containment -->
+    <div id="mobileMenuBackdrop" class="lg:hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden z-[90]"></div>
+    <aside id="mobileMenu" class="lg:hidden fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-slate-900 text-white shadow-2xl hidden z-[100]">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center">
+                    <span class="text-dswd-blue font-black text-xl font-display">E</span>
+                </div>
+                <div>
+                    <p class="font-black text-lg leading-none font-display">ETEEAP</p>
+                    <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-blue-300/70 mt-2">MENU</p>
+                </div>
+            </div>
+            <button id="mobileMenuCloseBtn" class="p-2 rounded-xl hover:bg-white/10 transition-colors" aria-label="Close menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <nav class="p-6 space-y-8 overflow-y-auto h-[calc(100%-72px)]">
+            <div>
+                <p class="text-[11px] uppercase tracking-[0.25em] font-black text-white/20 mb-4 px-2">Core</p>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="<?= appUrl('/admin/dashboard') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'dashboard' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Overview</a>
+                    </li>
+                    <li>
+                        <a href="<?= appUrl('/admin/responses') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'responses' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Responses</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="text-[11px] uppercase tracking-[0.25em] font-black text-white/20 mb-4 px-2">Data</p>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="<?= appUrl('/admin/reports') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'reports' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Reports</a>
+                    </li>
+                    <li>
+                        <a href="<?= appUrl('/admin/export/csv') ?>" class="block px-4 py-3 rounded-2xl font-semibold text-slate-300 hover:bg-white/10 hover:text-white">Export CSV</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
                 <div class="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">
                     ETEEAP v<?= APP_VERSION ?> • DSWD &copy; <?= date('Y') ?>
                 </div>
