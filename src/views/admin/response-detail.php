@@ -100,7 +100,15 @@ function formatEnumValue(string $key, $value): string
                     <?= $response['middle_name'] ? htmlspecialchars($response['middle_name']) : '' ?>
                     <?= $response['ext_name'] ? htmlspecialchars($response['ext_name']) : '' ?>
                 </h2>
-                <p class="text-sm text-gray-500">Response #<?= $response['id'] ?> • Submitted <?= date('F j, Y \a\t g:i A', strtotime($response['created_at'])) ?></p>
+                <p class="text-sm text-gray-500">Response #<?= $response['id'] ?> • Submitted <?php 
+                    try {
+                        $date = new DateTime($response['created_at'], new DateTimeZone('UTC'));
+                        $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                        echo $date->format('F j, Y \a\t g:i A');
+                    } catch (Exception $e) {
+                        echo date('F j, Y \a\t g:i A', strtotime($response['created_at']));
+                    }
+                ?></p>
             </div>
         </div>
     </div>
@@ -350,8 +358,28 @@ function formatEnumValue(string $key, $value): string
             </div>
             <span>Session ID: <?= htmlspecialchars($response['session_id'] ?? 'N/A') ?></span>
             <span>IP: <?= htmlspecialchars($response['ip_address'] ?? 'N/A') ?></span>
-            <span>Created: <?= date('Y-m-d H:i:s', strtotime($response['created_at'])) ?></span>
-            <span>Completed: <?= $response['completed_at'] ? date('Y-m-d H:i:s', strtotime($response['completed_at'])) : 'N/A' ?></span>
+            <span>Created: <?php 
+                try {
+                    $date = new DateTime($response['created_at'], new DateTimeZone('UTC'));
+                    $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                    echo $date->format('Y-m-d H:i:s');
+                } catch (Exception $e) {
+                    echo date('Y-m-d H:i:s', strtotime($response['created_at']));
+                }
+            ?></span>
+            <span>Completed: <?php 
+                if ($response['completed_at']) {
+                    try {
+                        $date = new DateTime($response['completed_at'], new DateTimeZone('UTC'));
+                        $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                        echo $date->format('Y-m-d H:i:s');
+                    } catch (Exception $e) {
+                        echo date('Y-m-d H:i:s', strtotime($response['completed_at']));
+                    }
+                } else {
+                    echo 'N/A';
+                }
+            ?></span>
         </div>
     </div>
 </div>

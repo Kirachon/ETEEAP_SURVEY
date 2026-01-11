@@ -79,7 +79,17 @@ $totalPages = $totalPages ?? 1;
                             ?>
                             <span class="px-2 py-1 text-xs rounded-full <?= $applyClass ?>"><?= ucfirst($response['will_apply'] ?? '') ?></span>
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-600"><?= date('M j, Y', strtotime($response['created_at'])) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            <?php 
+                            try {
+                                $date = new DateTime($response['created_at'], new DateTimeZone('UTC'));
+                                $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                                echo $date->format('M j, Y');
+                            } catch (Exception $e) {
+                                echo date('M j, Y', strtotime($response['created_at']));
+                            }
+                            ?>
+                        </td>
                         <td class="px-6 py-4">
                             <a href="<?= appUrl('/admin/responses/' . $response['id']) ?>" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View</a>
                         </td>
