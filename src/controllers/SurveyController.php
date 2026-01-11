@@ -181,7 +181,8 @@ class SurveyController
             // Insert main response
             $responseId = dbInsert(
                 "INSERT INTO survey_responses (
-                    session_id, consent_given, current_step, completed_at,
+                    session_id, consent_given, current_step, 
+                    created_at, completed_at,
                     last_name, first_name, middle_name, ext_name, sex, age_range, email, phone,
                     office_type, office_assignment, specific_office, current_position, employment_status,
                     years_dswd, years_swd_sector,
@@ -190,7 +191,8 @@ class SurveyController
                     availed_dswd_training,
                     eteeap_awareness, eteeap_interest, will_apply, will_not_apply_reason, additional_comments
                 ) VALUES (
-                    :session_id, :consent_given, :current_step, NOW(),
+                    :session_id, :consent_given, :current_step, 
+                    :created_at, :completed_at,
                     :last_name, :first_name, :middle_name, :ext_name, :sex, :age_range, :email, :phone,
                     :office_type, :office_assignment, :specific_office, :current_position, :employment_status,
                     :years_dswd, :years_swd_sector,
@@ -203,6 +205,8 @@ class SurveyController
                     'session_id' => $survey['session_id'],
                     'consent_given' => true,
                     'current_step' => SURVEY_TOTAL_STEPS,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'completed_at' => date('Y-m-d H:i:s'),
                     'last_name' => $lastName ?: null,
                     'first_name' => $firstName ?: null,
                     'middle_name' => $middleName ?: null,

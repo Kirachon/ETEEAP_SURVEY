@@ -222,17 +222,9 @@ function formatResponseForExport(array $response, array $multiValues = []): arra
             continue;
         }
         
-        // Format dates
+        // Format dates (already in Asia/Manila)
         if (in_array($key, ['created_at', 'updated_at', 'completed_at']) && $value) {
-            try {
-                // Assuming DB stores in UTC, convert to Philippines Time (Asia/Manila)
-                $date = new DateTime($value, new DateTimeZone('UTC'));
-                $date->setTimezone(new DateTimeZone('Asia/Manila'));
-                $formatted[$key] = $date->format('Y-m-d H:i:s');
-            } catch (Exception $e) {
-                // Fallback if parsing fails
-                $formatted[$key] = $value;
-            }
+            $formatted[$key] = $value;
             continue;
         }
         
@@ -369,16 +361,8 @@ function exportSurveyToCsv(array $responses, string $filename = 'survey_export')
         foreach ($headerMapping as $label => $field) {
             $value = $response[$field] ?? '';
 
-            // Format dates (UTC -> Asia/Manila)
-            if (in_array($field, ['created_at', 'updated_at', 'completed_at']) && $value) {
-                try {
-                    $date = new DateTime($value, new DateTimeZone('UTC'));
-                    $date->setTimezone(new DateTimeZone('Asia/Manila'));
-                    $value = $date->format('Y-m-d H:i:s');
-                } catch (Exception $e) {
-                    // Keep original value if parsing fails
-                }
-            }
+            // Format dates (already in Asia/Manila)
+            // No conversion needed
 
             // Map enums to human-readable labels
             if ($value !== '' && $value !== null && isset($enumMappings[$field])) {
