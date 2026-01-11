@@ -162,6 +162,24 @@ class ReportGenerator
         // Add UTF-8 BOM for Excel compatibility
         fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
         
+        // SECURITY: Escape CSV formula injection in user-controlled data
+        // Cells starting with =, +, -, @ can trigger formula execution in Excel
+        $escapeRow = function(array $row): array {
+            return array_map(function($cell) {
+                if (!is_string($cell)) return $cell;
+                // Use the existing csvEscapeFormula helper if available
+                if (function_exists('csvEscapeFormula')) {
+                    return csvEscapeFormula($cell);
+                }
+                // Fallback: prefix dangerous characters with a tab
+                $first = substr($cell, 0, 1);
+                if (in_array($first, ['=', '+', '-', '@', "\t", "\r"], true)) {
+                    return "\t" . $cell;
+                }
+                return $cell;
+            }, $row);
+        };
+        
         // Write report title
         fputcsv($output, [$meta['name']]);
         fputcsv($output, ['Generated: ' . date('Y-m-d H:i:s')]);
@@ -171,20 +189,20 @@ class ReportGenerator
         if (!empty($data['rows'])) {
             // Table format
             if (!empty($data['headers'])) {
-                fputcsv($output, $data['headers']);
+                fputcsv($output, $escapeRow($data['headers']));
             }
             foreach ($data['rows'] as $row) {
-                fputcsv($output, $row);
+                fputcsv($output, $escapeRow($row));
             }
         } elseif (!empty($data['sections'])) {
             // Multiple sections format
             foreach ($data['sections'] as $section) {
-                fputcsv($output, [$section['title']]);
+                fputcsv($output, $escapeRow([$section['title']]));
                 if (!empty($section['headers'])) {
-                    fputcsv($output, $section['headers']);
+                    fputcsv($output, $escapeRow($section['headers']));
                 }
                 foreach ($section['rows'] ?? [] as $row) {
-                    fputcsv($output, $row);
+                    fputcsv($output, $escapeRow($row));
                 }
                 fputcsv($output, []);
             }

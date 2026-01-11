@@ -85,6 +85,17 @@ class SurveyController
         // Validate CSRF token
         csrfProtect();
         
+        // SECURITY: Enforce consent for all steps beyond consent page
+        // This prevents users from bypassing consent by directly POSTing to later steps
+        if ($step > 1) {
+            $survey = getSurveySession();
+            if (empty($survey['consent_given'])) {
+                flashSet('error', 'Please provide consent before continuing.');
+                redirect(appUrl('/survey/consent'));
+                return;
+            }
+        }
+        
         // Get POST data
         $data = $_POST;
         

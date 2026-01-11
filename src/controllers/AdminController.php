@@ -186,6 +186,11 @@ class AdminController
      */
     public function generateReport(): void
     {
+        // SECURITY: Validate CSRF token for POST requests
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            csrfProtect();
+        }
+        
         header('Content-Type: application/json; charset=utf-8');
 
         $type = $_POST['type'] ?? $_GET['type'] ?? '';

@@ -53,6 +53,8 @@
       persist: false,
       preload: false,
       placeholder: select.getAttribute('placeholder') || 'Start typing…',
+      closeAfterSelect: true,
+      selectOnTab: true,
       load: function (query, callback) {
         const q = normalizeWhitespace(query);
         if (q.length < 1) return callback();
@@ -172,6 +174,8 @@
       persist: false,
       preload: true,
       placeholder: select.getAttribute('placeholder') || 'Search courses…',
+      closeAfterSelect: true,
+      selectOnTab: true,
       load: function (query, callback) {
         const reqUrl = query
           ? `${url}?q=${encodeURIComponent(query)}`

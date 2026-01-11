@@ -128,6 +128,10 @@ class InstallController
         if (!preg_match('/^[A-Za-z0-9_]+$/', $dbName)) {
             $errors['db_name'][] = 'DB name may only contain letters, numbers, and underscores.';
         }
+        // SECURITY: Strict validation for DB username to prevent SQL injection
+        if (!preg_match('/^[A-Za-z0-9_]+$/', $dbUser)) {
+            $errors['db_user'][] = 'DB user may only contain letters, numbers, and underscores.';
+        }
         if ($dbHost === '') $errors['db_host'][] = 'DB host is required.';
         if ($dbPort === '') $errors['db_port'][] = 'DB port is required.';
         if ($dbName === '') $errors['db_name'][] = 'DB name is required.';

@@ -63,11 +63,11 @@ function setSecurityHeaders(): void
     $nonce = cspNonce();
 
     // Content Security Policy - restrict resource loading
-    // Note: Inline styles are intentionally blocked; keep styles in compiled CSS files.
+    // Note: Inline style blocks with nonce are allowed; inline style attributes are still blocked.
     $csp = "default-src 'self'; " .
            "script-src 'self' 'nonce-{$nonce}'; " .
            "script-src-attr 'none'; " .
-           "style-src 'self' https://fonts.googleapis.com; " .
+           "style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com; " .
            "style-src-attr 'none'; " .
            "font-src 'self' https://fonts.gstatic.com; " .
            "img-src 'self' data: https:; " .
