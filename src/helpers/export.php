@@ -35,6 +35,40 @@ function csvEscapeFormula(string $value): string
 }
 
 /**
+ * Sanitize Unicode characters to ASCII equivalents for maximum Excel compatibility.
+ * 
+ * Replaces smart quotes, en-dashes, em-dashes, and other problematic Unicode
+ * characters with their ASCII equivalents to prevent encoding display issues.
+ *
+ * @param string $value
+ * @return string
+ */
+function sanitizeForCsv(string $value): string
+{
+    // Map of Unicode characters to ASCII equivalents
+    $replacements = [
+        // Quotes
+        "'" => "'",   // Right single quote (U+2019)
+        "'" => "'",   // Left single quote (U+2018)
+        '"' => '"',   // Left double quote (U+201C)
+        '"' => '"',   // Right double quote (U+201D)
+        
+        // Dashes
+        '–' => '-',   // En-dash (U+2013)
+        '—' => '-',   // Em-dash (U+2014)
+        
+        // Spaces
+        "\xC2\xA0" => ' ',   // Non-breaking space (UTF-8)
+        
+        // Other common problematic characters
+        '…' => '...',  // Ellipsis (U+2026)
+        '•' => '*',    // Bullet (U+2022)
+    ];
+    
+    return str_replace(array_keys($replacements), array_values($replacements), $value);
+}
+
+/**
  * Export data to CSV and send as download
  * 
  * @param array $data Array of associative arrays (rows)
@@ -119,10 +153,10 @@ function getSurveyEnumMappings(): array
             'prefer_not_to_say' => 'Prefer not to say'
         ],
         'age_range' => [
-            '20-29' => '20–29',
-            '30-39' => '30–39',
-            '40-49' => '40–49',
-            '50-59' => '50–59',
+            '20-29' => '20-29',
+            '30-39' => '30-39',
+            '40-49' => '40-49',
+            '50-59' => '50-59',
             '60+' => '60+'
         ],
         'office_type' => [
@@ -137,22 +171,22 @@ function getSurveyEnumMappings(): array
             'others' => 'Others'
         ],
         'years_dswd' => [
-            'lt5' => '<5',
-            '5-10' => '5–10',
-            '11-15' => '11–15',
-            '15+' => '15+'
+            'lt5' => 'Less than 5 years',
+            '5-10' => '5 to 10 years',
+            '11-15' => '11 to 15 years',
+            '15+' => 'More than 15 years'
         ],
         'years_swd_sector' => [
-            'lt5' => '<5',
-            '5-10' => '5–10',
-            '11-15' => '11–15',
-            '15+' => '15+'
+            'lt5' => 'Less than 5 years',
+            '5-10' => '5 to 10 years',
+            '11-15' => '11 to 15 years',
+            '15+' => 'More than 15 years'
         ],
         'highest_education' => [
             'high_school' => 'High School',
             'some_college' => 'Some College',
-            'bachelors' => 'Bachelor’s',
-            'masters' => 'Master’s',
+            'bachelors' => "Bachelor's",
+            'masters' => "Master's",
             'doctoral' => 'Doctoral Units / Degree'
         ],
         'eteeap_interest' => [
@@ -253,11 +287,11 @@ function getExportHeaders(): array
         
         // Work Experience
         'Total Years of Work Experience' => 'years_dswd',
-        'Years of Social Work–Related Experience' => 'years_swd_sector',
+        'Years of Social Work-Related Experience' => 'years_swd_sector',
         
-        // Work Experience / Social Work–Related Experience
+        // Work Experience / Social Work-Related Experience
         'Current Tasks / Functions' => 'sw_tasks',
-        'Social Work–Related Experiences' => 'expertise_areas',
+        'Social Work-Related Experiences' => 'expertise_areas',
         
         // Education
         'Highest Education' => 'highest_education',
@@ -296,12 +330,10 @@ function exportSurveyToCsv(array $responses, string $filename = 'survey_export')
     $enumMappings = getSurveyEnumMappings();
     $boolFields = ['consent_given', 'performs_sw_tasks', 'availed_dswd_training', 'eteeap_awareness'];
 
-    // Generate filename with timestamp
-    $filename = sprintf(
-        '%s_%s.csv',
-        $filename,
-        date(EXPORT_DATETIME_FORMAT)
-    );
+    // Ensure filename has .csv extension
+    if (!str_ends_with(strtolower($filename), '.csv')) {
+        $filename .= '.csv';
+    }
 
     // Set headers for download
     header('Content-Type: text/csv; charset=utf-8');
@@ -356,8 +388,9 @@ function exportSurveyToCsv(array $responses, string $filename = 'survey_export')
                 $value = ((string) $value === '1' || $value === true) ? 'Yes' : 'No';
             }
 
-            // Prevent CSV/Excel formula injection on string output
+            // Sanitize Unicode and prevent CSV/Excel formula injection on string output
             if (is_string($value)) {
+                $value = sanitizeForCsv($value);
                 $value = csvEscapeFormula($value);
             }
 
