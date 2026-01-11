@@ -224,7 +224,15 @@ function formatResponseForExport(array $response, array $multiValues = []): arra
         
         // Format dates
         if (in_array($key, ['created_at', 'updated_at', 'completed_at']) && $value) {
-            $formatted[$key] = date('Y-m-d H:i:s', strtotime($value));
+            try {
+                // Assuming DB stores in UTC, convert to Philippines Time (Asia/Manila)
+                $date = new DateTime($value, new DateTimeZone('UTC'));
+                $date->setTimezone(new DateTimeZone('Asia/Manila'));
+                $formatted[$key] = $date->format('Y-m-d H:i:s');
+            } catch (Exception $e) {
+                // Fallback if parsing fails
+                $formatted[$key] = $value;
+            }
             continue;
         }
         
