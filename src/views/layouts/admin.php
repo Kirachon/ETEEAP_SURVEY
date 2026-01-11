@@ -234,7 +234,7 @@
         </nav>
     </aside>
                 <div class="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">
-                    ETEEAP v<?= APP_VERSION ?> • DSWD &copy; <?= date('Y') ?>
+                    ETEEAP v<?= APP_VERSION ?> • DSWD &copy; <?= date('Y') ?> • Server: <?= date('Y-m-d H:i:s') ?>
                 </div>
             </footer>
         </div>
