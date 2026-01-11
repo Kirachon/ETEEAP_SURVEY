@@ -149,11 +149,11 @@
                 </div>
                 
                 <div class="flex items-center space-x-6">
-                    <div class="hidden md:flex items-center px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl text-slate-500 text-sm font-medium">
+                    <div class="hidden md:flex items-center px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl text-slate-500 text-sm font-medium font-mono" id="realtime-clock">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <?= date('M d, Y') ?>
+                        <span>Loading time...</span>
                     </div>
                     
                     <!-- Mobile Menu Trigger -->
@@ -288,6 +288,27 @@
         if (mobBtn) mobBtn.addEventListener('click', openMenu);
         if (closeBtn) closeBtn.addEventListener('click', closeMenu);
         if (backdrop) backdrop.addEventListener('click', closeMenu);
+
+        // Real-time clock (Asia/Manila)
+        function updateClock() {
+            const clockEl = document.querySelector('#realtime-clock span');
+            if (clockEl) {
+                const now = new Date();
+                const options = { 
+                    timeZone: 'Asia/Manila', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: true
+                };
+                clockEl.textContent = now.toLocaleString('en-US', options);
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
     
     <?php if (isset($additionalScripts)): ?>
