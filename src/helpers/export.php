@@ -280,8 +280,11 @@ function getExportHeaders(): array
         
         // Office & Employment
         'Office Type' => 'office_type',
-        'Office / Field Office Assignment' => 'office_assignment',
-        'Office Field / Unit / Program Assignment' => 'specific_office',
+        'Field Office (Region) Assignment' => 'office_assignment',
+        'Central Office Bureau / Service / Office' => 'office_bureau',
+        'Attached Agency' => 'attached_agency',
+        'Field Office Unit / Program Assignment' => 'field_office_unit',
+        'Division / Section / Unit (Optional)' => 'specific_office',
         'Current Position / Designation' => 'current_position',
         'Employment Status' => 'employment_status',
         

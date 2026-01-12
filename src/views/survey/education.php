@@ -60,7 +60,7 @@ $savedData = $savedData ?? [];
                 </div>
 
                 <!-- Bento Card: Undergraduate Course -->
-                <div class="lg:col-span-12 bg-white rounded-[2rem] shadow-premium border border-slate-200/60 overflow-hidden">
+                <div class="lg:col-span-12 bg-white rounded-[2rem] shadow-premium border border-slate-200/60">
                     <div class="p-8 md:p-10">
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
@@ -69,9 +69,21 @@ $savedData = $savedData ?? [];
                                 </label>
                                 <span class="text-[10px] font-black text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-widest">If applicable</span>
                             </div>
-                            <input type="text" name="undergrad_course" id="undergrad_course" value="<?= htmlspecialchars($savedData['undergrad_course'] ?? '') ?>" 
-                                class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold uppercase focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none" 
-                                placeholder="e.g. Bachelor of Arts in Psychology">
+                            <select
+                                name="undergrad_course"
+                                id="undergrad_course"
+                                data-tom-select="ched-programs"
+                                data-tom-url="<?= htmlspecialchars(appUrl('/api/ched-programs')) ?>"
+                                placeholder="Select or type your course..."
+                                class="w-full"
+                            >
+                                <option value="">Select or type your course...</option>
+                                <?php if (!empty($savedData['undergrad_course'] ?? '')): ?>
+                                    <option value="<?= htmlspecialchars($savedData['undergrad_course']) ?>" selected>
+                                        <?= htmlspecialchars($savedData['undergrad_course']) ?>
+                                    </option>
+                                <?php endif; ?>
+                            </select>
                             <?php if (isset($errors['undergrad_course'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['undergrad_course'][0]) ?></p>
                             <?php endif; ?>
@@ -145,3 +157,37 @@ $savedData = $savedData ?? [];
         </button>
     </div>
 </div>
+
+<script nonce="<?= cspNonceEscaped() ?>">
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Tom Select
+    document.querySelectorAll('[data-tom-select]').forEach(el => {
+        if(window.TomSelect) {
+            new TomSelect(el, {
+                valueField: 'value',
+                labelField: 'text',
+                searchField: 'text',
+                create: true, // Allow custom courses
+                maxItems: 1,
+                load: function(query, callback) {
+                    var url = el.getAttribute('data-tom-url');
+                    const fetchUrl = new URL(url, window.location.origin);
+                    fetchUrl.searchParams.append('q', query);
+
+                    fetch(fetchUrl)
+                        .then(response => response.json())
+                        .then(json => {
+                            if (json.success && Array.isArray(json.data)) {
+                                callback(json.data);
+                            } else {
+                                callback();
+                            }
+                        }).catch(()=> {
+                            callback();
+                        });
+                }
+            });
+        }
+    });
+});
+</script>

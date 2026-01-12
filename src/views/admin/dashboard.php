@@ -313,6 +313,16 @@ document.addEventListener('DOMContentLoaded', function() {
         interest: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
         office: ['#003087', '#2563eb', '#60a5fa', '#93c5fd']
     };
+
+    // Build same-origin URLs regardless of APP_URL config (avoids cookie/session mismatches like 127.0.0.1 vs localhost).
+    const basePath = <?= json_encode((function () {
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        $dir = is_string($scriptName) ? dirname($scriptName) : '';
+        $dir = str_replace('\\', '/', $dir);
+        if ($dir === '/' || $dir === '.' || $dir === '\\') return '';
+        return rtrim($dir, '/');
+    })()) ?>;
+    const apiUrl = (path) => `${basePath}${path}`;
     
     function showLoading(canvasId) {
         const canvas = document.getElementById(canvasId);
@@ -331,8 +341,17 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoading('ageChart');
         
         try {
-            const response = await fetch('<?= appUrl('/api/stats/demographics') ?>');
-            const result = await response.json();
+            const response = await fetch(apiUrl('/api/stats/demographics'));
+            const text = await response.text();
+            let result;
+
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                console.error('Invalid JSON:', text);
+                alert('Server Error (Demographics): ' + text.substring(0, 500));
+                return;
+            }
             
             if (result.success) {
                 const data = result.data;
@@ -429,6 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Failed to load demographics charts:', error);
+            alert('Error loading demographics: ' + error.message);
         }
         
         hideLoading('sexChart');
@@ -443,8 +463,17 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoading('barriersChart');
         
         try {
-            const response = await fetch('<?= appUrl('/api/stats/interest') ?>');
-            const result = await response.json();
+            const response = await fetch(apiUrl('/api/stats/interest'));
+            const text = await response.text();
+            let result;
+
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                console.error('Invalid JSON:', text);
+                alert('Server Error (Interest): ' + text.substring(0, 500));
+                return;
+            }
             
             if (result.success) {
                 const data = result.data;
@@ -553,6 +582,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Failed to load interest charts:', error);
+            alert('Error loading interest data: ' + error.message);
         }
         
         hideLoading('interestChart');

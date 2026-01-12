@@ -154,12 +154,28 @@ function formatEnumValue(string $key, $value): string
                     <dt class="text-sm text-gray-500">Office Type</dt>
                     <dd class="text-sm font-medium text-gray-900"><?= formatEnumValue('office_type', $response['office_type'] ?? null) ?></dd>
                 </div>
+                <?php if (($response['office_type'] ?? null) === 'field_office'): ?>
+                    <div class="flex justify-between">
+                        <dt class="text-sm text-gray-500">Field Office (Region) Assignment</dt>
+                        <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['office_assignment'] ?: 'N/A') ?></dd>
+                    </div>
+                    <div class="flex justify-between">
+                        <dt class="text-sm text-gray-500">Field Office Unit / Program Assignment</dt>
+                        <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['field_office_unit'] ?: 'N/A') ?></dd>
+                    </div>
+                <?php elseif (($response['office_type'] ?? null) === 'central_office'): ?>
+                    <div class="flex justify-between">
+                        <dt class="text-sm text-gray-500">Bureau / Service / Office</dt>
+                        <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['office_bureau'] ?: 'N/A') ?></dd>
+                    </div>
+                <?php elseif (($response['office_type'] ?? null) === 'attached_agency'): ?>
+                    <div class="flex justify-between">
+                        <dt class="text-sm text-gray-500">Attached Agency</dt>
+                        <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['attached_agency'] ?: 'N/A') ?></dd>
+                    </div>
+                <?php endif; ?>
                 <div class="flex justify-between">
-                    <dt class="text-sm text-gray-500">Office / Field Office Assignment</dt>
-                    <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['office_assignment'] ?: 'N/A') ?></dd>
-                </div>
-                <div class="flex justify-between">
-                    <dt class="text-sm text-gray-500">Office Field / Unit / Program Assignment</dt>
+                    <dt class="text-sm text-gray-500">Division / Section / Unit (Optional)</dt>
                     <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['specific_office'] ?: 'N/A') ?></dd>
                 </div>
                 <div class="flex justify-between">

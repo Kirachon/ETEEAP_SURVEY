@@ -1,4 +1,5 @@
 <?php
+ob_start();
 /**
  * ETEEAP Survey Application - Main Entry Point & Router
  * 
@@ -84,7 +85,14 @@ $routes = [
     'POST /admin/reports/generate' => ['controller' => 'AdminController', 'action' => 'generateReport'],
     'GET /admin/reports/export/{type}' => ['controller' => 'AdminController', 'action' => 'exportReport'],
      
-    // API routes (for charts)
+    // API Endpoints (Tom Select)
+    // API Endpoints (Tom Select) - Public Access Required
+    'GET /api/positions' => ['controller' => 'PublicApiController', 'action' => 'positions'],
+    'GET /api/ched-programs' => ['controller' => 'PublicApiController', 'action' => 'chedPrograms'],
+    'GET /api/obs' => ['controller' => 'PublicApiController', 'action' => 'obs'],
+    'GET /api/attached-agencies' => ['controller' => 'PublicApiController', 'action' => 'attachedAgencies'],
+
+    // Auth routes (for charts)
     'GET /api/stats/summary' => ['controller' => 'ApiController', 'action' => 'summary'],
     'GET /api/stats/demographics' => ['controller' => 'ApiController', 'action' => 'demographics'],
     'GET /api/stats/interest' => ['controller' => 'ApiController', 'action' => 'interest'],
@@ -162,19 +170,20 @@ try {
     $actionName = $route['action'];
     $params = $route['params'] ?? [];
     
+    // Load dependencies for controllers that need authentication.
+    // IMPORTANT: ApiController extends AuthController, so AuthController MUST be loaded first.
+    if (in_array($controllerName, ['AdminController', 'ApiController'], true)) {
+        require_once CONTROLLERS_PATH . '/AuthController.php';
+    }
+
     // Load and instantiate controller
     $controllerFile = CONTROLLERS_PATH . '/' . $controllerName . '.php';
-    
+
     if (!file_exists($controllerFile)) {
         throw new Exception("Controller not found: {$controllerName}");
     }
-    
+
     require_once $controllerFile;
-    
-    // Load dependencies for controllers that need authentication
-    if (in_array($controllerName, ['AdminController', 'ApiController'])) {
-        require_once CONTROLLERS_PATH . '/AuthController.php';
-    }
     
     if (!class_exists($controllerName)) {
         throw new Exception("Controller class not found: {$controllerName}");

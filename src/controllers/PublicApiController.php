@@ -158,12 +158,129 @@ class PublicApiController
             fclose($handle);
         }
         
-        // Remove duplicates and sort
-        $courses = array_unique($courses);
         sort($courses, SORT_STRING | SORT_FLAG_CASE);
         
         $this->coursesCache = $courses;
         return $courses;
+    }
+
+    /**
+     * OBS (Office/Bureau/Service) endpoint
+     * GET /api/obs?q=search_term
+     */
+    public function obs(): void
+    {
+        try {
+            $searchTerm = trim($_GET['q'] ?? '');
+            $obsList = $this->loadCsvData(APP_ROOT . '/docs/update/obs.csv');
+            
+            if ($searchTerm !== '') {
+                $searchLower = strtolower($searchTerm);
+                $obsList = array_filter($obsList, function($item) use ($searchLower) {
+                    return strpos(strtolower($item), $searchLower) !== false;
+                });
+            }
+            
+            $results = array_map(function($item) {
+                return ['value' => $item, 'text' => $item];
+            }, array_values($obsList));
+            
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $results,
+                'total' => count($results)
+            ]);
+        } catch (Exception $e) {
+            $this->jsonError('Failed to fetch OBS data', 500);
+        }
+    }
+
+    /**
+     * Attached Agencies endpoint
+     * GET /api/attached-agencies?q=search_term
+     */
+    public function attachedAgencies(): void
+    {
+        try {
+            $searchTerm = trim($_GET['q'] ?? '');
+            $agencies = $this->loadCsvData(APP_ROOT . '/docs/update/attached_agency.csv');
+            
+            if ($searchTerm !== '') {
+                $searchLower = strtolower($searchTerm);
+                $agencies = array_filter($agencies, function($item) use ($searchLower) {
+                    return strpos(strtolower($item), $searchLower) !== false;
+                });
+            }
+            
+            $results = array_map(function($item) {
+                return ['value' => $item, 'text' => $item];
+            }, array_values($agencies));
+            
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $results,
+                'total' => count($results)
+            ]);
+        } catch (Exception $e) {
+            $this->jsonError('Failed to fetch agencies', 500);
+        }
+    }
+
+    /**
+     * CHED Programs endpoint
+     * GET /api/ched-programs?q=search_term
+     */
+    public function chedPrograms(): void
+    {
+        try {
+            $searchTerm = trim($_GET['q'] ?? '');
+            $programs = $this->loadCsvData(APP_ROOT . '/docs/update/ched_list.csv');
+            
+            if ($searchTerm !== '') {
+                $searchLower = strtolower($searchTerm);
+                $programs = array_filter($programs, function($item) use ($searchLower) {
+                    return strpos(strtolower($item), $searchLower) !== false;
+                });
+            }
+            
+            $results = array_map(function($item) {
+                return ['value' => $item, 'text' => $item];
+            }, array_values($programs));
+            
+            $this->jsonResponse([
+                'success' => true,
+                'data' => $results,
+                'total' => count($results)
+            ]);
+        } catch (Exception $e) {
+            $this->jsonError('Failed to fetch programs', 500);
+        }
+    }
+
+    /**
+     * Helper to load simple list from CSV
+     */
+    private function loadCsvData(string $path): array
+    {
+        if (!file_exists($path)) {
+            return [];
+        }
+
+        $data = [];
+        $handle = fopen($path, 'r');
+        if ($handle !== false) {
+            while (($line = fgets($handle)) !== false) {
+                $item = trim($line);
+                if ($item !== '') {
+                    $data[] = $item;
+                }
+            }
+            fclose($handle);
+        }
+        
+        $data = array_unique($data);
+        sort($data, SORT_STRING | SORT_FLAG_CASE);
+        return $data;
     }
     
     /**

@@ -38,6 +38,9 @@ CREATE TABLE IF NOT EXISTS survey_responses (
     -- Section 3: Office & Employment Data
     office_type ENUM('central_office', 'field_office', 'attached_agency') NULL,
     office_assignment VARCHAR(50) NULL,
+    office_bureau VARCHAR(255) NULL,
+    attached_agency VARCHAR(255) NULL,
+    field_office_unit VARCHAR(255) NULL,
     specific_office VARCHAR(255) NULL,
     current_position VARCHAR(255) NULL,
     employment_status ENUM('permanent', 'cos', 'jo', 'others') NULL,

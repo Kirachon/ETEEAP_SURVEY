@@ -177,6 +177,17 @@ class InstallController
                 return $mysqli;
             };
 
+            $assertSafeIdentifier = static function (string $value, string $label): void {
+                // Allow only simple MySQL identifiers (no spaces, quotes, or punctuation).
+                // This prevents SQL injection in installer-generated statements.
+                if ($value === '' || preg_match('/^[A-Za-z0-9_]+$/', $value) !== 1) {
+                    throw new InvalidArgumentException("Invalid {$label}. Use only letters, numbers, and underscore.");
+                }
+            };
+
+            $assertSafeIdentifier($dbName, 'database name');
+            $assertSafeIdentifier($dbUser, 'database username');
+
             $rewriteDbName = static function (string $sql, string $dbName): string {
                 $dbEsc = '`' . str_replace('`', '``', $dbName) . '`';
                 $sql = preg_replace('/\\bUSE\\s+`?eteeap_survey`?\\s*;/i', 'USE ' . $dbEsc . ';', $sql);

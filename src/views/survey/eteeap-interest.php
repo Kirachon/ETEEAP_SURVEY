@@ -31,7 +31,7 @@ $savedData = $savedData ?? [];
                             <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
-                            <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">23. Awareness of ETEEAP</h3>
+                            <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">23. Awareness of ETEEAP <span class="text-red-500">*</span></h3>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -95,7 +95,7 @@ $savedData = $savedData ?? [];
                                 <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                                 </div>
-                                <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider break-words">25. Motivation for Enrolling</h3>
+                                <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider break-words">25. Motivation for Enrolling <span class="text-red-500">*</span></h3>
                             </div>
                             <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest px-3 py-1.5 bg-slate-100 rounded-lg self-start md:self-auto">Checkboxes – Check all that apply</span>
                         </div>
@@ -136,7 +136,7 @@ $savedData = $savedData ?? [];
                                 <div class="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 </div>
-                                <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider break-words">26. Possible Barriers</h3>
+                                <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider break-words">26. Possible Barriers <span class="text-red-500">*</span></h3>
                             </div>
                             <span class="text-[11px] font-black text-slate-400 uppercase tracking-widest px-3 py-1.5 bg-slate-100 rounded-lg self-start md:self-auto">Checkboxes – Check all that apply</span>
                         </div>

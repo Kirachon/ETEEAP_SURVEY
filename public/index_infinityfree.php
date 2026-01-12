@@ -144,17 +144,19 @@ try {
     $actionName = $route['action'];
     $params = $route['params'] ?? [];
     
+    // Load dependencies for controllers that need authentication.
+    // IMPORTANT: ApiController extends AuthController, so AuthController MUST be loaded first.
+    if (in_array($controllerName, ['AdminController', 'ApiController'], true)) {
+        require_once CONTROLLERS_PATH . '/AuthController.php';
+    }
+
     $controllerFile = CONTROLLERS_PATH . '/' . $controllerName . '.php';
-    
+
     if (!file_exists($controllerFile)) {
         throw new Exception("Controller not found: {$controllerName}");
     }
-    
+
     require_once $controllerFile;
-    
-    if (in_array($controllerName, ['AdminController', 'ApiController'])) {
-        require_once CONTROLLERS_PATH . '/AuthController.php';
-    }
     
     if (!class_exists($controllerName)) {
         throw new Exception("Controller class not found: {$controllerName}");

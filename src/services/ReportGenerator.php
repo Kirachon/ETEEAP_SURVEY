@@ -394,11 +394,38 @@ class ReportGenerator
              GROUP BY employment_status ORDER BY count DESC"
         );
         
-        // By Office Assignment (for secondary table)
-        $byOffice = dbFetchAll(
+        // Office assignment detail (region vs bureau vs attached agency)
+        $byRegion = dbFetchAll(
             "SELECT office_assignment as label, COUNT(*) as count
-             FROM survey_responses WHERE {$where} AND office_assignment IS NOT NULL
-             GROUP BY office_assignment ORDER BY count DESC LIMIT 15"
+             FROM survey_responses
+             WHERE {$where}
+               AND office_type = 'field_office'
+               AND office_assignment IS NOT NULL AND TRIM(office_assignment) <> ''
+             GROUP BY office_assignment
+             ORDER BY count DESC
+             LIMIT 15"
+        );
+
+        $byBureau = dbFetchAll(
+            "SELECT office_bureau as label, COUNT(*) as count
+             FROM survey_responses
+             WHERE {$where}
+               AND office_type = 'central_office'
+               AND office_bureau IS NOT NULL AND TRIM(office_bureau) <> ''
+             GROUP BY office_bureau
+             ORDER BY count DESC
+             LIMIT 15"
+        );
+
+        $byAgency = dbFetchAll(
+            "SELECT attached_agency as label, COUNT(*) as count
+             FROM survey_responses
+             WHERE {$where}
+               AND office_type = 'attached_agency'
+               AND attached_agency IS NOT NULL AND TRIM(attached_agency) <> ''
+             GROUP BY attached_agency
+             ORDER BY count DESC
+             LIMIT 15"
         );
         
         return [
@@ -419,9 +446,19 @@ class ReportGenerator
                     'rows' => array_map(fn($r) => [$r['office_type'] ?? 'N/A', $r['employment_status'] ?? 'N/A', $r['count']], $byOfficeStatus)
                 ],
                 [
-                    'title' => 'Top 15 Office Assignments',
-                    'headers' => ['Office/Region', 'Count'],
-                    'rows' => array_map(fn($r) => [$r['label'], $r['count']], $byOffice)
+                    'title' => 'Top 15 Field Office (Region) Assignments',
+                    'headers' => ['Region', 'Count'],
+                    'rows' => array_map(fn($r) => [$r['label'], $r['count']], $byRegion)
+                ],
+                [
+                    'title' => 'Top 15 Central Office Bureaus/Services/Offices',
+                    'headers' => ['Bureau/Service/Office', 'Count'],
+                    'rows' => array_map(fn($r) => [$r['label'], $r['count']], $byBureau)
+                ],
+                [
+                    'title' => 'Top 15 Attached Agencies',
+                    'headers' => ['Attached Agency', 'Count'],
+                    'rows' => array_map(fn($r) => [$r['label'], $r['count']], $byAgency)
                 ]
             ]
         ];
@@ -830,29 +867,83 @@ class ReportGenerator
     {
         $where = $this->baseWhere($filters);
         
-        // By Office with SW Experience and Will Apply
-        $byOffice = dbFetchAll(
+        // By Office Assignment Detail (region vs bureau vs attached agency)
+        $byRegion = dbFetchAll(
             "SELECT 
                 office_assignment as office,
                 COUNT(*) as total,
                 SUM(CASE WHEN years_swd_sector IN ('5-10', '11-15', '15+') THEN 1 ELSE 0 END) as with_sw_exp,
                 SUM(CASE WHEN will_apply = 'yes' THEN 1 ELSE 0 END) as will_apply_yes
-             FROM survey_responses WHERE {$where} AND office_assignment IS NOT NULL
+             FROM survey_responses
+             WHERE {$where}
+               AND office_type = 'field_office'
+               AND office_assignment IS NOT NULL AND TRIM(office_assignment) <> ''
              GROUP BY office_assignment
-             ORDER BY total DESC LIMIT 15"
+             ORDER BY total DESC
+             LIMIT 15"
+        );
+
+        $byBureau = dbFetchAll(
+            "SELECT 
+                office_bureau as office,
+                COUNT(*) as total,
+                SUM(CASE WHEN years_swd_sector IN ('5-10', '11-15', '15+') THEN 1 ELSE 0 END) as with_sw_exp,
+                SUM(CASE WHEN will_apply = 'yes' THEN 1 ELSE 0 END) as will_apply_yes
+             FROM survey_responses
+             WHERE {$where}
+               AND office_type = 'central_office'
+               AND office_bureau IS NOT NULL AND TRIM(office_bureau) <> ''
+             GROUP BY office_bureau
+             ORDER BY total DESC
+             LIMIT 15"
+        );
+
+        $byAgency = dbFetchAll(
+            "SELECT 
+                attached_agency as office,
+                COUNT(*) as total,
+                SUM(CASE WHEN years_swd_sector IN ('5-10', '11-15', '15+') THEN 1 ELSE 0 END) as with_sw_exp,
+                SUM(CASE WHEN will_apply = 'yes' THEN 1 ELSE 0 END) as will_apply_yes
+             FROM survey_responses
+             WHERE {$where}
+               AND office_type = 'attached_agency'
+               AND attached_agency IS NOT NULL AND TRIM(attached_agency) <> ''
+             GROUP BY attached_agency
+             ORDER BY total DESC
+             LIMIT 15"
         );
         
         return [
             'sections' => [
                 [
-                    'title' => 'Top 15 Offices - Readiness Overview',
-                    'headers' => ['Office/Region', 'Total', '% With SW Exp', '% Will Apply'],
+                    'title' => 'Top 15 Field Offices (Regions) - Readiness Overview',
+                    'headers' => ['Region', 'Total', '% With SW Exp', '% Will Apply'],
                     'rows' => array_map(fn($r) => [
                         $r['office'],
                         $r['total'],
                         round($r['with_sw_exp'] * 100 / max($r['total'], 1), 1) . '%',
                         round($r['will_apply_yes'] * 100 / max($r['total'], 1), 1) . '%'
-                    ], $byOffice)
+                    ], $byRegion)
+                ],
+                [
+                    'title' => 'Top 15 Central Office Bureaus/Services/Offices - Readiness Overview',
+                    'headers' => ['Bureau/Service/Office', 'Total', '% With SW Exp', '% Will Apply'],
+                    'rows' => array_map(fn($r) => [
+                        $r['office'],
+                        $r['total'],
+                        round($r['with_sw_exp'] * 100 / max($r['total'], 1), 1) . '%',
+                        round($r['will_apply_yes'] * 100 / max($r['total'], 1), 1) . '%'
+                    ], $byBureau)
+                ],
+                [
+                    'title' => 'Top 15 Attached Agencies - Readiness Overview',
+                    'headers' => ['Attached Agency', 'Total', '% With SW Exp', '% Will Apply'],
+                    'rows' => array_map(fn($r) => [
+                        $r['office'],
+                        $r['total'],
+                        round($r['with_sw_exp'] * 100 / max($r['total'], 1), 1) . '%',
+                        round($r['will_apply_yes'] * 100 / max($r['total'], 1), 1) . '%'
+                    ], $byAgency)
                 ]
             ]
         ];
