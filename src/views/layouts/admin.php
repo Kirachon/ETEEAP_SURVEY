@@ -168,7 +168,7 @@
 
             
             <!-- Page Content -->
-            <main class="flex-1 overflow-y-auto p-8 relative">
+            <main class="flex-1 overflow-y-auto p-8 pb-24 relative">
                 <!-- Content Backdrop Accent -->
                 <div class="absolute top-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl -z-10 animate-pulse"></div>
                 <div class="absolute bottom-0 left-0 w-64 h-64 bg-indigo-100/20 rounded-full blur-3xl -z-10 opacity-50"></div>
@@ -180,14 +180,20 @@
                 </div>
             </main>
             
-            <!-- Page Footer -->
-            <footer class="h-16 bg-white border-t border-slate-200/60 px-8 flex items-center justify-between">
+            <!-- Page Footer (Sticky) -->
+            <footer class="h-16 bg-white/95 backdrop-blur-sm border-t border-slate-200/60 px-8 flex items-center justify-between fixed bottom-0 left-0 lg:left-72 right-0 z-30">
                 <div class="flex items-center space-x-2">
                     <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">System Operational</span>
                 </div>
-
-    <!-- Mobile Menu (off-canvas) - Moved to root for z-index containment -->
+                <div class="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">
+                    ETEEAP v<?= APP_VERSION ?> • DSWD &copy; <?= date('Y') ?> • Server: <?= date('Y-m-d H:i:s') ?>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- Mobile Menu (off-canvas) - At document root for proper z-index -->
     <div id="mobileMenuBackdrop" class="lg:hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden z-[90]"></div>
     <aside id="mobileMenu" class="lg:hidden fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-slate-900 text-white shadow-2xl hidden z-[100]">
         <div class="p-6 border-b border-white/10 flex items-center justify-between">
@@ -233,12 +239,6 @@
             </div>
         </nav>
     </aside>
-                <div class="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">
-                    ETEEAP v<?= APP_VERSION ?> • DSWD &copy; <?= date('Y') ?> • Server: <?= date('Y-m-d H:i:s') ?>
-                </div>
-            </footer>
-        </div>
-    </div>
     
     <?php if (flashHas('success')): ?>
     <div id="flash-success" class="fixed top-6 right-6 bg-white border-l-4 border-green-500 p-4 rounded-2xl shadow-premium animate-slide-in z-[100] flex items-center gap-4">
