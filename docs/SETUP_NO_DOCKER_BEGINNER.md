@@ -98,13 +98,33 @@ mysql -u root -p eteeap_survey < database/seed.sql
 ### 3.3 Apply migrations (IMPORTANT)
 
 Migrations contain changes that must also exist in your DB.
-Run these in date order:
+
+If you are doing a **fresh install** and you imported the latest `database/schema.sql`, you can usually skip this step.
+
+If you are **upgrading** an existing database (or you’re not sure), run these in date order:
 
 ```bash
-mysql -u root -p eteeap_survey < database/migrations/2026-01-08_nationwide_interest_survey.sql
-mysql -u root -p eteeap_survey < database/migrations/2026-01-09_unique_identity_name_email.sql
-mysql -u root -p eteeap_survey < database/migrations/2026-01-09_update_q27_will_apply.sql
+for f in database/migrations/*.sql; do
+  echo "Applying $f"
+  mysql -u root -p eteeap_survey < "$f"
+done
 ```
+
+Note: `2026-01-12_email_unique_constraint.sql` enforces **one response per email** at the database level.
+Before applying it on an existing DB, check for duplicate emails:
+
+```sql
+SELECT email, COUNT(*) AS c
+FROM survey_responses
+WHERE email IS NOT NULL AND email <> ''
+GROUP BY email
+HAVING c > 1;
+```
+
+If duplicates exist, you must resolve them before applying the unique index (otherwise the migration will fail).
+Common options:
+- Keep the latest completed response per email, delete older duplicates.
+- If duplicates are legitimate, update emails to make them unique.
 
 If you skip migrations, you may see errors like:
 - “There was a problem submitting your survey…”

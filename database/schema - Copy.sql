@@ -1,6 +1,7 @@
 -- ============================================
 -- ETEEAP Survey Application - Database Schema
 -- MySQL 8.x Compatible
+-- Consolidated baseline schema (includes migrations up to 2026-01-12)
 -- ============================================
 
 SET NAMES utf8mb4;
@@ -74,7 +75,7 @@ CREATE TABLE IF NOT EXISTS survey_responses (
     INDEX idx_age_range (age_range),
     INDEX idx_sex (sex),
     INDEX idx_will_not_apply_reason (will_not_apply_reason(100)),
-    UNIQUE INDEX idx_unique_identity (email, last_name, first_name, middle_name, ext_name)
+   UNIQUE INDEX idx_unique_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================

@@ -46,8 +46,14 @@ The `db` container auto-initializes the database only on the **first** run of th
 For upgrades, apply new migrations manually:
 
 ```bash
-# Example: apply all migrations in order (repeat for each new migration file)
-docker compose exec -T db mysql -u root -p<root_password> eteeap_survey < database/migrations/2026-01-09_update_q27_will_apply.sql
+# Optional pre-check: show duplicate emails before enabling strict email uniqueness
+docker compose exec -T db mysql -u root -p<root_password> eteeap_survey -e "SELECT email, COUNT(*) AS c FROM survey_responses WHERE email IS NOT NULL AND email <> '' GROUP BY email HAVING c > 1;"
+
+# Apply all migrations in order
+for f in database/migrations/*.sql; do
+  echo "Applying $f"
+  docker compose exec -T db mysql -u root -p<root_password> eteeap_survey < "$f"
+done
 ```
 
 Use the credentials from `docker-compose.yml` (`MYSQL_ROOT_PASSWORD`, `MYSQL_USER`, `MYSQL_PASSWORD`).
@@ -118,4 +124,3 @@ Options:
 ### 8.3 404 when navigating to routes
 
 Ensure `public/.htaccess` exists and Apache has `mod_rewrite` enabled (the provided Docker image enables it).
-
