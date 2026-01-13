@@ -44,27 +44,88 @@ class AdminController
      */
     public function responses(): void
     {
-        $page = (int) ($_GET['page'] ?? 1);
-        $perPage = PAGINATION_PER_PAGE;
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+
+        $allowedPerPage = [10, 20, 50, 100];
+        $perPage = (int) ($_GET['per_page'] ?? PAGINATION_PER_PAGE);
+        if (!in_array($perPage, $allowedPerPage, true)) {
+            $perPage = PAGINATION_PER_PAGE;
+        }
+
         $offset = ($page - 1) * $perPage;
-        
-        // Get total count
-        $total = dbFetchOne(
-            "SELECT COUNT(*) as count FROM survey_responses WHERE consent_given = 1 AND completed_at IS NOT NULL"
-        )['count'];
-        
-        // Get filtered responses
-        $responses = dbFetchAll(
-            "SELECT id, last_name, first_name, middle_name, ext_name, email, sex, age_range, office_type, employment_status, 
-                    eteeap_interest, will_apply, created_at 
-             FROM survey_responses 
-             WHERE consent_given = 1 AND completed_at IS NOT NULL
-             ORDER BY created_at DESC 
-             LIMIT :limit OFFSET :offset",
-            ['limit' => $perPage, 'offset' => $offset]
+
+        $q = trim((string) ($_GET['q'] ?? ''));
+        $officeType = trim((string) ($_GET['office_type'] ?? ''));
+        $employmentStatus = trim((string) ($_GET['employment_status'] ?? ''));
+
+        $where = [];
+        $params = [];
+
+        // Always show only completed responses
+        $where[] = 'consent_given = 1';
+        $where[] = 'completed_at IS NOT NULL';
+
+        if ($officeType !== '') {
+            $where[] = 'office_type = :office_type';
+            $params['office_type'] = $officeType;
+        }
+
+        if ($employmentStatus !== '') {
+            $where[] = 'employment_status = :employment_status';
+            $params['employment_status'] = $employmentStatus;
+        }
+
+        if ($q !== '') {
+            // If the user searches an ID (e.g. "123" or "#123"), prioritize exact match.
+            $qNorm = ltrim($q, "# \t\r\n");
+            if ($qNorm !== '' && ctype_digit($qNorm)) {
+                $where[] = 'id = :id';
+                $params['id'] = (int) $qNorm;
+            } else {
+                $where[] = '('
+                    // MySQL PDO with emulated prepares disabled does not support reusing the same named
+                    // parameter multiple times. Use distinct placeholders.
+                    . 'LOWER(TRIM(last_name)) LIKE :q_last'
+                    . ' OR LOWER(TRIM(first_name)) LIKE :q_first'
+                    . ' OR LOWER(TRIM(middle_name)) LIKE :q_middle'
+                    . ' OR LOWER(TRIM(ext_name)) LIKE :q_ext'
+                    . ' OR LOWER(TRIM(email)) LIKE :q_email'
+                    . ')';
+
+                $needle = '%' . strtolower($q) . '%';
+                $params['q_last'] = $needle;
+                $params['q_first'] = $needle;
+                $params['q_middle'] = $needle;
+                $params['q_ext'] = $needle;
+                $params['q_email'] = $needle;
+            }
+        }
+
+        $whereSql = implode(' AND ', $where);
+
+        // Get total count for pagination (respect filters)
+        $totalRow = dbFetchOne(
+            "SELECT COUNT(*) as count FROM survey_responses WHERE {$whereSql}",
+            $params
         );
-        
-        $totalPages = ceil($total / $perPage);
+        $total = (int) ($totalRow['count'] ?? 0);
+
+        $totalPages = (int) ceil(max($total, 1) / $perPage);
+        if ($page > $totalPages) {
+            $page = $totalPages;
+        }
+        $offset = ($page - 1) * $perPage;
+
+        // Fetch paginated rows
+        $responses = dbFetchAll(
+            "SELECT id, last_name, first_name, middle_name, ext_name, email, sex, age_range, office_type, employment_status,
+                    eteeap_interest, will_apply, created_at
+             FROM survey_responses
+             WHERE {$whereSql}
+             ORDER BY created_at DESC
+             LIMIT :limit OFFSET :offset",
+            array_merge($params, ['limit' => $perPage, 'offset' => $offset])
+        );
         
         $this->render('admin/responses', [
             'pageTitle' => 'Survey Responses',
@@ -74,6 +135,12 @@ class AdminController
             'page' => $page,
             'totalPages' => $totalPages,
             'perPage' => $perPage,
+            'allowedPerPage' => $allowedPerPage,
+            'filters' => [
+                'q' => $q,
+                'office_type' => $officeType,
+                'employment_status' => $employmentStatus,
+            ],
             'adminUser' => sessionGet('admin_user')
         ]);
     }
