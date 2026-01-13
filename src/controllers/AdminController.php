@@ -57,6 +57,13 @@ class AdminController
         $q = trim((string) ($_GET['q'] ?? ''));
         $officeType = trim((string) ($_GET['office_type'] ?? ''));
         $employmentStatus = trim((string) ($_GET['employment_status'] ?? ''));
+        $sort = trim((string) ($_GET['sort'] ?? 'newest'));
+        if (!in_array($sort, ['newest', 'oldest'], true)) {
+            $sort = 'newest';
+        }
+        $orderBy = ($sort === 'oldest')
+            ? 'created_at ASC, id ASC'
+            : 'created_at DESC, id DESC';
 
         $where = [];
         $params = [];
@@ -122,7 +129,7 @@ class AdminController
                     eteeap_interest, will_apply, created_at
              FROM survey_responses
              WHERE {$whereSql}
-             ORDER BY created_at DESC
+             ORDER BY {$orderBy}
              LIMIT :limit OFFSET :offset",
             array_merge($params, ['limit' => $perPage, 'offset' => $offset])
         );
@@ -140,6 +147,7 @@ class AdminController
                 'q' => $q,
                 'office_type' => $officeType,
                 'employment_status' => $employmentStatus,
+                'sort' => $sort,
             ],
             'adminUser' => sessionGet('admin_user')
         ]);

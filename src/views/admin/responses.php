@@ -9,13 +9,15 @@ $page = $page ?? 1;
 $totalPages = $totalPages ?? 1;
 $perPage = $perPage ?? PAGINATION_PER_PAGE;
 $allowedPerPage = $allowedPerPage ?? [10, 20, 50, 100];
-$filters = $filters ?? ['q' => '', 'office_type' => '', 'employment_status' => ''];
+$filters = $filters ?? ['q' => '', 'office_type' => '', 'employment_status' => '', 'sort' => 'newest'];
+$currentSort = in_array(($filters['sort'] ?? ''), ['newest', 'oldest'], true) ? ($filters['sort'] ?? 'newest') : 'newest';
 
-$buildQuery = static function (array $overrides = []) use ($filters, $perPage): string {
+$buildQuery = static function (array $overrides = []) use ($filters, $perPage, $currentSort): string {
     $params = [
         'q' => $filters['q'] ?? '',
         'office_type' => $filters['office_type'] ?? '',
         'employment_status' => $filters['employment_status'] ?? '',
+        'sort' => $currentSort,
         'per_page' => $perPage,
     ];
     foreach ($overrides as $k => $v) {
@@ -47,7 +49,7 @@ $buildQuery = static function (array $overrides = []) use ($filters, $perPage): 
     <!-- Search + Filters -->
     <form method="GET" action="<?= appUrl('/admin/responses') ?>" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
-            <div class="lg:col-span-6">
+            <div class="lg:col-span-5">
                 <label for="q" class="block text-xs font-medium text-gray-600 mb-1">Search</label>
                 <input
                     type="text"
@@ -90,6 +92,22 @@ $buildQuery = static function (array $overrides = []) use ($filters, $perPage): 
                     ];
                     foreach ($employmentOptions as $val => $label):
                         $selected = (($filters['employment_status'] ?? '') === $val) ? 'selected' : '';
+                    ?>
+                        <option value="<?= htmlspecialchars($val) ?>" <?= $selected ?>><?= htmlspecialchars($label) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="lg:col-span-1">
+                <label for="sort" class="block text-xs font-medium text-gray-600 mb-1">Sort</label>
+                <select id="sort" name="sort" class="w-full h-10 px-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                    <?php
+                    $sortOptions = [
+                        'newest' => 'Newest',
+                        'oldest' => 'Oldest',
+                    ];
+                    foreach ($sortOptions as $val => $label):
+                        $selected = ($currentSort === $val) ? 'selected' : '';
                     ?>
                         <option value="<?= htmlspecialchars($val) ?>" <?= $selected ?>><?= htmlspecialchars($label) ?></option>
                     <?php endforeach; ?>
