@@ -78,6 +78,9 @@ $routes = [
     'GET /admin/responses' => ['controller' => 'AdminController', 'action' => 'responses'],
     'GET /admin/responses/{id}' => ['controller' => 'AdminController', 'action' => 'viewResponse'],
     'GET /admin/export/csv' => ['controller' => 'AdminController', 'action' => 'exportCsv'],
+    'GET /admin/import/csv' => ['controller' => 'AdminController', 'action' => 'importCsvForm'],
+    'POST /admin/import/csv' => ['controller' => 'AdminController', 'action' => 'importCsvUpload'],
+    'POST /admin/import/template' => ['controller' => 'AdminController', 'action' => 'exportImportTemplate'],
 
     // Reports
     'GET /admin/reports' => ['controller' => 'AdminController', 'action' => 'reports'],

@@ -95,6 +95,17 @@
                             </a>
                         </li>
                         <li>
+                            <a href="<?= appUrl('/admin/import/csv') ?>"
+                               class="group flex items-center space-x-3 px-4 py-3.5 rounded-2xl transition-all duration-300 <?= ($currentPage ?? '') === 'import' ? 'nav-item-active text-white' : 'text-slate-400/80 hover:bg-white/5 hover:text-white' ?>">
+                                <div class="p-2 rounded-xl transition-colors duration-300 <?= ($currentPage ?? '') === 'import' ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-white' ?>">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                    </svg>
+                                </div>
+                                <span class="font-semibold tracking-tight">Import Data</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="<?= appUrl('/admin/export/csv') ?>" 
                                class="group flex items-center space-x-3 px-4 py-3.5 rounded-2xl text-slate-400/80 hover:bg-white/5 hover:text-white transition-all duration-300">
                                 <div class="p-2 rounded-xl bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-white transition-all duration-300">
@@ -230,6 +241,9 @@
                 <ul class="space-y-2">
                     <li>
                         <a href="<?= appUrl('/admin/reports') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'reports' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Reports</a>
+                    </li>
+                    <li>
+                        <a href="<?= appUrl('/admin/import/csv') ?>" class="block px-4 py-3 rounded-2xl font-semibold <?= ($currentPage ?? '') === 'import' ? 'bg-white/10 text-white' : 'text-slate-300 hover:bg-white/10 hover:text-white' ?>">Import CSV</a>
                     </li>
                     <li>
                         <a href="<?= appUrl('/admin/export/csv') ?>" class="block px-4 py-3 rounded-2xl font-semibold text-slate-300 hover:bg-white/10 hover:text-white">Export CSV</a>

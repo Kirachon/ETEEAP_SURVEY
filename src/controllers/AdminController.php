@@ -243,6 +243,78 @@ class AdminController
     }
 
     /**
+     * CSV import page (admin).
+     */
+    public function importCsvForm(): void
+    {
+        $this->render('admin/import', [
+            'pageTitle' => 'Import CSV',
+            'currentPage' => 'import',
+            'adminUser' => sessionGet('admin_user'),
+        ]);
+    }
+
+    /**
+     * Handle CSV import upload (admin).
+     */
+    public function importCsvUpload(): void
+    {
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+            redirect(appUrl('/admin/import/csv'));
+        }
+
+        csrfProtect();
+
+        require_once SRC_PATH . '/services/CsvImportService.php';
+
+        $strictHeaders = filter_var($_POST['strict_headers'] ?? null, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        $strictHeaders = $strictHeaders ?? true;
+        $atomic = filter_var($_POST['atomic'] ?? null, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        $atomic = $atomic ?? true;
+
+        $file = $_FILES['csv_file'] ?? [];
+        $result = CsvImportService::importFromUploadedFile($file, [
+            'strict_headers' => $strictHeaders,
+            'atomic' => $atomic,
+        ]);
+
+        if (($result['success'] ?? false) === true) {
+            flashSet('success', 'Imported ' . (int) ($result['inserted'] ?? 0) . ' row(s).');
+        } else {
+            $rolledBack = ($result['atomic'] ?? false) && ($result['rolled_back'] ?? false);
+            $msg = $rolledBack
+                ? 'Import failed (atomic import rolled back).'
+                : 'Import finished with errors.';
+            flashSet('error', $msg);
+        }
+
+        $this->render('admin/import', [
+            'pageTitle' => 'Import CSV',
+            'currentPage' => 'import',
+            'adminUser' => sessionGet('admin_user'),
+            'importResult' => $result,
+            'importOptions' => [
+                'strict_headers' => $strictHeaders,
+                'atomic' => $atomic,
+            ],
+        ]);
+    }
+
+    /**
+     * Download the CSV import template.
+     */
+    public function exportImportTemplate(): void
+    {
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+            redirect(appUrl('/admin/import/csv'));
+        }
+
+        csrfProtect();
+        require_once SRC_PATH . '/services/CsvImportService.php';
+        CsvImportService::exportTemplateCsv();
+    }
+
+    /**
      * Reports dashboard page
      */
     public function reports(): void
