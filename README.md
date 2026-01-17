@@ -281,6 +281,8 @@ For shared hosting with a flat folder structure:
 4. Upload `public/assets/` to `htdocs/assets/`
 5. Upload `docs/update/` to `htdocs/docs/update/` (for course data)
 
+Note: if you update (pull) the app later and a feature works locally but is **404 on InfinityFree**, make sure your deployed `htdocs/index.php` is updated too (it comes from `public/index_infinityfree.php`).
+
 ### Application Settings
 
 Edit `src/config/app.php` if needed:
