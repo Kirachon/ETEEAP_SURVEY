@@ -216,6 +216,37 @@ The application supports environment-specific configuration through `config.loca
    putenv('DB_PASS=your_password');
    ```
 
+### Email OTP / MFA (Survey + Admin)
+
+This app can send **One-Time Passwords (OTP)** via email for:
+- Survey respondent email verification (after Step 2)
+- Admin login second factor (after password)
+
+Configure these in `src/config/config.local.php` (do not commit secrets):
+
+```php
+<?php
+putenv('OTP_SECRET=REPLACE_WITH_RANDOM_SECRET');
+putenv('SMTP_HOST=smtp.gmail.com');
+putenv('SMTP_PORT=587');
+putenv('SMTP_TLS=1');
+putenv('SMTP_USER=your@dswd.gov.ph');
+putenv('SMTP_PASS=YOUR_GOOGLE_APP_PASSWORD');
+putenv('SMTP_FROM_EMAIL=your@dswd.gov.ph');
+putenv('SMTP_FROM_NAME=ETEEAP Survey OTP');
+```
+
+OTP behavior (defaults):
+- Expires in ~10 minutes
+- You can resend after ~1 minute
+- Maximum 5 attempts per OTP
+
+Note: when deploying to a server infrastructure, confirm outbound access to `smtp.gmail.com:587` (some networks block outbound SMTP).
+
+Troubleshooting OTP sending:
+- Check `storage/logs/otp.log` for SMTP/DB errors (no secrets are logged).
+- Common causes: missing `otp_challenges` table (migration not applied), wrong SMTP credentials/app password, or blocked outbound SMTP on the target machine.
+
 ### Shared Hosting (InfinityFree, etc.)
 
 For shared hosting with a flat folder structure:

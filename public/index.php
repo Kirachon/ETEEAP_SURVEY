@@ -64,6 +64,9 @@ $routes = [
     'POST /survey/consent' => ['controller' => 'SurveyController', 'action' => 'saveStep', 'params' => ['step' => 1]],
     'GET /survey/step/{step}' => ['controller' => 'SurveyController', 'action' => 'showStep'],
     'POST /survey/step/{step}' => ['controller' => 'SurveyController', 'action' => 'saveStep'],
+    'GET /survey/verify-email' => ['controller' => 'SurveyController', 'action' => 'showVerifyEmail'],
+    'POST /survey/verify-email' => ['controller' => 'SurveyController', 'action' => 'verifyEmail'],
+    'POST /survey/verify-email/resend' => ['controller' => 'SurveyController', 'action' => 'resendEmailOtp'],
     'GET /survey/thank-you' => ['controller' => 'SurveyController', 'action' => 'thankYou'],
     'GET /survey/declined' => ['controller' => 'SurveyController', 'action' => 'declined'],
     
@@ -71,6 +74,10 @@ $routes = [
     'GET /admin' => ['controller' => 'AdminController', 'action' => 'dashboard'],
     'GET /admin/login' => ['controller' => 'AuthController', 'action' => 'showLogin'],
     'POST /admin/login' => ['controller' => 'AuthController', 'action' => 'login'],
+    'GET /admin/otp' => ['controller' => 'AuthController', 'action' => 'showOtp'],
+    'POST /admin/otp' => ['controller' => 'AuthController', 'action' => 'verifyOtp'],
+    'POST /admin/otp/resend' => ['controller' => 'AuthController', 'action' => 'resendOtp'],
+    'POST /admin/otp/cancel' => ['controller' => 'AuthController', 'action' => 'cancelOtp'],
     // GET shows a confirmation page (no state change); POST performs the logout
     'GET /admin/logout' => ['controller' => 'AuthController', 'action' => 'showLogout'],
     'POST /admin/logout' => ['controller' => 'AuthController', 'action' => 'logout'],

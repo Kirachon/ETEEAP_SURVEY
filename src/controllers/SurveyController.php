@@ -43,6 +43,27 @@ class SurveyController
         if ($step > $maxAllowedStep) {
             redirect(appUrl('/survey/step/' . $maxAllowedStep));
         }
+
+        // Email OTP gate: require verified email before step 3+
+        if ($step > 2) {
+            $emailVerified = ($survey['email_verified'] ?? false) === true;
+            if (!$emailVerified) {
+                redirect(appUrl('/survey/verify-email'));
+            }
+
+            $allData = getAllSurveyData();
+            $email = strtolower(trim((string) ($allData['email'] ?? '')));
+            $verifiedEmail = strtolower(trim((string) ($survey['verified_email'] ?? '')));
+            if ($email === '' || $verifiedEmail === '' || $email !== $verifiedEmail) {
+                // Email changed or missing; require re-verification.
+                updateSurveySession([
+                    'email_verified' => false,
+                    'verified_email' => null,
+                    'email_pending' => $email !== '' ? $email : null,
+                ]);
+                redirect(appUrl('/survey/verify-email'));
+            }
+        }
         
         // Get previously saved data for this step
         $savedData = getSurveyStepData($step);
@@ -131,6 +152,50 @@ class SurveyController
         
         // Save step data
         saveSurveyStepData($step, $result->sanitized);
+
+        // After Step 2, require email OTP verification before proceeding.
+        if ($step === 2) {
+            $survey = getSurveySession();
+            $email = strtolower(trim((string) ($result->sanitized['email'] ?? '')));
+
+            if ($email !== '') {
+                $verifiedEmail = strtolower(trim((string) ($survey['verified_email'] ?? '')));
+                $alreadyVerified = (($survey['email_verified'] ?? false) === true) && ($verifiedEmail === $email);
+
+                if (!$alreadyVerified) {
+                    try {
+                        require_once SRC_PATH . '/services/OtpService.php';
+                        OtpService::sendSurveyOtp(
+                            $email,
+                            (string) ($survey['session_id'] ?? ''),
+                            (string) (getClientIp() ?? ''),
+                            (string) ($_SERVER['HTTP_USER_AGENT'] ?? '')
+                        );
+                        flashSet('success', 'We sent a one-time code (OTP) to your email. Please enter it to continue.');
+                    } catch (Throwable $e) {
+                        $msg = trim(preg_replace('/\s+/', ' ', (string) $e->getMessage()) ?? '');
+                        $msg = mb_substr($msg, 0, 220, 'UTF-8');
+
+                        $logPath = (defined('STORAGE_PATH') ? STORAGE_PATH : (APP_ROOT . '/storage')) . '/logs/otp.log';
+                        @error_log('Survey OTP send failed: ' . $msg . ' | IP=' . (string) getClientIp(), 3, $logPath);
+
+                        $hint = APP_DEBUG && $msg !== '' ? (' Details: ' . $msg) : '';
+                        flashSet('error', 'Failed to send OTP. Please try again.' . $hint);
+                        redirect(appUrl('/survey/step/2'));
+                        return;
+                    }
+
+                    updateSurveySession([
+                        'email_verified' => false,
+                        'verified_email' => null,
+                        'email_pending' => $email,
+                    ]);
+
+                    redirect(appUrl('/survey/verify-email'));
+                    return;
+                }
+            }
+        }
         
         // Determine next action
         if ($step >= SURVEY_TOTAL_STEPS) {
@@ -149,6 +214,16 @@ class SurveyController
     {
         $survey = getSurveySession();
         $allData = getAllSurveyData();
+
+        // Enforce email verification before submission
+        $emailVerified = ($survey['email_verified'] ?? false) === true;
+        $email = strtolower(trim((string) ($allData['email'] ?? '')));
+        $verifiedEmail = strtolower(trim((string) ($survey['verified_email'] ?? '')));
+        if (!$emailVerified || $email === '' || $verifiedEmail === '' || $email !== $verifiedEmail) {
+            flashSet('error', 'Please verify your email address before submitting the survey.');
+            redirect(appUrl('/survey/verify-email'));
+            return;
+        }
         
         // Final duplicate check before submission (safety net for race conditions)
         $email = $allData['email'] ?? '';
@@ -311,6 +386,128 @@ class SurveyController
             flashSet('error', $msg);
             redirect(appUrl('/survey/step/' . SURVEY_TOTAL_STEPS));
         }
+    }
+
+    /**
+     * Show email verification (OTP) page.
+     */
+    public function showVerifyEmail(): void
+    {
+        $survey = getSurveySession();
+
+        if (empty($survey['consent_given'])) {
+            flashSet('error', 'Please provide consent before continuing.');
+            redirect(appUrl('/survey/consent'));
+            return;
+        }
+
+        $allData = getAllSurveyData();
+        $email = strtolower(trim((string) ($allData['email'] ?? '')));
+        if ($email === '') {
+            flashSet('error', 'Please enter your email address first.');
+            redirect(appUrl('/survey/step/2'));
+            return;
+        }
+
+        $this->render('survey/verify-email', [
+            'pageTitle' => 'Verify Email',
+            'email' => $email,
+            'errors' => flashGet('validation_errors', []),
+            'csrfToken' => csrfGetToken(),
+        ]);
+    }
+
+    /**
+     * Verify email OTP.
+     */
+    public function verifyEmail(): void
+    {
+        csrfProtect();
+
+        $survey = getSurveySession();
+        if (empty($survey['consent_given'])) {
+            flashSet('error', 'Please provide consent before continuing.');
+            redirect(appUrl('/survey/consent'));
+            return;
+        }
+
+        $allData = getAllSurveyData();
+        $email = strtolower(trim((string) ($allData['email'] ?? '')));
+        if ($email === '') {
+            flashSet('error', 'Please enter your email address first.');
+            redirect(appUrl('/survey/step/2'));
+            return;
+        }
+
+        $otp = sanitizeString($_POST['otp'] ?? '');
+        if ($otp === '') {
+            flashSet('error', 'OTP is required.');
+            redirect(appUrl('/survey/verify-email'));
+            return;
+        }
+
+        require_once SRC_PATH . '/services/OtpService.php';
+        $ok = OtpService::verifySurveyOtp($email, (string) ($survey['session_id'] ?? ''), $otp);
+
+        if (!$ok) {
+            flashSet('error', 'Invalid or expired OTP. Please try again.');
+            redirect(appUrl('/survey/verify-email'));
+            return;
+        }
+
+        updateSurveySession([
+            'email_verified' => true,
+            'verified_email' => $email,
+            'email_pending' => null,
+        ]);
+
+        flashSet('success', 'Email verified. You may now continue the survey.');
+        redirect(appUrl('/survey/step/3'));
+    }
+
+    /**
+     * Resend survey email OTP.
+     */
+    public function resendEmailOtp(): void
+    {
+        csrfProtect();
+
+        $survey = getSurveySession();
+        if (empty($survey['consent_given'])) {
+            flashSet('error', 'Please provide consent before continuing.');
+            redirect(appUrl('/survey/consent'));
+            return;
+        }
+
+        $allData = getAllSurveyData();
+        $email = strtolower(trim((string) ($allData['email'] ?? '')));
+        if ($email === '') {
+            flashSet('error', 'Please enter your email address first.');
+            redirect(appUrl('/survey/step/2'));
+            return;
+        }
+
+        try {
+            require_once SRC_PATH . '/services/OtpService.php';
+            OtpService::sendSurveyOtp(
+                $email,
+                (string) ($survey['session_id'] ?? ''),
+                (string) (getClientIp() ?? ''),
+                (string) ($_SERVER['HTTP_USER_AGENT'] ?? '')
+            );
+            flashSet('success', 'OTP sent. Please check your email.');
+        } catch (Throwable $e) {
+            $msg = trim(preg_replace('/\s+/', ' ', (string) $e->getMessage()) ?? '');
+            $msg = mb_substr($msg, 0, 220, 'UTF-8');
+
+            $logPath = (defined('STORAGE_PATH') ? STORAGE_PATH : (APP_ROOT . '/storage')) . '/logs/otp.log';
+            @error_log('Survey OTP resend failed: ' . $msg . ' | IP=' . (string) getClientIp(), 3, $logPath);
+
+            $hint = APP_DEBUG && $msg !== '' ? (' Details: ' . $msg) : '';
+            flashSet('error', 'Failed to resend OTP.' . $hint);
+        }
+
+        redirect(appUrl('/survey/verify-email'));
     }
     
     /**

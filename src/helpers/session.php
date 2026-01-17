@@ -199,7 +199,12 @@ function getSurveySession(): array
             'current_step' => 1,
             'consent_given' => false,
             'started_at' => time(),
-            'data' => []
+            'data' => [],
+
+            // Email OTP verification (set after Step 2)
+            'email_verified' => false,
+            'verified_email' => null,
+            'email_pending' => null,
         ];
     }
     
