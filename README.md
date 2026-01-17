@@ -246,6 +246,20 @@ putenv('SMTP_FROM_EMAIL=your@dswd.gov.ph');
 putenv('SMTP_FROM_NAME=ETEEAP Survey OTP');
 ```
 
+#### Google App Password (for SMTP_PASS)
+
+If you will use **Google SMTP** (like `smtp.gmail.com`) you should use an **App Password** instead of your normal email password.
+
+How to create an App Password (easy steps):
+1. Go to your Google Account settings (the account for your email).
+2. Open **Security**.
+3. Turn on **2‑Step Verification** (required).
+4. After 2‑Step Verification is enabled, find **App passwords**.
+5. Create an App Password for **Mail** (you can name it like “ETEEAP Survey”).
+6. Google will show a **16‑character password** — copy it and put it in `SMTP_PASS`.
+
+If you cannot see “App passwords”, it usually means 2‑Step Verification is not enabled, or your organization/admin disabled it.
+
 OTP behavior (defaults):
 - Expires in ~10 minutes
 - You can resend after ~1 minute
