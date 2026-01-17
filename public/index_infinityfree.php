@@ -98,6 +98,9 @@ $routes = [
 
     // Public API routes (for survey dropdowns)
     'GET /api/positions' => ['controller' => 'PublicApiController', 'action' => 'positions'],
+    'GET /api/ched-programs' => ['controller' => 'PublicApiController', 'action' => 'chedPrograms'],
+    'GET /api/obs' => ['controller' => 'PublicApiController', 'action' => 'obs'],
+    'GET /api/attached-agencies' => ['controller' => 'PublicApiController', 'action' => 'attachedAgencies'],
     'GET /api/courses' => ['controller' => 'PublicApiController', 'action' => 'courses'],
 
     // Survey submission API

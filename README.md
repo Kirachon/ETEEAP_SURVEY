@@ -278,7 +278,7 @@ For shared hosting with a flat folder structure:
 1. Upload all files to `htdocs/` (not a subfolder)
 2. Rename `public/index_infinityfree.php` to `index.php`
 3. Create `src/config/config.local.php` with your hosting credentials
-4. Upload `public/assets/` to `htdocs/assets/`
+4. Upload `public/assets/` to `htdocs/assets/` (include `assets/vendor/` for Tom Select)
 5. Upload `docs/update/` to `htdocs/docs/update/` (for course data)
 
 Note: if you update (pull) the app later and a feature works locally but is **404 on InfinityFree**, make sure your deployed `htdocs/index.php` is updated too (it comes from `public/index_infinityfree.php`).
