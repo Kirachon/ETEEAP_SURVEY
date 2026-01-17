@@ -216,6 +216,16 @@ The application supports environment-specific configuration through `config.loca
    putenv('DB_PASS=your_password');
    ```
 
+### After Pulling Updates (Existing Install)
+
+If you already installed this app before and you pull new updates, it is **not always plug-and-play** until you also:
+
+1. Keep your local secrets/config:
+   - Your `src/config/config.local.php` stays on your machine/server (it is gitignored and not overwritten by `git pull`).
+
+2. Apply new database migrations (when present):
+   - Current required migration for OTP/MFA: `database/migrations/2026-01-17_otp_challenges.sql`
+
 ### Email OTP / MFA (Survey + Admin)
 
 This app can send **One-Time Passwords (OTP)** via email for:
