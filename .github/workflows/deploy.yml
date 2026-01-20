@@ -19,6 +19,11 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          # InfinityFree FTP can be slow/unreliable; increase timeout to avoid "Timeout (control socket)"
+          timeout: 300000
+          log-level: minimal
           server-dir: htdocs/
           exclude: |
             **/.git*
