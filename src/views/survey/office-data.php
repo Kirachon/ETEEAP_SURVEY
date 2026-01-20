@@ -72,25 +72,84 @@ $savedData = $savedData ?? [];
                                 <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                 </div>
-                                <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">9. Region Assignment *</h3>
+                                <h3 class="text-lg font-black text-dswd-dark uppercase tracking-wider">9. Location (PSGC) *</h3>
                             </div>
                             
-                            <div class="relative">
-                                <select name="office_assignment" id="office_assignment" class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none appearance-none cursor-pointer">
-                                    <option value="" disabled selected>Select Region</option>
-                                    <?php 
-                                    $regions = ['I', 'II', 'III', 'IV-A', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'NCR', 'CAR', 'XIII', 'MIMAROPA', 'NIR', 'BARMM'];
-                                    foreach ($regions as $region): 
-                                    ?>
-                                        <option value="<?= $region ?>" <?= ($savedData['office_assignment'] ?? '') === $region ? 'selected' : '' ?>>
-                                            Field Office <?= $region ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <!-- Backward-compat: keep storing region label (e.g. I, NCR) -->
+                            <input
+                                type="hidden"
+                                name="office_assignment"
+                                id="office_assignment"
+                                value="<?= htmlspecialchars($savedData['office_assignment'] ?? '') ?>"
+                            >
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label for="psgc_region_code" class="block text-xs font-bold text-slate-600 mb-2">Region</label>
+                                    <div class="relative">
+                                        <select
+                                            name="psgc_region_code"
+                                            id="psgc_region_code"
+                                            data-psgc-url-regions="<?= htmlspecialchars(appUrl('/api/psgc/regions')) ?>"
+                                            data-psgc-url-provinces="<?= htmlspecialchars(appUrl('/api/psgc/provinces')) ?>"
+                                            data-psgc-url-cities="<?= htmlspecialchars(appUrl('/api/psgc/cities')) ?>"
+                                            data-saved="<?= htmlspecialchars((string) ($savedData['psgc_region_code'] ?? '')) ?>"
+                                            class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none appearance-none cursor-pointer"
+                                        >
+                                            <option value="" selected>Select Region</option>
+                                        </select>
+                                        <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </div>
+                                    </div>
+                                    <?php if (isset($errors['psgc_region_code'])): ?>
+                                        <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['psgc_region_code'][0]) ?></p>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div>
+                                    <label for="psgc_province_code" class="block text-xs font-bold text-slate-600 mb-2">Province</label>
+                                    <div class="relative">
+                                        <select
+                                            name="psgc_province_code"
+                                            id="psgc_province_code"
+                                            data-saved="<?= htmlspecialchars((string) ($savedData['psgc_province_code'] ?? '')) ?>"
+                                            class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none appearance-none cursor-pointer"
+                                            disabled
+                                        >
+                                            <option value="" selected>Select Province</option>
+                                        </select>
+                                        <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </div>
+                                    </div>
+                                    <?php if (isset($errors['psgc_province_code'])): ?>
+                                        <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['psgc_province_code'][0]) ?></p>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div>
+                                    <label for="psgc_city_code" class="block text-xs font-bold text-slate-600 mb-2">City / Municipality</label>
+                                    <div class="relative">
+                                        <select
+                                            name="psgc_city_code"
+                                            id="psgc_city_code"
+                                            data-saved="<?= htmlspecialchars((string) ($savedData['psgc_city_code'] ?? '')) ?>"
+                                            class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-blue-500/10 focus:border-dswd-blue transition-all outline-none appearance-none cursor-pointer"
+                                            disabled
+                                        >
+                                            <option value="" selected>Select City / Municipality</option>
+                                        </select>
+                                        <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </div>
+                                    </div>
+                                    <?php if (isset($errors['psgc_city_code'])): ?>
+                                        <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['psgc_city_code'][0]) ?></p>
+                                    <?php endif; ?>
                                 </div>
                             </div>
+
                             <?php if (isset($errors['office_assignment'])): ?>
                                 <p class="mt-1.5 text-xs font-bold text-red-500"><?= htmlspecialchars($errors['office_assignment'][0]) ?></p>
                             <?php endif; ?>
@@ -374,5 +433,207 @@ document.addEventListener('DOMContentLoaded', () => {
         const allowCreate = type === 'positions';
         initTomSelect(el, url, allowCreate);
     });
+
+    // PSGC drill-down (Region -> Province -> City/Municipality)
+    const regionSelect = document.getElementById('psgc_region_code');
+    const provinceSelect = document.getElementById('psgc_province_code');
+    const citySelect = document.getElementById('psgc_city_code');
+    const regionNameHidden = document.getElementById('office_assignment');
+
+    const setOptions = (selectEl, options, placeholder) => {
+        if (!(selectEl instanceof HTMLSelectElement)) return;
+        selectEl.innerHTML = '';
+        const ph = document.createElement('option');
+        ph.value = '';
+        ph.textContent = placeholder;
+        ph.selected = true;
+        selectEl.appendChild(ph);
+        for (const opt of options) {
+            const o = document.createElement('option');
+            o.value = String(opt.value ?? '');
+            o.textContent = String(opt.text ?? '');
+            selectEl.appendChild(o);
+        }
+    };
+
+    const fetchOptions = async (url) => {
+        const res = await fetch(url, { credentials: 'same-origin' });
+        const json = await res.json().catch(() => null);
+        if (!json || !json.success || !Array.isArray(json.data)) return [];
+        return json.data;
+    };
+
+    const loadRegions = async () => {
+        if (!(regionSelect instanceof HTMLSelectElement)) return;
+        const url = regionSelect.getAttribute('data-psgc-url-regions') || '';
+        if (!url) return;
+
+        const options = await fetchOptions(url);
+        setOptions(regionSelect, options, 'Select Region');
+
+        const savedCode = String(regionSelect.getAttribute('data-saved') || '').trim();
+        const savedName = (regionNameHidden instanceof HTMLInputElement) ? String(regionNameHidden.value || '').trim() : '';
+
+        if (savedCode) {
+            regionSelect.value = savedCode;
+        } else if (savedName) {
+            const match = Array.from(regionSelect.options).find((o) => (o.textContent || '').trim() === savedName);
+            if (match) regionSelect.value = match.value;
+        }
+    };
+
+    const loadProvinces = async (regionCode, { allowRestore } = { allowRestore: true }) => {
+        if (!(provinceSelect instanceof HTMLSelectElement) || !(regionSelect instanceof HTMLSelectElement)) return;
+        const base = regionSelect.getAttribute('data-psgc-url-provinces') || '';
+        if (!base || !regionCode) return;
+
+        provinceSelect.disabled = true;
+        setOptions(provinceSelect, [], 'Loading provinces...');
+        setOptions(citySelect, [], 'Select City / Municipality');
+        if (citySelect instanceof HTMLSelectElement) citySelect.disabled = true;
+
+        const url = new URL(base, window.location.origin);
+        url.searchParams.set('region_code', String(regionCode));
+        const options = await fetchOptions(url.toString());
+        setOptions(provinceSelect, options, 'Select Province');
+        provinceSelect.disabled = false;
+
+        if (allowRestore) {
+            const saved = String(provinceSelect.getAttribute('data-saved') || '').trim();
+            if (saved) provinceSelect.value = saved;
+        }
+    };
+
+    const loadCities = async (provinceCode, { allowRestore } = { allowRestore: true }) => {
+        if (!(citySelect instanceof HTMLSelectElement) || !(regionSelect instanceof HTMLSelectElement)) return;
+        const base = regionSelect.getAttribute('data-psgc-url-cities') || '';
+        if (!base || !provinceCode) return;
+
+        citySelect.disabled = true;
+        setOptions(citySelect, [], 'Loading cities...');
+
+        const url = new URL(base, window.location.origin);
+        url.searchParams.set('province_code', String(provinceCode));
+        const options = await fetchOptions(url.toString());
+        setOptions(citySelect, options, 'Select City / Municipality');
+        citySelect.disabled = false;
+
+        if (allowRestore) {
+            const saved = String(citySelect.getAttribute('data-saved') || '').trim();
+            if (saved) citySelect.value = saved;
+        }
+    };
+
+    const updateHiddenRegionName = () => {
+        if (!(regionSelect instanceof HTMLSelectElement) || !(regionNameHidden instanceof HTMLInputElement)) return;
+        const sel = regionSelect.options[regionSelect.selectedIndex];
+        const name = sel ? String(sel.textContent || '').trim() : '';
+        regionNameHidden.value = name;
+    };
+
+    const clearLocation = () => {
+        if (regionSelect instanceof HTMLSelectElement) regionSelect.value = '';
+        if (provinceSelect instanceof HTMLSelectElement) {
+            setOptions(provinceSelect, [], 'Select Province');
+            provinceSelect.value = '';
+            provinceSelect.disabled = true;
+        }
+        if (citySelect instanceof HTMLSelectElement) {
+            setOptions(citySelect, [], 'Select City / Municipality');
+            citySelect.value = '';
+            citySelect.disabled = true;
+        }
+        if (regionNameHidden instanceof HTMLInputElement) regionNameHidden.value = '';
+    };
+
+    const syncRequiredAndDisabled = (isFieldOffice) => {
+        const shouldEnable = Boolean(isFieldOffice);
+        for (const el of [regionSelect, provinceSelect, citySelect]) {
+            if (!(el instanceof HTMLSelectElement)) continue;
+            el.required = shouldEnable;
+            if (!shouldEnable) el.disabled = true;
+        }
+        if (shouldEnable) {
+            if (regionSelect instanceof HTMLSelectElement) regionSelect.disabled = false;
+            // province/city get enabled once options load
+        } else {
+            clearLocation();
+        }
+    };
+
+    if (regionSelect || provinceSelect || citySelect) {
+        // Initial required/disabled state based on office type selection
+        const checked = document.querySelector('input[name="office_type"]:checked');
+        const officeType = checked instanceof HTMLInputElement ? checked.value : '';
+        syncRequiredAndDisabled(officeType === 'field_office');
+
+        // Initial load (safe even if not field office; controls will be disabled)
+        loadRegions().then(() => {
+            if (!(regionSelect instanceof HTMLSelectElement)) return;
+            const regionCode = regionSelect.value;
+            if (regionCode) {
+                updateHiddenRegionName();
+                loadProvinces(regionCode).then(() => {
+                    if (!(provinceSelect instanceof HTMLSelectElement)) return;
+                    const provinceCode = provinceSelect.value;
+                    if (provinceCode) {
+                        loadCities(provinceCode);
+                    }
+                });
+            }
+        });
+
+        document.addEventListener('change', (e) => {
+            const target = e.target;
+            if (!(target instanceof HTMLElement)) return;
+
+            if (target.matches('input[name="office_type"]')) {
+                const t = target instanceof HTMLInputElement ? target.value : '';
+                syncRequiredAndDisabled(t === 'field_office');
+                if (t === 'field_office') {
+                    loadRegions();
+                }
+            }
+        });
+
+        if (regionSelect instanceof HTMLSelectElement) {
+            regionSelect.addEventListener('change', () => {
+                updateHiddenRegionName();
+                if (!(regionSelect instanceof HTMLSelectElement)) return;
+                const regionCode = regionSelect.value;
+                if (!regionCode) {
+                    clearLocation();
+                    return;
+                }
+                if (provinceSelect instanceof HTMLSelectElement) {
+                    provinceSelect.setAttribute('data-saved', '');
+                }
+                if (citySelect instanceof HTMLSelectElement) {
+                    citySelect.setAttribute('data-saved', '');
+                }
+                loadProvinces(regionCode, { allowRestore: false });
+            });
+        }
+
+        if (provinceSelect instanceof HTMLSelectElement) {
+            provinceSelect.addEventListener('change', () => {
+                if (!(provinceSelect instanceof HTMLSelectElement)) return;
+                const provinceCode = provinceSelect.value;
+                if (!provinceCode) {
+                    setOptions(citySelect, [], 'Select City / Municipality');
+                    if (citySelect instanceof HTMLSelectElement) {
+                        citySelect.value = '';
+                        citySelect.disabled = true;
+                        citySelect.setAttribute('data-saved', '');
+                    }
+                    return;
+                }
+                if (citySelect instanceof HTMLSelectElement) {
+                    citySelect.setAttribute('data-saved', '');
+                }
+                loadCities(provinceCode, { allowRestore: false });
+            });
+        }
+    }
 });
 </script>

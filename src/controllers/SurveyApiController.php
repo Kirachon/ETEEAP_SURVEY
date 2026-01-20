@@ -101,7 +101,7 @@ class SurveyApiController
                 "INSERT INTO survey_responses (
                     session_id, consent_given, current_step, completed_at,
                     last_name, first_name, middle_name, ext_name, sex, age_range, email, phone,
-                    office_type, office_assignment, office_bureau, attached_agency, field_office_unit, specific_office, current_position, employment_status,
+                    office_type, office_assignment, psgc_region_code, psgc_province_code, psgc_city_code, office_bureau, attached_agency, field_office_unit, specific_office, current_position, employment_status,
                     years_dswd, years_swd_sector,
                     performs_sw_tasks,
                     highest_education, undergrad_course, diploma_course, graduate_course,
@@ -110,7 +110,7 @@ class SurveyApiController
                 ) VALUES (
                     :session_id, :consent_given, :current_step, NOW(),
                     :last_name, :first_name, :middle_name, :ext_name, :sex, :age_range, :email, :phone,
-                    :office_type, :office_assignment, :office_bureau, :attached_agency, :field_office_unit, :specific_office, :current_position, :employment_status,
+                    :office_type, :office_assignment, :psgc_region_code, :psgc_province_code, :psgc_city_code, :office_bureau, :attached_agency, :field_office_unit, :specific_office, :current_position, :employment_status,
                     :years_dswd, :years_swd_sector,
                     :performs_sw_tasks,
                     :highest_education, :undergrad_course, :diploma_course, :graduate_course,
@@ -131,6 +131,9 @@ class SurveyApiController
                     'phone' => $sanitized['phone'] ?? null,
                     'office_type' => $sanitized['office_type'] ?? null,
                     'office_assignment' => $sanitized['office_assignment'] ?? null,
+                    'psgc_region_code' => $sanitized['psgc_region_code'] ?? null,
+                    'psgc_province_code' => $sanitized['psgc_province_code'] ?? null,
+                    'psgc_city_code' => $sanitized['psgc_city_code'] ?? null,
                     'office_bureau' => $sanitized['office_bureau'] ?? null,
                     'attached_agency' => $sanitized['attached_agency'] ?? null,
                     'field_office_unit' => $sanitized['field_office_unit'] ?? null,

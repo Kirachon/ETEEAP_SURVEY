@@ -281,6 +281,13 @@ function getExportHeaders(): array
         // Office & Employment
         'Office Type' => 'office_type',
         'Field Office (Region) Assignment' => 'office_assignment',
+        'PSGC Location (Name)' => 'psgc_location_name',
+        'PSGC Region (Name)' => 'psgc_region_name',
+        'PSGC Province (Name)' => 'psgc_province_name',
+        'PSGC City/Municipality (Name)' => 'psgc_city_name',
+        'PSGC Region Code' => 'psgc_region_code',
+        'PSGC Province Code' => 'psgc_province_code',
+        'PSGC City/Municipality Code' => 'psgc_city_code',
         'Central Office Bureau / Service / Office' => 'office_bureau',
         'Attached Agency' => 'attached_agency',
         'Field Office Unit / Program Assignment' => 'field_office_unit',
@@ -317,6 +324,153 @@ function getExportHeaders(): array
 }
 
 /**
+ * Build PSGC lookup maps for bulk name resolution.
+ *
+ * @return array{city:array<int,array{city_name:string,province_code:int,province_name:string,region_code:int,region_name:string}>,province:array<int,array{province_name:string,region_code:int,region_name:string}>,region:array<int,string>}
+ */
+function psgcBuildLookupMaps(array $responses): array
+{
+    $cityCodes = [];
+    $provinceCodes = [];
+    $regionCodes = [];
+
+    foreach ($responses as $r) {
+        if (!is_array($r)) continue;
+        $cc = (int) ($r['psgc_city_code'] ?? 0);
+        $pc = (int) ($r['psgc_province_code'] ?? 0);
+        $rc = (int) ($r['psgc_region_code'] ?? 0);
+        if ($cc > 0) $cityCodes[$cc] = true;
+        if ($pc > 0) $provinceCodes[$pc] = true;
+        if ($rc > 0) $regionCodes[$rc] = true;
+    }
+
+    $cityCodes = array_keys($cityCodes);
+    $provinceCodes = array_keys($provinceCodes);
+    $regionCodes = array_keys($regionCodes);
+
+    $maps = [
+        'city' => [],
+        'province' => [],
+        'region' => [],
+    ];
+
+    // Best-effort DB lookups; if DB/table is missing, just return empty maps.
+    try {
+        $chunkSize = 800;
+
+        if (!empty($cityCodes)) {
+            foreach (array_chunk(array_values($cityCodes), $chunkSize) as $chunk) {
+                $chunk = array_map('intval', $chunk);
+                $placeholders = implode(',', array_fill(0, count($chunk), '?'));
+                $rows = dbFetchAll(
+                    "SELECT city_code, city_name, province_code, province_name, region_code, region_name
+                     FROM ref_psgc_city
+                     WHERE city_code IN ({$placeholders})",
+                    $chunk
+                );
+                foreach ($rows as $row) {
+                    $cc = (int) ($row['city_code'] ?? 0);
+                    if ($cc <= 0) continue;
+                    $maps['city'][$cc] = [
+                        'city_name' => (string) ($row['city_name'] ?? ''),
+                        'province_code' => (int) ($row['province_code'] ?? 0),
+                        'province_name' => (string) ($row['province_name'] ?? ''),
+                        'region_code' => (int) ($row['region_code'] ?? 0),
+                        'region_name' => (string) ($row['region_name'] ?? ''),
+                    ];
+                }
+            }
+        }
+
+        if (!empty($provinceCodes)) {
+            foreach (array_chunk(array_values($provinceCodes), $chunkSize) as $chunk) {
+                $chunk = array_map('intval', $chunk);
+                $placeholders = implode(',', array_fill(0, count($chunk), '?'));
+                $rows = dbFetchAll(
+                    "SELECT DISTINCT province_code, province_name, region_code, region_name
+                     FROM ref_psgc_city
+                     WHERE province_code IN ({$placeholders})",
+                    $chunk
+                );
+                foreach ($rows as $row) {
+                    $pc = (int) ($row['province_code'] ?? 0);
+                    if ($pc <= 0) continue;
+                    $maps['province'][$pc] = [
+                        'province_name' => (string) ($row['province_name'] ?? ''),
+                        'region_code' => (int) ($row['region_code'] ?? 0),
+                        'region_name' => (string) ($row['region_name'] ?? ''),
+                    ];
+                }
+            }
+        }
+
+        if (!empty($regionCodes)) {
+            foreach (array_chunk(array_values($regionCodes), $chunkSize) as $chunk) {
+                $chunk = array_map('intval', $chunk);
+                $placeholders = implode(',', array_fill(0, count($chunk), '?'));
+                $rows = dbFetchAll(
+                    "SELECT DISTINCT region_code, region_name
+                     FROM ref_psgc_city
+                     WHERE region_code IN ({$placeholders})",
+                    $chunk
+                );
+                foreach ($rows as $row) {
+                    $rc = (int) ($row['region_code'] ?? 0);
+                    if ($rc <= 0) continue;
+                    $maps['region'][$rc] = (string) ($row['region_name'] ?? '');
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        // ignore
+    }
+
+    return $maps;
+}
+
+function psgcEnrichResponseWithNames(array $response, array $maps): array
+{
+    $officeType = (string) ($response['office_type'] ?? '');
+    $legacyRegion = trim((string) ($response['office_assignment'] ?? ''));
+
+    $regionCode = (int) ($response['psgc_region_code'] ?? 0);
+    $provinceCode = (int) ($response['psgc_province_code'] ?? 0);
+    $cityCode = (int) ($response['psgc_city_code'] ?? 0);
+
+    $regionName = '';
+    $provinceName = '';
+    $cityName = '';
+
+    if ($cityCode > 0 && isset($maps['city'][$cityCode])) {
+        $row = $maps['city'][$cityCode];
+        $cityName = trim((string) ($row['city_name'] ?? ''));
+        $provinceName = trim((string) ($row['province_name'] ?? ''));
+        $regionName = trim((string) ($row['region_name'] ?? ''));
+    } elseif ($provinceCode > 0 && isset($maps['province'][$provinceCode])) {
+        $row = $maps['province'][$provinceCode];
+        $provinceName = trim((string) ($row['province_name'] ?? ''));
+        $regionName = trim((string) ($row['region_name'] ?? ''));
+    } elseif ($regionCode > 0 && isset($maps['region'][$regionCode])) {
+        $regionName = trim((string) ($maps['region'][$regionCode] ?? ''));
+    }
+
+    if ($regionName === '' && $officeType === 'field_office' && $legacyRegion !== '') {
+        $regionName = $legacyRegion;
+    }
+
+    $regionLabel = $regionName !== '' ? ('Region ' . $regionName) : '';
+    $parts = array_values(array_filter([$regionLabel, $provinceName, $cityName], static fn($v) => is_string($v) && trim($v) !== ''));
+    $locationName = implode(' / ', $parts);
+
+    $response['psgc_region_name'] = $regionLabel;
+    $response['psgc_province_name'] = $provinceName;
+    $response['psgc_city_name'] = $cityName;
+    $response['psgc_location_name'] = $locationName;
+
+    return $response;
+}
+
+/**
  * Export survey responses to CSV
  * 
  * @param array $responses Array of survey response data with multi-value fields
@@ -332,6 +486,7 @@ function exportSurveyToCsv(array $responses, string $filename = 'survey_export')
 
     $enumMappings = getSurveyEnumMappings();
     $boolFields = ['consent_given', 'performs_sw_tasks', 'availed_dswd_training', 'eteeap_awareness'];
+    $psgcMaps = psgcBuildLookupMaps($responses);
 
     // Ensure filename has .csv extension
     if (!str_ends_with(strtolower($filename), '.csv')) {
@@ -359,6 +514,9 @@ function exportSurveyToCsv(array $responses, string $filename = 'survey_export')
 
     // Stream rows (avoid building a second in-memory export array)
     foreach ($responses as $response) {
+        if (is_array($response)) {
+            $response = psgcEnrichResponseWithNames($response, $psgcMaps);
+        }
         $csvRow = [];
 
         foreach ($headerMapping as $label => $field) {

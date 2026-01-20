@@ -159,6 +159,44 @@ function formatEnumValue(string $key, $value): string
                         <dt class="text-sm text-gray-500">Field Office (Region) Assignment</dt>
                         <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['office_assignment'] ?: 'N/A') ?></dd>
                     </div>
+                    <?php
+                    $psgcRegionName = (string) ($response['psgc_region_name'] ?? '');
+                    $psgcProvinceName = (string) ($response['psgc_province_name'] ?? '');
+                    $psgcCityName = (string) ($response['psgc_city_name'] ?? '');
+                    $psgcRegionCode = (string) ($response['psgc_region_code'] ?? '');
+                    $psgcProvinceCode = (string) ($response['psgc_province_code'] ?? '');
+                    $psgcCityCode = (string) ($response['psgc_city_code'] ?? '');
+                    $hasPsgc = trim($psgcRegionName . $psgcProvinceName . $psgcCityName . $psgcRegionCode . $psgcProvinceCode . $psgcCityCode) !== '';
+                    ?>
+                    <?php if ($hasPsgc): ?>
+                        <div class="flex justify-between">
+                            <dt class="text-sm text-gray-500">PSGC Region</dt>
+                            <dd class="text-sm font-medium text-gray-900">
+                                <?= htmlspecialchars($psgcRegionName !== '' ? $psgcRegionName : 'N/A') ?>
+                                <?php if ($psgcRegionCode !== '' && $psgcRegionCode !== '0'): ?>
+                                    <span class="text-xs font-normal text-gray-500">(<?= htmlspecialchars($psgcRegionCode) ?>)</span>
+                                <?php endif; ?>
+                            </dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="text-sm text-gray-500">PSGC Province</dt>
+                            <dd class="text-sm font-medium text-gray-900">
+                                <?= htmlspecialchars($psgcProvinceName !== '' ? $psgcProvinceName : 'N/A') ?>
+                                <?php if ($psgcProvinceCode !== '' && $psgcProvinceCode !== '0'): ?>
+                                    <span class="text-xs font-normal text-gray-500">(<?= htmlspecialchars($psgcProvinceCode) ?>)</span>
+                                <?php endif; ?>
+                            </dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="text-sm text-gray-500">PSGC City / Municipality</dt>
+                            <dd class="text-sm font-medium text-gray-900">
+                                <?= htmlspecialchars($psgcCityName !== '' ? $psgcCityName : 'N/A') ?>
+                                <?php if ($psgcCityCode !== '' && $psgcCityCode !== '0'): ?>
+                                    <span class="text-xs font-normal text-gray-500">(<?= htmlspecialchars($psgcCityCode) ?>)</span>
+                                <?php endif; ?>
+                            </dd>
+                        </div>
+                    <?php endif; ?>
                     <div class="flex justify-between">
                         <dt class="text-sm text-gray-500">Field Office Unit / Program Assignment</dt>
                         <dd class="text-sm font-medium text-gray-900"><?= htmlspecialchars($response['field_office_unit'] ?: 'N/A') ?></dd>

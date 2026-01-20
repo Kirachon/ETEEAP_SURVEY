@@ -585,6 +585,49 @@ function validateStepOfficeData(array $data): ValidationResult
              $result->addError('office_assignment', 'Please select a valid Field Office.');
         }
 
+        // PSGC drill-down (Region -> Province -> City/Municipality)
+        $psgcRegionCode = (int) sanitizeString($data['psgc_region_code'] ?? '');
+        $psgcProvinceCode = (int) sanitizeString($data['psgc_province_code'] ?? '');
+        $psgcCityCode = (int) sanitizeString($data['psgc_city_code'] ?? '');
+
+        if ($psgcRegionCode <= 0) {
+            $result->addError('psgc_region_code', 'Please select your Region.');
+        }
+        if ($psgcProvinceCode <= 0) {
+            $result->addError('psgc_province_code', 'Please select your Province.');
+        }
+        if ($psgcCityCode <= 0) {
+            $result->addError('psgc_city_code', 'Please select your City / Municipality.');
+        }
+
+        // Validate PSGC hierarchy when all codes are present.
+        // (Best-effort: if DB/table is unavailable, skip this check.)
+        if ($psgcRegionCode > 0 && $psgcProvinceCode > 0 && $psgcCityCode > 0) {
+            try {
+                $ok = dbFetchOne(
+                    "SELECT 1 FROM ref_psgc_city
+                     WHERE city_code = :city_code
+                       AND province_code = :province_code
+                       AND region_code = :region_code
+                     LIMIT 1",
+                    [
+                        'city_code' => $psgcCityCode,
+                        'province_code' => $psgcProvinceCode,
+                        'region_code' => $psgcRegionCode,
+                    ]
+                );
+                if (!$ok) {
+                    $result->addError('psgc_city_code', 'Selected location is invalid. Please re-select your Region/Province/City.');
+                }
+            } catch (Throwable $e) {
+                // ignore
+            }
+        }
+
+        $result->sanitized['psgc_region_code'] = $psgcRegionCode > 0 ? $psgcRegionCode : null;
+        $result->sanitized['psgc_province_code'] = $psgcProvinceCode > 0 ? $psgcProvinceCode : null;
+        $result->sanitized['psgc_city_code'] = $psgcCityCode > 0 ? $psgcCityCode : null;
+
         // Q10: Field Office Unit (Required)
         $fieldOfficeUnit = sanitizeString($data['field_office_unit'] ?? '');
         if ($fieldOfficeUnit === '') {
@@ -597,6 +640,9 @@ function validateStepOfficeData(array $data): ValidationResult
     } else {
         $officeAssignment = null;
         $result->sanitized['field_office_unit'] = null;
+        $result->sanitized['psgc_region_code'] = null;
+        $result->sanitized['psgc_province_code'] = null;
+        $result->sanitized['psgc_city_code'] = null;
     }
     $result->sanitized['office_assignment'] = $officeAssignment;
     

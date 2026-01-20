@@ -2,8 +2,12 @@ node_modules/
 .context-engine/
 screenshots/
 .augment-context-state.json
+.env
+.env.*
+!.env.example
 storage/config.php
 storage/install.lock
 storage/install.log
+storage/logs/
 src/config/config.local.php
 public/debug.php

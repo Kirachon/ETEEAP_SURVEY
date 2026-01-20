@@ -396,12 +396,22 @@ class ReportGenerator
         
         // Office assignment detail (region vs bureau vs attached agency)
         $byRegion = dbFetchAll(
-            "SELECT office_assignment as label, COUNT(*) as count
-             FROM survey_responses
+            "SELECT
+                COALESCE(
+                    CONCAT(rpc.city_name, ' (', rpc.province_name, ', ', rpc.region_name, ')'),
+                    CONCAT('Region ', office_assignment)
+                ) as label,
+                COUNT(*) as count
+             FROM survey_responses sr
+             LEFT JOIN ref_psgc_city rpc
+               ON rpc.city_code = sr.psgc_city_code
              WHERE {$where}
-               AND office_type = 'field_office'
-               AND office_assignment IS NOT NULL AND TRIM(office_assignment) <> ''
-             GROUP BY office_assignment
+               AND sr.office_type = 'field_office'
+               AND (
+                   sr.psgc_city_code IS NOT NULL
+                   OR (sr.office_assignment IS NOT NULL AND TRIM(sr.office_assignment) <> '')
+               )
+             GROUP BY label
              ORDER BY count DESC
              LIMIT 15"
         );
@@ -446,8 +456,8 @@ class ReportGenerator
                     'rows' => array_map(fn($r) => [$r['office_type'] ?? 'N/A', $r['employment_status'] ?? 'N/A', $r['count']], $byOfficeStatus)
                 ],
                 [
-                    'title' => 'Top 15 Field Office (Region) Assignments',
-                    'headers' => ['Region', 'Count'],
+                    'title' => 'Top 15 Field Office (City/Municipality)',
+                    'headers' => ['Location', 'Count'],
                     'rows' => array_map(fn($r) => [$r['label'], $r['count']], $byRegion)
                 ],
                 [
@@ -870,15 +880,23 @@ class ReportGenerator
         // By Office Assignment Detail (region vs bureau vs attached agency)
         $byRegion = dbFetchAll(
             "SELECT 
-                office_assignment as office,
+                COALESCE(
+                    CONCAT(rpc.city_name, ' (', rpc.province_name, ', ', rpc.region_name, ')'),
+                    CONCAT('Region ', office_assignment)
+                ) as office,
                 COUNT(*) as total,
                 SUM(CASE WHEN years_swd_sector IN ('5-10', '11-15', '15+') THEN 1 ELSE 0 END) as with_sw_exp,
                 SUM(CASE WHEN will_apply = 'yes' THEN 1 ELSE 0 END) as will_apply_yes
-             FROM survey_responses
+             FROM survey_responses sr
+             LEFT JOIN ref_psgc_city rpc
+               ON rpc.city_code = sr.psgc_city_code
              WHERE {$where}
-               AND office_type = 'field_office'
-               AND office_assignment IS NOT NULL AND TRIM(office_assignment) <> ''
-             GROUP BY office_assignment
+               AND sr.office_type = 'field_office'
+               AND (
+                   sr.psgc_city_code IS NOT NULL
+                   OR (sr.office_assignment IS NOT NULL AND TRIM(sr.office_assignment) <> '')
+               )
+             GROUP BY office
              ORDER BY total DESC
              LIMIT 15"
         );

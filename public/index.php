@@ -87,6 +87,7 @@ $routes = [
     'GET /admin/export/csv' => ['controller' => 'AdminController', 'action' => 'exportCsv'],
     'GET /admin/import/csv' => ['controller' => 'AdminController', 'action' => 'importCsvForm'],
     'POST /admin/import/csv' => ['controller' => 'AdminController', 'action' => 'importCsvUpload'],
+    'POST /admin/import/psgc' => ['controller' => 'AdminController', 'action' => 'importPsgc'],
     'POST /admin/import/template' => ['controller' => 'AdminController', 'action' => 'exportImportTemplate'],
 
     // Reports
@@ -111,6 +112,9 @@ $routes = [
     // Public API routes (for survey dropdowns - no auth required)
     'GET /api/positions' => ['controller' => 'PublicApiController', 'action' => 'positions'],
     'GET /api/courses' => ['controller' => 'PublicApiController', 'action' => 'courses'],
+    'GET /api/psgc/regions' => ['controller' => 'PublicApiController', 'action' => 'psgcRegions'],
+    'GET /api/psgc/provinces' => ['controller' => 'PublicApiController', 'action' => 'psgcProvinces'],
+    'GET /api/psgc/cities' => ['controller' => 'PublicApiController', 'action' => 'psgcCities'],
 
     // Survey submission API (public, CSRF-protected)
     'POST /api/survey/submit' => ['controller' => 'SurveyApiController', 'action' => 'submit'],

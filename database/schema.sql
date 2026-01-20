@@ -39,6 +39,9 @@ CREATE TABLE IF NOT EXISTS survey_responses (
     -- Section 3: Office & Employment Data
     office_type ENUM('central_office', 'field_office', 'attached_agency') NULL,
     office_assignment VARCHAR(50) NULL,
+    psgc_region_code INT UNSIGNED NULL,
+    psgc_province_code INT UNSIGNED NULL,
+    psgc_city_code INT UNSIGNED NULL,
     office_bureau VARCHAR(255) NULL,
     attached_agency VARCHAR(255) NULL,
     field_office_unit VARCHAR(255) NULL,
@@ -73,12 +76,35 @@ CREATE TABLE IF NOT EXISTS survey_responses (
     INDEX idx_session (session_id),
     INDEX idx_created (created_at),
     INDEX idx_office_type (office_type),
+    INDEX idx_psgc_region_code (psgc_region_code),
+    INDEX idx_psgc_province_code (psgc_province_code),
+    INDEX idx_psgc_city_code (psgc_city_code),
     INDEX idx_interest (eteeap_interest),
     INDEX idx_completed (completed_at),
     INDEX idx_age_range (age_range),
     INDEX idx_sex (sex),
     INDEX idx_will_not_apply_reason (will_not_apply_reason(100)),
     UNIQUE INDEX idx_unique_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- PSGC Reference Data (Region -> Province -> City/Municipality)
+-- ============================================
+CREATE TABLE IF NOT EXISTS ref_psgc_city (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    region_code INT UNSIGNED NOT NULL,
+    region_name VARCHAR(20) NOT NULL,
+    province_code INT UNSIGNED NOT NULL,
+    province_name VARCHAR(255) NOT NULL,
+    city_code INT UNSIGNED NOT NULL,
+    city_name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE KEY ux_city_code (city_code),
+    KEY idx_region_code (region_code),
+    KEY idx_province_code (province_code),
+    KEY idx_region_province (region_code, province_code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================

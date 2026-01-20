@@ -4,6 +4,7 @@
  */
 
 $importResult = $importResult ?? null;
+$psgcImportResult = $psgcImportResult ?? null;
 $importOptions = $importOptions ?? ['strict_headers' => true, 'atomic' => true];
 $strictHeaders = (bool) ($importOptions['strict_headers'] ?? true);
 $atomic = (bool) ($importOptions['atomic'] ?? true);
@@ -35,6 +36,35 @@ $atomic = (bool) ($importOptions['atomic'] ?? true);
                 <li>Enum fields accept either the template text (e.g., <span class="font-mono">Male</span>) or internal codes (e.g., <span class="font-mono">male</span>).</li>
             </ul>
         </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h3 class="text-sm font-semibold text-gray-900">PSGC Reference Data</h3>
+                <p class="text-sm text-gray-500">Import Region → Province → City/Municipality data from <span class="font-mono">docs/update/lib_psgc_2025.csv</span>.</p>
+            </div>
+            <form method="POST" action="<?= appUrl('/admin/import/psgc') ?>">
+                <?= csrfInputField() ?>
+                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
+                    Import PSGC
+                </button>
+            </form>
+        </div>
+
+        <?php if (is_array($psgcImportResult)): ?>
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                    Total rows: <?= (int) ($psgcImportResult['total'] ?? 0) ?>
+                </span>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                    Imported: <?= (int) ($psgcImportResult['processed'] ?? 0) ?>
+                </span>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
+                    Skipped: <?= (int) ($psgcImportResult['skipped'] ?? 0) ?>
+                </span>
+            </div>
+        <?php endif; ?>
     </div>
 
     <form method="POST" action="<?= appUrl('/admin/import/csv') ?>" enctype="multipart/form-data" class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 space-y-4">

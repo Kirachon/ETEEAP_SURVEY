@@ -242,7 +242,13 @@ class OtpService
         }
 
         $challenge = self::createChallenge(self::PURPOSE_SURVEY, $email, $surveySessionId, null, $ip, $userAgent);
-        self::sendOtpEmail($email, 'Survey Email Verification', $challenge['otp'], (int) $challenge['expires_seconds']);
+        try {
+            self::sendOtpEmail($email, 'Survey Email Verification', $challenge['otp'], (int) $challenge['expires_seconds']);
+        } catch (Throwable $e) {
+            // If delivery fails (SMTP/network), allow retry without waiting for cooldown.
+            self::invalidateActive(self::PURPOSE_SURVEY, $email, $surveySessionId, null);
+            throw $e;
+        }
     }
 
     /**
@@ -333,7 +339,13 @@ class OtpService
         }
 
         $challenge = self::createChallenge(self::PURPOSE_ADMIN, $email, null, $adminUserId, $ip, $userAgent);
-        self::sendOtpEmail($email, 'Admin Login', $challenge['otp'], (int) $challenge['expires_seconds']);
+        try {
+            self::sendOtpEmail($email, 'Admin Login', $challenge['otp'], (int) $challenge['expires_seconds']);
+        } catch (Throwable $e) {
+            // If delivery fails (SMTP/network), allow retry without waiting for cooldown.
+            self::invalidateActive(self::PURPOSE_ADMIN, $email, null, $adminUserId);
+            throw $e;
+        }
     }
 
     /**

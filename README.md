@@ -238,12 +238,20 @@ Configure these in `src/config/config.local.php` (do not commit secrets):
 <?php
 putenv('OTP_SECRET=REPLACE_WITH_RANDOM_SECRET');
 putenv('SMTP_HOST=smtp.gmail.com');
-putenv('SMTP_PORT=587');
-putenv('SMTP_TLS=1');
+// Recommended defaults:
+// - Port 465 + SSL is often more reliable on networks that block STARTTLS on 587
+// - You can still use 587 + STARTTLS if your network allows it
+putenv('SMTP_PORT=465');
+putenv('SMTP_ENCRYPTION=ssl'); // ssl | starttls | none
+putenv('SMTP_AUTH=1');
 putenv('SMTP_USER=your@dswd.gov.ph');
 putenv('SMTP_PASS=YOUR_GOOGLE_APP_PASSWORD');
 putenv('SMTP_FROM_EMAIL=your@dswd.gov.ph');
 putenv('SMTP_FROM_NAME=ETEEAP Survey OTP');
+// Optional troubleshooting (some networks/DNS prefer broken IPv6)
+putenv('SMTP_FORCE_IPV4=1');
+// Optional: writes safe SMTP stage logs to storage/logs/otp.log (no secrets)
+// putenv('SMTP_DEBUG_LOG=1');
 ```
 
 #### Google App Password (for SMTP_PASS)
@@ -265,11 +273,29 @@ OTP behavior (defaults):
 - You can resend after ~1 minute
 - Maximum 5 attempts per OTP
 
-Note: when deploying to a server infrastructure, confirm outbound access to `smtp.gmail.com:587` (some networks block outbound SMTP).
+Note: when deploying to a server infrastructure, confirm outbound access to `smtp.gmail.com:587` (STARTTLS) and/or `smtp.gmail.com:465` (SSL). Some networks block outbound SMTP on certain ports.
 
 Troubleshooting OTP sending:
 - Check `storage/logs/otp.log` for SMTP/DB errors (no secrets are logged).
 - Common causes: missing `otp_challenges` table (migration not applied), wrong SMTP credentials/app password, or blocked outbound SMTP on the target machine.
+
+### PSGC Location Drilldown (Field Office)
+
+Step 3 (Field Office) uses a PSGC-based drilldown:
+**Region → Province → City/Municipality**.
+
+Requirements:
+- PSGC source file: `docs/update/lib_psgc_2025.csv`
+- PSGC reference table in DB: `ref_psgc_city` (created by the PSGC migration)
+
+How to enable PSGC data:
+1. Ensure your database is updated (run migrations).
+2. Log in as admin, then open **Admin → Import** and click **Import PSGC**.
+   - This imports the PSGC CSV into `ref_psgc_city`.
+
+Notes:
+- The database stores PSGC *codes* (`psgc_region_code`, `psgc_province_code`, `psgc_city_code`).
+- Admin view + exports also include human-readable names so users don’t need to interpret codes.
 
 ### Shared Hosting (InfinityFree, etc.)
 

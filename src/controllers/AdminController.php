@@ -172,6 +172,12 @@ class AdminController
             flashSet('error', 'Response not found.');
             redirect(appUrl('/admin/responses'));
         }
+
+        // Enrich PSGC codes -> human-readable names for display
+        if (function_exists('psgcBuildLookupMaps') && function_exists('psgcEnrichResponseWithNames')) {
+            $maps = psgcBuildLookupMaps([$response]);
+            $response = psgcEnrichResponseWithNames($response, $maps);
+        }
         
         // Get multi-value data
         $multiValues = [];
@@ -245,14 +251,38 @@ class AdminController
     /**
      * CSV import page (admin).
      */
-    public function importCsvForm(): void
-    {
-        $this->render('admin/import', [
-            'pageTitle' => 'Import CSV',
-            'currentPage' => 'import',
-            'adminUser' => sessionGet('admin_user'),
-        ]);
-    }
+   public function importCsvForm(): void
+   {
+       $this->render('admin/import', [
+           'pageTitle' => 'Import CSV',
+           'currentPage' => 'import',
+           'psgcImportResult' => flashGet('psgc_import_result'),
+           'adminUser' => sessionGet('admin_user'),
+       ]);
+   }
+
+   /**
+    * Import PSGC reference data from docs/update/lib_psgc_2025.csv into DB.
+    */
+   public function importPsgc(): void
+   {
+       if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+           redirect(appUrl('/admin/import/csv'));
+       }
+
+       csrfProtect();
+
+       try {
+           require_once SRC_PATH . '/services/PsgcImportService.php';
+           $result = PsgcImportService::importFromCsv();
+           flashSet('psgc_import_result', $result);
+           flashSet('success', 'PSGC reference data imported successfully.');
+       } catch (Throwable $e) {
+           flashSet('error', 'PSGC import failed: ' . $e->getMessage());
+       }
+
+       redirect(appUrl('/admin/import/csv'));
+   }
 
     /**
      * Handle CSV import upload (admin).

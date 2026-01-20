@@ -13,7 +13,11 @@
     if (!(form instanceof HTMLFormElement)) return;
 
     const assignment = form.querySelector('#office_assignment');
-    if (!(assignment instanceof HTMLSelectElement)) return;
+    if (!(assignment instanceof HTMLInputElement) && !(assignment instanceof HTMLSelectElement)) return;
+
+    const region = form.querySelector('#psgc_region_code');
+    const province = form.querySelector('#psgc_province_code');
+    const city = form.querySelector('#psgc_city_code');
 
     const help = form.querySelector('#officeAssignmentHelp');
     const checked = form.querySelector('input[name="office_type"]:checked');
@@ -27,9 +31,23 @@
       assignment.value = '';
       assignment.classList.add('opacity-60', 'cursor-not-allowed');
       if (help) help.classList.remove('hidden');
+
+      // Clear/disable PSGC drill-down selects (if present on this page)
+      [region, province, city].forEach((el) => {
+        if (el instanceof HTMLSelectElement) {
+          el.value = '';
+          el.disabled = true;
+          el.classList.add('opacity-60', 'cursor-not-allowed');
+        }
+      });
     } else {
       assignment.classList.remove('opacity-60', 'cursor-not-allowed');
       if (help) help.classList.add('hidden');
+
+      if (region instanceof HTMLSelectElement) {
+        region.disabled = false;
+        region.classList.remove('opacity-60', 'cursor-not-allowed');
+      }
     }
   };
 

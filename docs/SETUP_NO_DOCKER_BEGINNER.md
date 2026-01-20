@@ -180,6 +180,46 @@ Note: The app can also derive the base URL from the current request host, but se
 
 ---
 
+## 4.3 Configure Email OTP (Survey + Admin)
+
+OTP emails are sent via SMTP. Create or update `src/config/config.local.php` (gitignored) and add:
+
+```php
+<?php
+putenv('OTP_SECRET=REPLACE_WITH_RANDOM_SECRET');
+putenv('SMTP_HOST=smtp.gmail.com');
+// Recommended: port 465 + SSL (often works on office networks)
+putenv('SMTP_PORT=465');
+putenv('SMTP_ENCRYPTION=ssl'); // ssl | starttls | none
+putenv('SMTP_AUTH=1');
+putenv('SMTP_USER=your@dswd.gov.ph');
+putenv('SMTP_PASS=YOUR_GOOGLE_APP_PASSWORD');
+putenv('SMTP_FROM_EMAIL=your@dswd.gov.ph');
+putenv('SMTP_FROM_NAME=ETEEAP Survey OTP');
+// Optional troubleshooting (forces IPv4 if IPv6 is unreliable)
+putenv('SMTP_FORCE_IPV4=1');
+```
+
+If your network allows STARTTLS on 587, you can use:
+- `SMTP_PORT=587`
+- `SMTP_ENCRYPTION=starttls`
+
+---
+
+## 4.4 Configure PSGC Location Drilldown (Field Office)
+
+Step 3 (Field Office) uses PSGC drilldown: **Region → Province → City/Municipality**.
+
+Requirements:
+- PSGC CSV file exists at `docs/update/lib_psgc_2025.csv`
+- PSGC reference data is imported into DB table `ref_psgc_city`
+
+How to enable PSGC data:
+1. Finish install and migrations.
+2. Log in as admin → open **Admin → Import** → click **Import PSGC**.
+
+Exports and admin “View Response” will show **location names** (and still include codes as separate columns).
+
 ## 5) Web Server Setup (Apache)
 
 The app’s public entry point is:
