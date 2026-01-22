@@ -62,7 +62,14 @@ class SmtpMailer
         $username = $get('SMTP_USER', '');
         $password = $get('SMTP_PASS', '');
         $fromEmail = $get('SMTP_FROM_EMAIL', $username !== '' ? $username : 'no-reply@localhost');
-        $fromName = $get('SMTP_FROM_NAME', APP_NAME . ' OTP');
+        $fromName = $get('SMTP_FROM_NAME', '');
+        if ($fromName === '') {
+            // Backward-compat alias sometimes used in env files
+            $fromName = $get('SMTP_NAME', '');
+        }
+        if ($fromName === '') {
+            $fromName = APP_NAME . ' OTP';
+        }
 
         if ($host === '' || $port <= 0 || $fromEmail === '') {
             throw new RuntimeException('SMTP configuration is incomplete. Check SMTP settings in config.local.php.');

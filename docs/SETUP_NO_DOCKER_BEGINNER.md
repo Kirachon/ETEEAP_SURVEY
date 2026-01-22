@@ -204,6 +204,10 @@ If your network allows STARTTLS on 587, you can use:
 - `SMTP_PORT=587`
 - `SMTP_ENCRYPTION=starttls`
 
+Mailer implementation:
+- Default: **PHPMailer** (bundled in this repo under `PHPMailer/`)
+- Fallback: internal `src/services/SmtpMailer.php` (only used if `PHPMailer/` is missing)
+
 ---
 
 ## 4.4 Configure PSGC Location Drilldown (Field Office)

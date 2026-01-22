@@ -216,8 +216,6 @@ class OtpService
 
     private static function sendOtpEmail(string $toEmail, string $purposeLabel, string $otp, int $expiresSeconds): void
     {
-        require_once SRC_PATH . '/services/SmtpMailer.php';
-
         $minutes = (int) ceil(max($expiresSeconds, 1) / 60);
 
         $subject = "{$purposeLabel} - One-Time Password (OTP)";
@@ -225,6 +223,17 @@ class OtpService
             . "This code expires in {$minutes} minute(s).\n\n"
             . "If you did not request this, you can ignore this email.";
 
+        // Default to PHPMailer (vendored under /PHPMailer). Fall back only if PHPMailer is not deployed.
+        $phpMailerFile = SRC_PATH . '/services/PhpMailerMailer.php';
+        if (is_file($phpMailerFile)) {
+            require_once $phpMailerFile;
+            if (class_exists('PhpMailerMailer') && PhpMailerMailer::isAvailable()) {
+                PhpMailerMailer::sendText($toEmail, $subject, $body);
+                return;
+            }
+        }
+
+        require_once SRC_PATH . '/services/SmtpMailer.php';
         SmtpMailer::sendText($toEmail, $subject, $body);
     }
 

@@ -232,6 +232,8 @@ This app can send **One-Time Passwords (OTP)** via email for:
 - Survey respondent email verification (after Step 2)
 - Admin login second factor (after password)
 
+DSWD deployments: see `docs/SETUP_DSWD_BEGINNER.md` (uses root `.env` + internal SMTP relay examples).
+
 Configure these in `src/config/config.local.php` (do not commit secrets):
 
 ```php
@@ -253,6 +255,35 @@ putenv('SMTP_FORCE_IPV4=1');
 // Optional: writes safe SMTP stage logs to storage/logs/otp.log (no secrets)
 // putenv('SMTP_DEBUG_LOG=1');
 ```
+
+Mailer implementation:
+- Default: **PHPMailer** (bundled in this repo under `PHPMailer/`)
+- Fallback: internal `src/services/SmtpMailer.php` (only used if `PHPMailer/` is missing)
+
+Using a root `.env` file:
+- Docker: put values in the project root `.env` (Docker Compose loads it automatically).
+- Non-Docker: you can load the project root `.env` from `src/config/config.local.php` (see `src/config/config.local.php.example`).
+
+#### Option: Internal SMTP Relay (Port 25, no auth)
+
+If your office provides an internal SMTP relay (example: `172.16.x.x`) you can configure OTP emails like this:
+
+```php
+<?php
+putenv('SMTP_HOST=172.16.10.118'); // replace with your mail relay IP/host
+putenv('SMTP_PORT=25');
+putenv('SMTP_ENCRYPTION=none');
+putenv('SMTP_AUTH=0');
+putenv('SMTP_USER=');
+putenv('SMTP_PASS=');
+putenv('SMTP_FROM_EMAIL=app-mailer1@dswd.gov.ph'); // use an allowed sender
+putenv('SMTP_FROM_NAME=ETEEAP Survey OTP');
+```
+
+Notes:
+- Port `25` is usually for server-to-server mail relay and may be blocked outside your internal network.
+- Some relays only accept mail from whitelisted IPs and/or require the `From` domain to match policy (coordinate with DSWD IT).
+- If your existing env file uses `SMTP_NAME="..."`, this app also supports `SMTP_NAME` as an alias for `SMTP_FROM_NAME`.
 
 #### Google App Password (for SMTP_PASS)
 
@@ -297,6 +328,10 @@ Notes:
 - The database stores PSGC *codes* (`psgc_region_code`, `psgc_province_code`, `psgc_city_code`).
 - Admin view + exports also include human-readable names so users don’t need to interpret codes.
 
+### Third-party Notices
+
+- PHPMailer (LGPL-2.1) is bundled under `PHPMailer/`. See `PHPMailer/LICENSE`.
+
 ### Shared Hosting (InfinityFree, etc.)
 
 For shared hosting with a flat folder structure:
@@ -306,6 +341,7 @@ For shared hosting with a flat folder structure:
 3. Create `src/config/config.local.php` with your hosting credentials
 4. Upload `public/assets/` to `htdocs/assets/` (include `assets/vendor/` for Tom Select)
 5. Upload `docs/update/` to `htdocs/docs/update/` (for course data)
+6. Ensure `PHPMailer/` is uploaded (required for OTP emails)
 
 Note: if you update (pull) the app later and a feature works locally but is **404 on InfinityFree**, make sure your deployed `htdocs/index.php` is updated too (it comes from `public/index_infinityfree.php`).
 
@@ -318,6 +354,16 @@ define('APP_NAME', 'ETEEAP Survey');
 define('APP_URL', 'http://your-domain.com');
 define('APP_ENV', 'production'); // development | production
 ```
+
+### Database Settings via `.env` / env vars
+
+Yes, database settings can be provided via environment variables too (preferred for Docker/servers):
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`
+
+The app loads DB config in this order:
+1. Real environment variables (`getenv()`) — Docker/Apache/PHP-FPM
+2. Values loaded from a root `.env` (if you load it in `src/config/config.local.php`)
+3. `installConfigGet()` fallback values
 
 ---
 

@@ -7,7 +7,68 @@
  * Use it to set environment-specific settings like DB credentials and SMTP secrets.
  */
 
+/**
+ * Optional: load environment variables from a project-root `.env` file.
+ *
+ * This lets you keep secrets in `.env` and avoid typing credentials here.
+ * Notes:
+ * - `.env` should remain gitignored.
+ * - Your web server should serve only from `/public` so `.env` is not web-accessible.
+ */
+$envFile = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . '.env';
+if (is_file($envFile) && is_readable($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($lines !== false && is_array($lines)) {
+        foreach ($lines as $line) {
+            $line = trim((string) $line);
+            if ($line === '' || (isset($line[0]) && $line[0] === '#')) {
+                continue;
+            }
+            if (strlen($line) > 5000) {
+                continue;
+            }
+            if (substr($line, 0, 7) === 'export ') {
+                $line = trim(substr($line, 7));
+            }
+            if (strpos($line, '=') === false) {
+                continue;
+            }
+            [$k, $v] = explode('=', $line, 2);
+            $k = trim($k);
+            $v = trim($v);
+            if ($k === '' || strlen($k) > 120 || preg_match('/^[A-Z_][A-Z0-9_]*$/', $k) !== 1) {
+                continue;
+            }
+            // Basic quote support: KEY="value" or KEY='value'
+            if ($v !== '') {
+                $v = trim($v);
+                if ((substr($v, 0, 1) === '"' && substr($v, -1) === '"') || (substr($v, 0, 1) === "'" && substr($v, -1) === "'")) {
+                    $v = substr($v, 1, -1);
+                }
+            }
+            // Do not overwrite real environment variables set by the server.
+            if (getenv($k) === false) {
+                // Avoid control characters in putenv payload.
+                $v = preg_replace('/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/', '', (string) $v) ?? '';
+                if (strlen($v) > 5000) {
+                    continue;
+                }
+                putenv($k . '=' . $v);
+                $_ENV[$k] = $v;
+                $_SERVER[$k] = $v;
+            }
+        }
+    }
+}
+
 function installConfigGet($key, $default = null) {
+    // Prefer real environment variables (Docker/Apache/PHP-FPM or loaded from `.env` above)
+    $env = getenv($key);
+    if ($env !== false && $env !== '') {
+        return $env;
+    }
+
+    // Fallback defaults (only used if env vars are not set)
     $config = [
         'DB_HOST' => 'REPLACE_WITH_DB_HOST',
         'DB_PORT' => '3306',
@@ -28,19 +89,23 @@ function installConfigGet($key, $default = null) {
         // ============================================
         // SMTP (Google Workspace / Gmail SMTP)
         // ============================================
+        // Mailer: PHPMailer (bundled under /PHPMailer)
         // For local testing with Google SMTP + App Password:
-        // SMTP_HOST=smtp.gmail.com, SMTP_PORT=587, SMTP_TLS=1
+        // Recommended: SMTP_PORT=465 + SMTP_ENCRYPTION=ssl (often works on office networks)
+        // Alternative: SMTP_PORT=587 + SMTP_ENCRYPTION=starttls (if allowed)
         // SMTP_USER=your@dswd.gov.ph, SMTP_PASS=APP_PASSWORD
         // SMTP_FROM_EMAIL=your@dswd.gov.ph, SMTP_FROM_NAME="ETEEAP Survey OTP"
         'SMTP_HOST' => 'smtp.gmail.com',
-        'SMTP_PORT' => '587',
-        'SMTP_TLS' => '1',
+        'SMTP_PORT' => '465',
+        'SMTP_ENCRYPTION' => 'ssl', // ssl | starttls | none
+        'SMTP_AUTH' => '1',
         'SMTP_USER' => 'REPLACE_WITH_EMAIL',
         'SMTP_PASS' => 'REPLACE_WITH_APP_PASSWORD',
         'SMTP_FROM_EMAIL' => 'REPLACE_WITH_EMAIL',
         'SMTP_FROM_NAME' => 'ETEEAP Survey OTP',
+        // Optional troubleshooting: force IPv4 if IPv6 is unreliable on your network
+        // 'SMTP_FORCE_IPV4' => '1',
     ];
 
     return $config[$key] ?? $default;
 }
-

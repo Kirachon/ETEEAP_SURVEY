@@ -242,6 +242,10 @@ putenv('SMTP_FROM_NAME=ETEEAP Survey OTP');
 putenv('SMTP_FORCE_IPV4=1');
 ```
 
+Mailer implementation:
+- Default: **PHPMailer** (bundled in this repo under `PHPMailer/`)
+- Fallback: internal `src/services/SmtpMailer.php` (only used if `PHPMailer/` is missing)
+
 If your network allows STARTTLS on 587, you can use:
 - `SMTP_PORT=587`
 - `SMTP_ENCRYPTION=starttls`
