@@ -205,8 +205,17 @@ If your network allows STARTTLS on 587, you can use:
 - `SMTP_ENCRYPTION=starttls`
 
 Mailer implementation:
-- Default: **PHPMailer** (bundled in this repo under `PHPMailer/`)
+- Default: **PHPMailer** (not committed to this repo; you must download it)
 - Fallback: internal `src/services/SmtpMailer.php` (only used if `PHPMailer/` is missing)
+
+Install PHPMailer (manual, no Composer):
+1. Download the latest PHPMailer release zip.
+2. Extract it into the project root so this path exists: `PHPMailer/src/PHPMailer.php`
+
+Download link:
+```
+https://github.com/PHPMailer/PHPMailer/releases
+```
 
 ---
 

@@ -2,7 +2,7 @@
 /**
  * ETEEAP Survey Application - PHPMailer SMTP Mailer
  *
- * Uses the vendored PHPMailer library under /PHPMailer.
+ * Uses the PHPMailer library under /PHPMailer (downloaded; not committed).
  *
  * Security notes:
  * - Do NOT log credentials.

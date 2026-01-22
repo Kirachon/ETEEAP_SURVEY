@@ -89,7 +89,7 @@ function installConfigGet($key, $default = null) {
         // ============================================
         // SMTP (Google Workspace / Gmail SMTP)
         // ============================================
-        // Mailer: PHPMailer (bundled under /PHPMailer)
+        // Mailer: PHPMailer (download into /PHPMailer; not committed)
         // For local testing with Google SMTP + App Password:
         // Recommended: SMTP_PORT=465 + SMTP_ENCRYPTION=ssl (often works on office networks)
         // Alternative: SMTP_PORT=587 + SMTP_ENCRYPTION=starttls (if allowed)

@@ -77,6 +77,8 @@ To verify the container sees your env vars:
 
 ## 4) Quick OTP email test (Docker)
 
+Note: This test uses `PhpMailerMailer.php`. Make sure PHPMailer is installed in the project root first (path should exist: `PHPMailer/src/PHPMailer.php`).
+
 This sends a test email to the configured sender address (`SMTP_FROM_EMAIL` or `SMTP_USER`):
 
 ```bash

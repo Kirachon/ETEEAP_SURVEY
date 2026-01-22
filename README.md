@@ -272,8 +272,17 @@ putenv('SMTP_FORCE_IPV4=1');
 ```
 
 Mailer implementation:
-- Default: **PHPMailer** (bundled in this repo under `PHPMailer/`)
+- Default: **PHPMailer** (not committed to this repo; you must download it)
 - Fallback: internal `src/services/SmtpMailer.php` (only used if `PHPMailer/` is missing)
+
+Install PHPMailer (manual, no Composer):
+1. Download the latest PHPMailer release zip.
+2. Extract it into the project root so this path exists: `PHPMailer/src/PHPMailer.php`
+
+Download link:
+```
+https://github.com/PHPMailer/PHPMailer/releases
+```
 
 Using a root `.env` file:
 - Docker: put values in the project root `.env` (Docker Compose loads it automatically).
@@ -345,7 +354,7 @@ Notes:
 
 ### Third-party Notices
 
-- PHPMailer (LGPL-2.1) is bundled under `PHPMailer/`. See `PHPMailer/LICENSE`.
+- PHPMailer (LGPL-2.1) is used by the default mailer. Download it into `PHPMailer/` (not committed). See `PHPMailer/LICENSE` after download.
 
 ### Shared Hosting (InfinityFree, etc.)
 
@@ -356,7 +365,7 @@ For shared hosting with a flat folder structure:
 3. Create `src/config/config.local.php` with your hosting credentials
 4. Upload `public/assets/` to `htdocs/assets/` (include `assets/vendor/` for Tom Select)
 5. Upload `docs/update/` to `htdocs/docs/update/` (for course data)
-6. Ensure `PHPMailer/` is uploaded (required for OTP emails)
+6. Ensure `PHPMailer/` is uploaded (download it first; required for OTP emails)
 
 Note: if you update (pull) the app later and a feature works locally but is **404 on InfinityFree**, make sure your deployed `htdocs/index.php` is updated too (it comes from `public/index_infinityfree.php`).
 

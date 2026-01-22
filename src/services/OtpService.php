@@ -223,7 +223,7 @@ class OtpService
             . "This code expires in {$minutes} minute(s).\n\n"
             . "If you did not request this, you can ignore this email.";
 
-        // Default to PHPMailer (vendored under /PHPMailer). Fall back only if PHPMailer is not deployed.
+        // Default to PHPMailer (download into /PHPMailer). Fall back only if PHPMailer is not deployed.
         $phpMailerFile = SRC_PATH . '/services/PhpMailerMailer.php';
         if (is_file($phpMailerFile)) {
             require_once $phpMailerFile;
