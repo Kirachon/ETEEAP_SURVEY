@@ -196,25 +196,40 @@ The ETEEAP Survey Application is designed to assess the interest and eligibility
 
 ### Database Configuration
 
-The application supports environment-specific configuration through `config.local.php`. This file is **not** committed to Git, allowing each deployment to have its own credentials.
+The app supports environment-specific configuration via environment variables (`getenv()`), with an optional helper file `src/config/config.local.php` (gitignored) to load/set them.
 
-**For local development (XAMPP):** No configuration needed — defaults work out of the box.
+**Recommended option (works best for DSWD + servers): use a root `.env`**
 
-**For production/hosting deployments:**
+- Docker: put values in project root `.env` (Docker Compose loads it automatically).
+- Non-Docker: use `src/config/config.local.php` to load the root `.env` (the example already includes a safe loader).
+
+Example `.env` DB settings:
+
+```env
+DB_HOST=REPLACE_WITH_DB_HOST
+DB_PORT=3306
+DB_NAME=REPLACE_WITH_DB_NAME
+DB_USER=REPLACE_WITH_DB_USER
+DB_PASS=REPLACE_WITH_DB_PASSWORD
+```
+
+**Alternative option: set DB vars directly in `config.local.php`**
 
 1. Copy the template:
    ```bash
    cp src/config/config.local.php.example src/config/config.local.php
    ```
-
-2. Edit `src/config/config.local.php` with your credentials:
+2. Edit `src/config/config.local.php`:
    ```php
    <?php
    putenv('DB_HOST=your_database_host');
+   putenv('DB_PORT=3306');
    putenv('DB_NAME=your_database_name');
    putenv('DB_USER=your_username');
    putenv('DB_PASS=your_password');
    ```
+
+Note: for local development (XAMPP/Laragon), defaults may work if your DB matches the defaults; otherwise configure DB vars as above.
 
 ### After Pulling Updates (Existing Install)
 
@@ -354,16 +369,6 @@ define('APP_NAME', 'ETEEAP Survey');
 define('APP_URL', 'http://your-domain.com');
 define('APP_ENV', 'production'); // development | production
 ```
-
-### Database Settings via `.env` / env vars
-
-Yes, database settings can be provided via environment variables too (preferred for Docker/servers):
-- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`
-
-The app loads DB config in this order:
-1. Real environment variables (`getenv()`) — Docker/Apache/PHP-FPM
-2. Values loaded from a root `.env` (if you load it in `src/config/config.local.php`)
-3. `installConfigGet()` fallback values
 
 ---
 
